@@ -3,6 +3,7 @@
     "target": "ES5",
     "module": "ESNext",
     "moduleResolution": "node",
+    "outDir": "./dist/",
     "allowJs": true,
     "strict": true,
     "strictNullChecks": true,
