@@ -1,16 +1,12 @@
-import TextBox from './components/text-box'
+import { defineCustomElements } from './registry'
 
 export default class App {
   $root: HTMLElement
 
   constructor($root: HTMLElement) {
     this.$root = $root
-    this.defineCustomElements()
+    defineCustomElements()
     this.render()
-  }
-
-  defineCustomElements() {
-    customElements.define(TextBox.displayName, TextBox)
   }
 
   render() {
