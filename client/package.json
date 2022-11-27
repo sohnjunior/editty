@@ -10,7 +10,7 @@
     "dev": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
     "lint": "eslint . --ext .js,.ts",
-    "prettier": "prettier --check --write **/*.{js,ts}",
+    "prettier": "prettier --check --write src/**/*.{js,ts}",
     "prepare": "cd .. && husky install client/.husky",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
