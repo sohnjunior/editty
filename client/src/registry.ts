@@ -1,5 +1,5 @@
-import TextBox from './components/text-box'
+import AtomButton from '@atoms/button'
 
 export function defineCustomElements() {
-  customElements.define(TextBox.displayName, TextBox)
+  customElements.define(AtomButton.displayName, AtomButton)
 }
