@@ -1,6 +1,6 @@
 import { html } from 'lit-html'
 
-import Button from '../components/atoms/button'
+import Button from '@atoms/button'
 
 customElements.define(Button.displayName, Button)
 
