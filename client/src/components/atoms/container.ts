@@ -16,6 +16,7 @@ export default class Container extends HTMLElement {
     return `
       <style>
         :host > div {
+          all: unset;
           width: fit-content;
           padding: 15px 20px;
           background: #fafafa;
