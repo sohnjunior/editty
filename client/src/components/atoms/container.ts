@@ -13,7 +13,7 @@ template.innerHTML = `
   <slot></slot>
 `
 
-export default class Container extends HTMLElement {
+export default class VContainer extends HTMLElement {
   private $root: ShadowRoot
 
   static tag = 'v-container'
