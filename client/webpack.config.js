@@ -16,6 +16,11 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: ['.js', '.ts'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+        '@atoms': path.resolve(__dirname, 'src/components/atoms'),
+        '@templates': path.resolve(__dirname, 'src/components/templates'),
+      },
     },
     module: {
       rules: [
