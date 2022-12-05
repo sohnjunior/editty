@@ -16,7 +16,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@atoms/*": ["src/components/atoms/*"],
-      "@templates/*": ["src/components/templates/*"]
+      "@layouts/*": ["src/components/layouts/*"]
     }
   },
   "include": ["src"],

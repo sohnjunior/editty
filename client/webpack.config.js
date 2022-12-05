@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
       alias: {
         '@': path.resolve(__dirname, 'src'),
         '@atoms': path.resolve(__dirname, 'src/components/atoms'),
-        '@templates': path.resolve(__dirname, 'src/components/templates'),
+        '@layouts': path.resolve(__dirname, 'src/components/layouts'),
       },
     },
     module: {

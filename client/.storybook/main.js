@@ -10,7 +10,7 @@ module.exports = {
   webpackFinal: async (config) => {
     config.resolve.alias['@'] = path.resolve(__dirname, '../src/')
     config.resolve.alias['@atoms'] = path.resolve(__dirname, '../src/components/atoms')
-    config.resolve.alias['@templates'] = path.resolve(__dirname, '../src/components/templates')
+    config.resolve.alias['@layouts'] = path.resolve(__dirname, '../src/components/layouts')
     return config
   },
 }
