@@ -1,5 +1,5 @@
 import { defineCustomElements } from './registry'
-import './app.css'
+import './global.css'
 
 export default class App {
   $root: HTMLElement
