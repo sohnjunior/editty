@@ -2,7 +2,7 @@ const template = document.createElement('template')
 template.innerHTML = `
   <style>
     :host {
-      all: unset;
+      display: block;
       width: fit-content;
       padding: 15px 20px;
       background: #fafafa;
