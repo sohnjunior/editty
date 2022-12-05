@@ -1,4 +1,5 @@
 import { defineCustomElements } from './registry'
+import './app.css'
 
 export default class App {
   $root: HTMLElement
@@ -10,6 +11,13 @@ export default class App {
   }
 
   render() {
-    this.$root.innerHTML = '<text-box></text-box>'
+    this.$root.innerHTML = `
+      <v-mobile-layout>
+        <main slot="main">
+          <h1>Hello World!</h1>
+          <v-button></v-button>
+        </main>
+      </v-mobile-layout>
+    `
   }
 }

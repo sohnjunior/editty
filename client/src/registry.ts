@@ -1,5 +1,7 @@
-import AtomButton from '@atoms/button'
+import MobileLayout from '@layouts/mobile'
+import Button from '@atoms/button'
 
 export function defineCustomElements() {
-  customElements.define(AtomButton.displayName, AtomButton)
+  customElements.define(MobileLayout.tag, MobileLayout)
+  customElements.define(Button.tag, Button)
 }
