@@ -28,6 +28,10 @@ module.exports = (env, argv) => {
           test: /\.ts$/,
           use: ['babel-loader', 'ts-loader'],
         },
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader'],
+        },
       ],
     },
     plugins: [
