@@ -14,8 +14,7 @@ export default class App {
     this.$root.innerHTML = `
       <v-mobile-layout>
         <main slot="main">
-          <h1>Hello World!</h1>
-          <v-button></v-button>
+          <v-canvas></v-canvas>
         </main>
       </v-mobile-layout>
     `
