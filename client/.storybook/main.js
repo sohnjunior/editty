@@ -7,6 +7,7 @@ module.exports = {
   core: {
     builder: '@storybook/builder-webpack5',
   },
+  staticDirs: ['../public'],
   webpackFinal: async (config) => {
     config.resolve.alias['@'] = path.resolve(__dirname, '../src/')
     config.resolve.alias['@atoms'] = path.resolve(__dirname, '../src/components/atoms')
