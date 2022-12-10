@@ -17,23 +17,38 @@ template.innerHTML = `
 `
 
 export default class VCanvas extends HTMLElement {
-  private $root: ShadowRoot
-  private $canvas: HTMLCanvasElement
-  private context: CanvasRenderingContext2D
+  private $root!: ShadowRoot
+  private $canvas!: HTMLCanvasElement
+  private context!: CanvasRenderingContext2D
 
   static tag = 'v-canvas'
 
   constructor() {
-    super()
-    this.$root = this.attachShadow({ mode: 'open' })
-    this.$root.appendChild(template.content.cloneNode(true))
-    this.$canvas = this.$root.getElementById('canvas') as HTMLCanvasElement
-
-    const ctx = this.$canvas.getContext('2d')
-    if (!ctx) {
-      throw new Error('🚨 canvas load fail')
+    const initShadowRoot = () => {
+      this.$root = this.attachShadow({ mode: 'open' })
+      this.$root.appendChild(template.content.cloneNode(true))
     }
-    this.context = ctx
+
+    const initCanvas = () => {
+      this.$canvas = this.$root.getElementById('canvas') as HTMLCanvasElement
+      const ctx = this.$canvas.getContext('2d')
+      if (!ctx) {
+        throw new Error('🚨 canvas load fail')
+      }
+      this.context = ctx
+    }
+
+    const refineCanvasRatio = () => {
+      const ratio = window.devicePixelRatio
+      const { width, height } = getComputedStyle(this.$canvas)
+      this.$canvas.width = parseInt(width) * ratio
+      this.$canvas.height = parseInt(height) * ratio
+    }
+
+    super()
+    initShadowRoot()
+    initCanvas()
+    refineCanvasRatio()
   }
 
   connectedCallback() {
