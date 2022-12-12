@@ -1,12 +1,12 @@
 import { html } from 'lit-html'
 
-import IconButton from '@atoms/icon-button'
-import type { Icon, Size } from '@atoms/icon-button'
+import IconButton from '@/components/elements/icon-button'
+import type { Icon, Size } from '@/components/elements/icon-button'
 
 customElements.define(IconButton.tag, IconButton)
 
 export default {
-  title: 'Atoms / Icon Button',
+  title: 'Elements / Icon Button',
   argTypes: {
     icon: { control: 'select', options: ['delete', 'cursor', 'pen'] },
     size: { control: 'select', options: ['small', 'medium', 'large'] },

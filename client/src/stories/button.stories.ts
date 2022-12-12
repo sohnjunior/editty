@@ -1,11 +1,11 @@
 import { html } from 'lit-html'
 
-import Button from '@atoms/button'
+import Button from '@/components/elements/button'
 
 customElements.define(Button.tag, Button)
 
 export default {
-  title: 'Atoms / Button',
+  title: 'Elements / Button',
 }
 
 export const Basic = ({ color, onClick }: { color: string; onClick: () => void }) =>

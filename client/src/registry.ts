@@ -1,6 +1,6 @@
 import MobileLayout from '@layouts/mobile'
-import Button from '@atoms/button'
-import Canvas from '@atoms/canvas'
+import Button from '@/components/elements/button'
+import Canvas from '@/components/elements/canvas'
 
 export function defineCustomElements() {
   customElements.define(MobileLayout.tag, MobileLayout)
