@@ -1,4 +1,4 @@
-const icon = ['delete', 'cursor', 'pen'] as const
+const icon = ['delete', 'cursor', 'pen', 'text'] as const
 const size = ['small', 'medium', 'large'] as const
 
 export type Icon = typeof icon[number]
@@ -20,6 +20,7 @@ const URL: Record<Icon, string> = {
   delete: `url('assets/images/delete.svg')`,
   cursor: `url('assets/images/cursor.svg')`,
   pen: `url('assets/images/pen.svg')`,
+  text: `url('assets/images/text.svg')`,
 }
 
 const SIZE: Record<Size, string> = {
