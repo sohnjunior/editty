@@ -16,6 +16,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@elements/*": ["src/components/elements/*"],
+      "@molecules/*": ["src/components/molecules/*"],
       "@layouts/*": ["src/components/layouts/*"]
     }
   },

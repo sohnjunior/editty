@@ -19,6 +19,7 @@ module.exports = (env, argv) => {
       alias: {
         '@': path.resolve(__dirname, 'src'),
         '@elements': path.resolve(__dirname, 'src/components/elements'),
+        '@molecules': path.resolve(__dirname, 'src/components/molecules'),
         '@layouts': path.resolve(__dirname, 'src/components/layouts'),
       },
     },
