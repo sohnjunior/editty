@@ -1,6 +1,17 @@
-import App from './app'
+import { defineCustomElements } from './registry'
 
-const root = document.getElementById('app')
-if (root) {
-  new App(root)
+import './global.css'
+
+function mountApp() {
+  const $app = document.getElementById('app')
+  if ($app) {
+    $app.appendChild(document.createElement('v-app'))
+  }
 }
+
+function initialize() {
+  defineCustomElements()
+  mountApp()
+}
+
+initialize()

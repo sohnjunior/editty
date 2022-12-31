@@ -1,22 +1,33 @@
-import { defineCustomElements } from './registry'
-import './global.css'
+const template = document.createElement('template')
+template.innerHTML = `
+  <style>
+    :host .control-container {
+      position: fixed;
+      left: 20px;
+      bottom: 40px;
+    }
+  </style>
 
-export default class App {
-  $root: HTMLElement
+  <v-mobile-layout>
+    <main slot="main">
+      <v-canvas></v-canvas>
+      <v-control-container class="control-container"></v-control-container>
+    </main>
+  </v-mobile-layout>
+`
 
-  constructor($root: HTMLElement) {
-    this.$root = $root
-    defineCustomElements()
-    this.render()
-  }
+export default class App extends HTMLElement {
+  private $root!: ShadowRoot
 
-  render() {
-    this.$root.innerHTML = `
-      <v-mobile-layout>
-        <main slot="main">
-          <v-canvas></v-canvas>
-        </main>
-      </v-mobile-layout>
-    `
+  static tag = 'v-app'
+
+  constructor() {
+    const initShadowRoot = () => {
+      this.$root = this.attachShadow({ mode: 'open' })
+      this.$root.appendChild(template.content.cloneNode(true))
+    }
+
+    super()
+    initShadowRoot()
   }
 }
