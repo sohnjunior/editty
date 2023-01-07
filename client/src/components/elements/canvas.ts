@@ -38,6 +38,11 @@ export default class VCanvas extends HTMLElement {
       this.context = ctx
     }
 
+    const initCanvasStyle = () => {
+      this.context.fillStyle = '#f8f8f8'
+      this.context.fillRect(0, 0, this.$canvas.width, this.$canvas.height)
+    }
+
     const refineCanvasRatio = () => {
       const ratio = window.devicePixelRatio
       const { width, height } = getComputedStyle(this.$canvas)
@@ -49,6 +54,7 @@ export default class VCanvas extends HTMLElement {
     initShadowRoot()
     initCanvas()
     refineCanvasRatio()
+    initCanvasStyle()
   }
 
   connectedCallback() {
