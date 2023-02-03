@@ -6,12 +6,19 @@ template.innerHTML = `
       left: 20px;
       bottom: 40px;
     }
+
+    :host .history-container {
+      position: fixed;
+      right: 20px;
+      bottom: 40px;
+    }
   </style>
 
   <v-mobile-layout>
     <main slot="main">
       <v-canvas></v-canvas>
       <v-control-container class="control-container"></v-control-container>
+      <v-history-container class="history-container"></v-history-container>
     </main>
   </v-mobile-layout>
 `

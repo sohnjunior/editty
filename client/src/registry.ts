@@ -4,6 +4,7 @@ import Canvas from '@elements/canvas'
 import IconButton from '@elements/icon-button'
 import Container from '@elements/container'
 import ControlContainer from '@molecules/control-container'
+import HistoryContainer from '@molecules/history-container'
 import App from './app'
 
 export function defineCustomElements() {
@@ -14,4 +15,5 @@ export function defineCustomElements() {
   customElements.define(Canvas.tag, Canvas)
   customElements.define(Container.tag, Container)
   customElements.define(ControlContainer.tag, ControlContainer)
+  customElements.define(HistoryContainer.tag, HistoryContainer)
 }
