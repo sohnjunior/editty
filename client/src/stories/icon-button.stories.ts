@@ -1,7 +1,7 @@
 import { html } from 'lit-html'
 
-import IconButton from '@/components/elements/icon-button'
-import type { Icon, Size } from '@/components/elements/icon-button'
+import IconButton from '@elements/icon-button'
+import type { Icon, Size } from '@elements/icon-button'
 
 customElements.define(IconButton.tag, IconButton)
 

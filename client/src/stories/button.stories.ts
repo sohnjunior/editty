@@ -1,6 +1,6 @@
 import { html } from 'lit-html'
 
-import Button from '@/components/elements/button'
+import Button from '@elements/button'
 
 customElements.define(Button.tag, Button)
 
