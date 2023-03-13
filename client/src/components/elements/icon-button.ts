@@ -1,35 +1,8 @@
-const icon = ['delete', 'cursor', 'pen', 'text', 'back-arrow', 'forward-arrow'] as const
-const size = ['small', 'medium', 'large'] as const
+import { isIconType, isSizeType } from './icon'
+import type { Icon as BaseIcon, Size as BaseSize } from './icon'
 
-export type Icon = typeof icon[number]
-export type Size = typeof size[number]
-
-export function contains<T extends string>(list: ReadonlyArray<T>, value: string): value is T {
-  return list.some((item) => item === value)
-}
-
-const isIconType = (maybe: unknown): maybe is Icon => {
-  return typeof maybe === 'string' && contains(icon, maybe)
-}
-
-const isSizeType = (maybe: unknown): maybe is Size => {
-  return typeof maybe === 'string' && contains(size, maybe)
-}
-
-const URL: Record<Icon, string> = {
-  delete: `url('assets/images/delete.svg')`,
-  cursor: `url('assets/images/cursor.svg')`,
-  pen: `url('assets/images/pen.svg')`,
-  text: `url('assets/images/text.svg')`,
-  'back-arrow': `url('assets/images/back-arrow.svg')`,
-  'forward-arrow': `url('assets/images/forward-arrow.svg')`,
-}
-
-const SIZE: Record<Size, string> = {
-  small: '20px',
-  medium: '30px',
-  large: '40px',
-}
+export type Icon = BaseIcon
+export type Size = BaseSize
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -43,7 +16,9 @@ template.innerHTML = `
       background-size: contain;
     }
   </style>
-  <button type="button"></button>
+  <button type="button">
+    <v-icon />
+  </button>
 `
 
 export default class VIconButton extends HTMLElement {
@@ -78,7 +53,7 @@ export default class VIconButton extends HTMLElement {
       this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
     }
 
-    initStyle()
+    requestAnimationFrame(initStyle)
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -86,22 +61,21 @@ export default class VIconButton extends HTMLElement {
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
-    const $button = this.$root.querySelector('button')
-    if (!$button) {
+    const $icon = this.$root.querySelector('v-icon')
+    if (!$icon) {
       return
     }
 
     switch (attribute) {
       case 'icon': {
         if (isIconType(value)) {
-          $button.style.backgroundImage = URL[value]
+          $icon.setAttribute('icon', value)
           break
         }
       }
       case 'size': {
         if (isSizeType(value)) {
-          $button.style.width = SIZE[value]
-          $button.style.height = SIZE[value]
+          $icon.setAttribute('size', value)
           break
         }
       }
