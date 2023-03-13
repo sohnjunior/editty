@@ -7,7 +7,8 @@ template.innerHTML = `
       outline: none;
       font-weight: 500;
       font-size: 16px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
+      background-color: transparent;
     }
   </style>
   <input type="text" />
