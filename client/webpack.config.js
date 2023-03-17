@@ -45,6 +45,7 @@ module.exports = (env, argv) => {
       }),
       new HtmlWebpackPlugin({
         template: './public/index.html',
+        favicon: './public/assets/favicon.ico',
         minify:
           process.env.NODE_ENV === 'production'
             ? {
