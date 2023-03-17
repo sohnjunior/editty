@@ -4,14 +4,13 @@ template.innerHTML = `
     :host {
       display: block;
       height: 100%;
-      background-color: #D8D8D8;
+      background-color: #f3f3f3;
     }
 
     ::slotted([slot="main"]) {
       max-width: 780px;
       height: 100%;
       margin: 0 auto;
-      background-color: #FFFFFF;
     }
   </style>
   <slot name="main">main slot</slot>
