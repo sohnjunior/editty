@@ -4,7 +4,7 @@ template.innerHTML = `
     :host > v-container {
       display: flex;
       align-items: center;
-      gap: 14px;
+      padding: 10px 20px;
     }
   </style>
   <v-container>
