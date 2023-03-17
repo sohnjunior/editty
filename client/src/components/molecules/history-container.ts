@@ -7,9 +7,9 @@ template.innerHTML = `
     }
   </style>
   <v-container>
-    <v-icon-button icon="back-arrow"></v-icon-button>
-    <v-icon-button icon="forward-arrow"></v-icon-button>
-    <v-icon-button icon="delete"></v-icon-button>
+    <v-icon-button icon="back-arrow" size="medium"></v-icon-button>
+    <v-icon-button icon="forward-arrow" size="medium"></v-icon-button>
+    <v-icon-button icon="delete" size="medium"></v-icon-button>
   </v-container>
 `
 
