@@ -1,6 +1,12 @@
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
+    :host .input-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+    }
+
     :host .control-container {
       position: fixed;
       left: 20px;
@@ -17,6 +23,7 @@ template.innerHTML = `
   <v-mobile-layout>
     <main slot="main">
       <v-canvas></v-canvas>
+      <v-input-container class="input-container"></v-input-container>
       <v-control-container class="control-container"></v-control-container>
       <v-history-container class="history-container"></v-history-container>
     </main>
