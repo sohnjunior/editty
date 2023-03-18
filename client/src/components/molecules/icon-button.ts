@@ -1,5 +1,5 @@
-import { isIconType, isSizeType } from './icon'
-import type { Icon as BaseIcon, Size as BaseSize } from './icon'
+import { isIconType, isSizeType } from '../elements/icon'
+import type { Icon as BaseIcon, Size as BaseSize } from '../elements/icon'
 
 export type Icon = BaseIcon
 export type Size = BaseSize
@@ -53,6 +53,7 @@ export default class VIconButton extends HTMLElement {
       this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
     }
 
+    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
     requestAnimationFrame(initStyle)
   }
 
@@ -70,14 +71,14 @@ export default class VIconButton extends HTMLElement {
       case 'icon': {
         if (isIconType(value)) {
           $icon.setAttribute('icon', value)
-          break
         }
+        break
       }
       case 'size': {
         if (isSizeType(value)) {
           $icon.setAttribute('size', value)
-          break
         }
+        break
       }
     }
   }
