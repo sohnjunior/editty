@@ -53,6 +53,7 @@ export default class VIconButton extends HTMLElement {
       this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
     }
 
+    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
     requestAnimationFrame(initStyle)
   }
 
