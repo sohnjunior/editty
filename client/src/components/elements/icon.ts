@@ -83,8 +83,8 @@ export default class VIcon extends HTMLElement {
       }
     }
 
+    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
     requestAnimationFrame(initStyle)
-    // initStyle()
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
