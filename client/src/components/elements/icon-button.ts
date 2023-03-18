@@ -70,14 +70,14 @@ export default class VIconButton extends HTMLElement {
       case 'icon': {
         if (isIconType(value)) {
           $icon.setAttribute('icon', value)
-          break
         }
+        break
       }
       case 'size': {
         if (isSizeType(value)) {
           $icon.setAttribute('size', value)
-          break
         }
+        break
       }
     }
   }

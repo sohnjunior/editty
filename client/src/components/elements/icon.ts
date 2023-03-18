@@ -102,15 +102,15 @@ export default class VIcon extends HTMLElement {
       case 'icon': {
         if (isIconType(value)) {
           $icon.style.backgroundImage = ASSET_URL[value]
-          break
         }
+        break
       }
       case 'size': {
         if (isSizeType(value)) {
           $icon.style.width = SIZE[value]
           $icon.style.height = SIZE[value]
-          break
         }
+        break
       }
     }
   }
