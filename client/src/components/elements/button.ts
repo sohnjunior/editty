@@ -5,7 +5,9 @@ template.innerHTML = `
     color: blue;
   }
   </style>
-  <button>버튼</button>
+  <button>
+    <slot></slot>
+  </button>
 `
 
 export default class VButton extends HTMLElement {
