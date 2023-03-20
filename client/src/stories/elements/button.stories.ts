@@ -8,9 +8,16 @@ export default {
   title: 'Elements / Button',
 }
 
-export const Basic = ({ color, onClick }: { color: string; onClick: () => void }) =>
-  html`<v-button color="${color}" @click="${onClick}"></v-button>`
+interface Props {
+  color: string
+  children: string
+  onClick: () => void
+}
+
+export const Basic = ({ color, children, onClick }: Props) =>
+  html`<v-button color="${color}" @click="${onClick}">${children}</v-button>`
 Basic.args = {
   color: 'blue',
+  children: '예시 버튼',
   onClick: () => console.log('clicked!'),
 }
