@@ -15,12 +15,12 @@ describe('container', () => {
   it('should render slot', async () => {
     const example = document.createElement('div')
     example.innerHTML = `
-      <v-container data-id="v-container">
+      <v-container>
         <div>test</div>
       </v-container>
     `
 
-    const target = example.querySelector('[data-id="v-container"]')
+    const target = example.querySelector('v-container')
     const slotElement = getSlotElements(target)[0]
     expect(slotElement).toHaveTextContent('test')
   })
