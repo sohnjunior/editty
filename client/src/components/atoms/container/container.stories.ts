@@ -1,6 +1,6 @@
 import { html } from 'lit-html'
 
-import Container from '@/components/atoms/container/container'
+import Container from './container'
 
 customElements.define(Container.tag, Container)
 

@@ -1,6 +1,6 @@
 import { html } from 'lit-html'
 
-import TextInput from '@/components/atoms/text-input/text-input'
+import TextInput from './text-input'
 
 customElements.define(TextInput.tag, TextInput)
 

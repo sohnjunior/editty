@@ -1,7 +1,7 @@
 import { html } from 'lit-html'
 
-import VIcon from '@/components/atoms/icon/icon'
-import type { Icon, Size } from '@/components/atoms/icon/icon'
+import VIcon from './icon'
+import type { Icon, Size } from './icon'
 
 customElements.define(VIcon.tag, VIcon)
 

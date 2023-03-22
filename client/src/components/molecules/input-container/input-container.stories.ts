@@ -1,6 +1,6 @@
 import { html } from 'lit-html'
 
-import InputContainer from '@/components/molecules/input-container/input-container'
+import InputContainer from './input-container'
 
 customElements.define(InputContainer.tag, InputContainer)
 
