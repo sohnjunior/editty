@@ -1,7 +1,7 @@
 import { html } from 'lit-html'
 
-import IconButton from '@/components/molecules/icon-button'
-import type { Icon, Size } from '@/components/molecules/icon-button'
+import IconButton from '@/components/molecules/icon-button/icon-button'
+import type { Icon, Size } from '@/components/molecules/icon-button/icon-button'
 
 customElements.define(IconButton.tag, IconButton)
 
