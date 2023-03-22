@@ -7,15 +7,16 @@ on:
     paths:
       - "client/**"
 
+defaults:
+  run:
+    working-directory: client
+
 jobs:
   client-ci:
     strategy:
       matrix:
         node-version: [18.x]
         os: [ubuntu-latest]
-    defaults:
-      run:
-        working-directory: ./client
 
     name: Generate Client CI
     runs-on: ${{ matrix.os }}
@@ -46,9 +47,6 @@ jobs:
       matrix:
         node-version: [18.x]
         os: [ubuntu-latest]
-    defaults:
-      run:
-        working-directory: ./client
 
     name: Chromatic Deployment
     runs-on: ${{ matrix.os }}
@@ -72,3 +70,4 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           zip: true
+          workingDir: client
