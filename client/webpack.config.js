@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
       extensions: ['.js', '.ts'],
       alias: {
         '@': path.resolve(__dirname, 'src'),
-        '@elements': path.resolve(__dirname, 'src/components/elements'),
+        '@atoms': path.resolve(__dirname, 'src/components/atoms'),
         '@molecules': path.resolve(__dirname, 'src/components/molecules'),
         '@layouts': path.resolve(__dirname, 'src/components/layouts'),
       },

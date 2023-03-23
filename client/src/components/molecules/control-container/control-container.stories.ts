@@ -1,6 +1,6 @@
 import { html } from 'lit-html'
 
-import ControlContainer from '@molecules/control-container'
+import ControlContainer from './control-container'
 
 customElements.define(ControlContainer.tag, ControlContainer)
 

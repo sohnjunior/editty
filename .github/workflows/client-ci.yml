@@ -7,15 +7,16 @@ on:
     paths:
       - "client/**"
 
+defaults:
+  run:
+    working-directory: client
+
 jobs:
   client-ci:
     strategy:
       matrix:
         node-version: [18.x]
         os: [ubuntu-latest]
-    defaults:
-      run:
-        working-directory: ./client
 
     name: Generate Client CI
     runs-on: ${{ matrix.os }}
@@ -35,5 +36,47 @@ jobs:
       - name: Lint
         run: yarn lint
 
+      - name: Test
+        run: yarn test
+
       - name: Build
         run: yarn build
+
+  chromatic-deployment:
+    strategy:
+      matrix:
+        node-version: [18.x]
+        os: [ubuntu-latest]
+
+    name: Chromatic Deployment
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        uses: tj-actions/changed-files@v35
+        id: changed-files
+        with:
+          files: client/src/components/**
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        run: yarn install
+
+      - name: Publish to Chromatic
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          zip: true
+          workingDir: client

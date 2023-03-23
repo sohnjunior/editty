@@ -3,6 +3,7 @@
     "target": "ES6",
     "module": "ESNext",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "outDir": "./dist/",
     "allowJs": true,
     "strict": true,
@@ -15,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@elements/*": ["src/components/elements/*"],
+      "@atoms/*": ["src/components/atoms/*"],
       "@molecules/*": ["src/components/molecules/*"],
       "@layouts/*": ["src/components/layouts/*"]
     }

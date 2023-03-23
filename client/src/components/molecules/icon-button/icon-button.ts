@@ -1,5 +1,5 @@
-import { isIconType, isSizeType } from '../elements/icon'
-import type { Icon as BaseIcon, Size as BaseSize } from '../elements/icon'
+import { isIconType, isSizeType } from '../../atoms/icon/icon'
+import type { Icon as BaseIcon, Size as BaseSize } from '../../atoms/icon/icon'
 
 export type Icon = BaseIcon
 export type Size = BaseSize

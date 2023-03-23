@@ -23,6 +23,10 @@ export default class VTextInput extends HTMLElement {
     return ['placeholder']
   }
 
+  get value() {
+    return this.$input.value
+  }
+
   get placeHolderAttribute() {
     return this.getAttribute('placeholder')
   }
