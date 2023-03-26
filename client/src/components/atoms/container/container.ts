@@ -14,13 +14,17 @@ template.innerHTML = `
 `
 
 export default class VContainer extends HTMLElement {
-  private $root: ShadowRoot
+  private $root!: ShadowRoot
 
   static tag = 'v-container'
 
   constructor() {
+    const initShadowRoot = () => {
+      this.$root = this.attachShadow({ mode: 'open' })
+      this.$root.appendChild(template.content.cloneNode(true))
+    }
+
     super()
-    this.$root = this.attachShadow({ mode: 'open' })
-    this.$root.appendChild(template.content.cloneNode(true))
+    initShadowRoot()
   }
 }
