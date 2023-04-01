@@ -5,18 +5,21 @@ template.innerHTML = `
       position: fixed;
       top: 20px;
       left: 20px;
+      z-index: 3;
     }
 
     :host .control-container {
       position: fixed;
       left: 20px;
       bottom: 40px;
+      z-index: 3;
     }
 
     :host .history-container {
       position: fixed;
       right: 20px;
       bottom: 40px;
+      z-index: 3;
     }
   </style>
 
