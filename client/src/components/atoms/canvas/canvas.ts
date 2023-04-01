@@ -1,3 +1,5 @@
+import { Z_INDEX } from '@/utils/constant'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -17,12 +19,12 @@ template.innerHTML = `
 
     :host #background-layer {
       background-color: #f8f8f8;
-      z-index: 1;
+      z-index: ${Z_INDEX.CANVAS_LAYER.BACKGROUND};
       position: absolute;
     }
 
     :host #drawing-layer {
-      z-index: 2;
+      z-index: ${Z_INDEX.CANVAS_LAYER.DRAWING};
       position: absolute;
     }
   </style>
