@@ -1,24 +1,40 @@
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host {
+    :host #canvas-container {
       display: block;
       width: 100%;
       height: 100%;
       margin: 0;
       padding: 0;
+      position: relative;
     }
 
-    :host > #canvas-container {
+    :host #canvas-container > canvas {
       width: 100%;
       height: 100%;
     }
+
+    :host #background-layer {
+      background-color: #f8f8f8;
+      z-index: 1;
+      position: absolute;
+    }
+
+    :host #drawing-layer {
+      z-index: 2;
+      position: absolute;
+    }
   </style>
-  <canvas id="canvas-container"></canvas>
+  <div id="canvas-container">
+    <canvas id="background-layer"></canvas>
+    <canvas id="drawing-layer"></canvas>
+  </div>
 `
 
 /** TODO: 전역상태로 변경하기 */
 const snapshots: ImageData[] = []
+let phase: 'drawing' | 'erase' = 'drawing'
 
 interface PencilPoint {
   x: number
@@ -40,7 +56,7 @@ export default class VCanvas extends HTMLElement {
     }
 
     const initCanvas = () => {
-      this.$canvas = this.$root.getElementById('canvas-container') as HTMLCanvasElement
+      this.$canvas = this.$root.getElementById('drawing-layer') as HTMLCanvasElement
       const ctx = this.$canvas.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')
@@ -129,6 +145,12 @@ export default class VCanvas extends HTMLElement {
 
     const paint = () => {
       this.context.beginPath()
+
+      if (phase === 'drawing') {
+        this.context.globalCompositeOperation = 'source-over'
+      } else {
+        this.context.globalCompositeOperation = 'destination-out'
+      }
 
       // we can insure coordinate is exist because paint is called after track touch point
       const { x: startX, y: startY } = this.points[0]
