@@ -36,7 +36,7 @@ template.innerHTML = `
 
 /** TODO: 전역상태로 변경하기 */
 const snapshots: ImageData[] = []
-let phase: 'drawing' | 'erase' = 'drawing'
+const phase: 'drawing' | 'erase' = 'drawing'
 
 interface PencilPoint {
   x: number
