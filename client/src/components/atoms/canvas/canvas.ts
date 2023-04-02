@@ -141,7 +141,7 @@ export default class VCanvas extends HTMLElement {
 
   draw(e: MouseEvent | TouchEvent) {
     const trackTouchPoint = () => {
-      const { x, y } = getIsomorphicTouchPoint(this.$canvas, e)
+      const { x, y } = getSyntheticTouchPoint(this.$canvas, e)
       this.points.push({ x, y })
     }
 
@@ -177,12 +177,16 @@ export default class VCanvas extends HTMLElement {
   }
 }
 
-function getIsomorphicTouchPoint(canvas: HTMLCanvasElement, e: MouseEvent | TouchEvent) {
+function isTouchEvent(e: unknown): e is TouchEvent {
+  return window.TouchEvent && e instanceof TouchEvent
+}
+
+function getSyntheticTouchPoint(canvas: HTMLCanvasElement, e: MouseEvent | TouchEvent) {
   const rect = canvas.getBoundingClientRect()
   const scaleX = canvas.width / rect.width
   const scaleY = canvas.height / rect.height
 
-  if (e instanceof TouchEvent) {
+  if (isTouchEvent(e)) {
     // only deal with one finger touch
     const touch = e.touches[0]
 
