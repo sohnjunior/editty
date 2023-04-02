@@ -140,6 +140,8 @@ export default class VCanvas extends HTMLElement {
   }
 
   draw(e: MouseEvent | TouchEvent) {
+    e.preventDefault()
+
     const trackTouchPoint = () => {
       const { x, y } = getSyntheticTouchPoint(this.$canvas, e)
       this.points.push({ x, y })
