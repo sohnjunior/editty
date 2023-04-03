@@ -1,3 +1,5 @@
+import { Z_INDEX } from '@/utils/constant'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -5,18 +7,21 @@ template.innerHTML = `
       position: fixed;
       top: 20px;
       left: 20px;
+      z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
     :host .control-container {
       position: fixed;
       left: 20px;
       bottom: 40px;
+      z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
     :host .history-container {
       position: fixed;
       right: 20px;
       bottom: 40px;
+      z-index: ${Z_INDEX.ACTION_LAYER};
     }
   </style>
 
