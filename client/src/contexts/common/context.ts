@@ -36,7 +36,7 @@ export class Context<State extends Object, Action extends BaseAction> {
     const effects = this.#effects.get(param.action)
 
     if (effects) {
-      effects.forEach((handler) => handler(this))
+      effects.forEach((effect) => effect(this))
     }
   }
 
