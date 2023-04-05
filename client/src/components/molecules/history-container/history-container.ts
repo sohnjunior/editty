@@ -9,7 +9,7 @@ template.innerHTML = `
   <v-container>
     <v-icon-button icon="back-arrow" size="medium"></v-icon-button>
     <v-icon-button icon="forward-arrow" size="medium"></v-icon-button>
-    <v-icon-button icon="delete" size="medium"></v-icon-button>
+    <v-icon-button icon="trash" size="medium"></v-icon-button>
   </v-container>
 `
 
