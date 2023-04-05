@@ -1,4 +1,14 @@
-const icon = ['delete', 'cursor', 'pen', 'text', 'back-arrow', 'forward-arrow', 'search'] as const
+const icon = [
+  'cursor',
+  'pen',
+  'text',
+  'back-arrow',
+  'forward-arrow',
+  'search',
+  'eraser',
+  'emoji',
+  'trash',
+] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
 export type Icon = typeof icon[number]
@@ -17,13 +27,15 @@ export const isSizeType = (maybe: unknown): maybe is Size => {
 }
 
 const ASSET_URL: Record<Icon, string> = {
-  delete: `url('assets/images/delete.svg')`,
   cursor: `url('assets/images/cursor.svg')`,
   pen: `url('assets/images/pen.svg')`,
   text: `url('assets/images/text.svg')`,
   'back-arrow': `url('assets/images/back-arrow.svg')`,
   'forward-arrow': `url('assets/images/forward-arrow.svg')`,
   search: `url('assets/images/search.svg')`,
+  eraser: `url('assets/images/eraser.svg')`,
+  emoji: `url('assets/images/emoji.svg')`,
+  trash: `url('assets/images/trash.svg')`,
 }
 
 const SIZE: Record<Size, string> = {

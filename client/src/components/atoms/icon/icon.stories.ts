@@ -16,6 +16,6 @@ interface Props {
 
 export const Basic = ({ icon, size }: Props) => html`<v-icon icon="${icon}" size="${size}" />`
 Basic.args = {
-  icon: 'delete',
+  icon: 'trash',
   size: 'small',
 }

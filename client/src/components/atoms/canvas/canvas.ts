@@ -1,4 +1,5 @@
 import { Z_INDEX } from '@/utils/constant'
+import { CanvasContext } from '@/contexts'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -34,10 +35,6 @@ template.innerHTML = `
   </div>
 `
 
-/** TODO: 전역상태로 변경하기 */
-const snapshots: ImageData[] = []
-const phase: 'drawing' | 'erase' = 'drawing'
-
 interface PencilPoint {
   x: number
   y: number
@@ -50,6 +47,14 @@ export default class VCanvas extends HTMLElement {
   private points: PencilPoint[] = []
 
   static tag = 'v-canvas'
+
+  get phase() {
+    return CanvasContext.state.phase
+  }
+
+  get snapshots() {
+    return CanvasContext.state.snapshots
+  }
 
   constructor() {
     const initShadowRoot = () => {
@@ -111,8 +116,8 @@ export default class VCanvas extends HTMLElement {
     }
 
     const setupSnapshots = () => {
-      if (snapshots.length > 0) {
-        snapshots.forEach((snapshot) => setSnapshot(this.$canvas, snapshot))
+      if (this.snapshots.length > 0) {
+        this.snapshots.forEach((snapshot) => setSnapshot(this.$canvas, snapshot))
       }
     }
 
@@ -125,8 +130,11 @@ export default class VCanvas extends HTMLElement {
 
   cleanup() {
     const takeSnapshot = () => {
+      /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
       const snapshot = getSnapshot(this.$canvas)
-      snapshot && snapshots.push(snapshot)
+      if (snapshot) {
+        CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
+      }
     }
 
     const resetPencilPoints = () => {
@@ -150,7 +158,7 @@ export default class VCanvas extends HTMLElement {
     const paint = () => {
       this.context.beginPath()
 
-      if (phase === 'drawing') {
+      if (this.phase === 'drawing') {
         this.context.globalCompositeOperation = 'source-over'
       } else {
         this.context.globalCompositeOperation = 'destination-out'

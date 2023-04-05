@@ -1,3 +1,5 @@
+import { CanvasContext } from '@/contexts'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -7,9 +9,10 @@ template.innerHTML = `
     }
   </style>
   <v-container>
-    <v-icon-button icon="cursor" size="medium"></v-icon-button>
-    <v-icon-button icon="pen" size="medium"></v-icon-button>
-    <v-icon-button icon="text" size="medium"></v-icon-button>
+    <v-icon-button data-icon="cursor" icon="cursor" size="medium"></v-icon-button>
+    <v-icon-button data-icon="pen" icon="pen" size="medium"></v-icon-button>
+    <v-icon-button data-icon="eraser" icon="eraser" size="medium"></v-icon-button>
+    <v-icon-button data-icon="emoji" icon="emoji" size="medium"></v-icon-button>
   </v-container>
 `
 
@@ -26,5 +29,28 @@ export default class VControlContainer extends HTMLElement {
 
     super()
     initShadowRoot()
+  }
+
+  connectedCallback() {
+    const initEvents = () => {
+      const $container = this.$root.querySelector('v-container')
+
+      $container?.addEventListener('click', (e) => {
+        const $target = e.target as HTMLElement
+
+        switch ($target.dataset.icon) {
+          case 'pen':
+            CanvasContext.dispatch({ action: 'SET_PHASE', data: 'drawing' })
+            break
+          case 'eraser':
+            CanvasContext.dispatch({ action: 'SET_PHASE', data: 'erasing' })
+            break
+          default:
+            return
+        }
+      })
+    }
+
+    initEvents()
   }
 }

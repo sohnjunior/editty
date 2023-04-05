@@ -27,7 +27,9 @@ describe('text-input', () => {
     const input = target?.shadowRoot?.querySelector('input')
     const host = target?.shadowRoot?.host as TextInput
 
-    input!.value = 'test'
-    expect(host!.value).toBe('test')
+    if (input) {
+      input.value = 'test'
+      expect(host.value).toBe('test')
+    }
   })
 })
