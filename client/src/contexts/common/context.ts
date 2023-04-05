@@ -1,15 +1,19 @@
-type Object = { [key: string]: any }
-type BaseAction = { action: string; data: Object | string | number | null | undefined }
+type IndexableObject = Record<string, unknown>
+type PrimitiveType = string | number | boolean | null | undefined | symbol | bigint
+type BaseAction = {
+  action: string
+  data: PrimitiveType | IndexableObject | Array<unknown>
+}
 
-export type Reducer<State extends Object, Action extends BaseAction> = (param: {
+export type Reducer<State extends IndexableObject, Action extends BaseAction> = (param: {
   state: State
   payload: Action
 }) => State
-export type Effect<State extends Object, Action extends BaseAction> = (
+export type Effect<State extends IndexableObject, Action extends BaseAction> = (
   context: Context<State, Action>
 ) => void
 
-export class Context<State extends Object, Action extends BaseAction> {
+export class Context<State extends IndexableObject, Action extends BaseAction> {
   #state: State
   #effects: Map<string, Effect<State, Action>[]> = new Map()
   #reducer: Reducer<State, Action>
