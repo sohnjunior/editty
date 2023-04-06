@@ -14,7 +14,7 @@ template.innerHTML = `
     :host > button {
       cursor: pointer;
       border: none;
-      border-radius: 4px;
+      border-radius: 3px;
       background: transparent;
       background-repeat: no-repeat;
       background-position: center center;
@@ -24,6 +24,10 @@ template.innerHTML = `
 
     :host > button:hover {
       background-color: rgba(151, 222, 255, 0.3);
+    }
+
+    :host > button:active {
+      background-color: rgba(151, 222, 255, 0.2);
     }
   </style>
   <button type="button">
