@@ -1,5 +1,15 @@
 import { Z_INDEX } from '@/utils/constant'
 import { CanvasContext } from '@/contexts'
+import { lastOf } from '@/utils/ramda'
+import {
+  getMiddlePoint,
+  getSnapshot,
+  getSyntheticTouchPoint,
+  setSnapshot,
+  fillBackgroundColor,
+  clearCanvas,
+} from './canvas.utils'
+import type { PencilPoint } from './canvas.types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -34,11 +44,6 @@ template.innerHTML = `
     <canvas id="drawing-layer"></canvas>
   </div>
 `
-
-interface PencilPoint {
-  x: number
-  y: number
-}
 
 export default class VCanvas extends HTMLElement {
   private $root!: ShadowRoot
@@ -83,7 +88,7 @@ export default class VCanvas extends HTMLElement {
     const initEvents = () => {
       this.addEventListener('mousedown', this.setup)
       this.addEventListener('mouseup', this.cleanup)
-      this.addEventListener('mouseleave', this.cleanup)
+      // this.addEventListener('mouseleave', this.cleanup)
 
       this.addEventListener('touchstart', this.setup)
       this.addEventListener('touchend', this.cleanup)
@@ -99,8 +104,32 @@ export default class VCanvas extends HTMLElement {
       fillBackgroundColor(this.$canvas, '#f8f8f8')
     }
 
-    refineCanvasRatio()
+    const subscribeContext = () => {
+      CanvasContext.subscribe({
+        action: 'POP_SNAPSHOT',
+        effect: (context) => {
+          const snapshot = lastOf(context.state.snapshots)
+
+          console.log(context.state.snapshots)
+          if (snapshot) {
+            setSnapshot(this.$canvas, snapshot)
+          } else {
+            clearCanvas(this.$canvas)
+          }
+        },
+      })
+
+      CanvasContext.subscribe({
+        action: 'PUSH_SNAPSHOT',
+        effect: (context) => {
+          console.log(context.state.snapshots)
+        },
+      })
+    }
+
     initEvents()
+    refineCanvasRatio()
+    subscribeContext()
   }
 
   disconnectedCallback() {
@@ -185,64 +214,4 @@ export default class VCanvas extends HTMLElement {
     trackTouchPoint()
     paint()
   }
-}
-
-function isTouchEvent(e: unknown): e is TouchEvent {
-  return window.TouchEvent && e instanceof TouchEvent
-}
-
-function getSyntheticTouchPoint(canvas: HTMLCanvasElement, e: MouseEvent | TouchEvent) {
-  const rect = canvas.getBoundingClientRect()
-  const scaleX = canvas.width / rect.width
-  const scaleY = canvas.height / rect.height
-
-  if (isTouchEvent(e)) {
-    // only deal with one finger touch
-    const touch = e.touches[0]
-
-    return {
-      x: (touch.clientX - rect.left) * scaleX,
-      y: (touch.clientY - rect.top) * scaleY,
-    }
-  } else {
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    }
-  }
-}
-
-function getMiddlePoint(p1: PencilPoint, p2: PencilPoint) {
-  return {
-    x: p1.x + (p2.x - p1.x) / 2,
-    y: p1.y + (p2.y - p1.y) / 2,
-  }
-}
-
-function fillBackgroundColor(canvas: HTMLCanvasElement, color: string) {
-  const context = canvas.getContext('2d')
-  if (!context) {
-    return
-  }
-
-  context.fillStyle = color
-  context.fillRect(0, 0, canvas.width, canvas.height)
-}
-
-function getSnapshot(canvas: HTMLCanvasElement) {
-  const context = canvas.getContext('2d')
-  if (!context) {
-    return
-  }
-
-  return context.getImageData(0, 0, canvas.width, canvas.height)
-}
-
-function setSnapshot(canvas: HTMLCanvasElement, snapshot: ImageData) {
-  const context = canvas.getContext('2d')
-  if (!context) {
-    return
-  }
-
-  context.putImageData(snapshot, 0, 0)
 }
