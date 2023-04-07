@@ -88,6 +88,7 @@ export default class VCanvas extends HTMLElement {
     const initEvents = () => {
       this.addEventListener('mousedown', this.setup)
       this.addEventListener('mouseup', this.cleanup)
+      /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
       // this.addEventListener('mouseleave', this.cleanup)
 
       this.addEventListener('touchstart', this.setup)
@@ -159,7 +160,6 @@ export default class VCanvas extends HTMLElement {
 
   cleanup() {
     const takeSnapshot = () => {
-      /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
       const snapshot = getSnapshot(this.$canvas)
       if (snapshot) {
         CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
@@ -187,7 +187,7 @@ export default class VCanvas extends HTMLElement {
     const paint = () => {
       this.context.beginPath()
 
-      if (this.phase === 'drawing') {
+      if (this.phase === 'draw') {
         this.context.globalCompositeOperation = 'source-over'
       } else {
         this.context.globalCompositeOperation = 'destination-out'

@@ -1,11 +1,11 @@
 const icon = [
   'cursor',
-  'pen',
+  'draw',
   'text',
   'back-arrow',
   'forward-arrow',
   'search',
-  'eraser',
+  'erase',
   'emoji',
   'trash',
 ] as const
@@ -28,12 +28,12 @@ export const isSizeType = (maybe: unknown): maybe is Size => {
 
 const ASSET_URL: Record<Icon, string> = {
   cursor: `url('assets/images/cursor.svg')`,
-  pen: `url('assets/images/pen.svg')`,
+  draw: `url('assets/images/pen.svg')`,
   text: `url('assets/images/text.svg')`,
   'back-arrow': `url('assets/images/back-arrow.svg')`,
   'forward-arrow': `url('assets/images/forward-arrow.svg')`,
   search: `url('assets/images/search.svg')`,
-  eraser: `url('assets/images/eraser.svg')`,
+  erase: `url('assets/images/eraser.svg')`,
   emoji: `url('assets/images/emoji.svg')`,
   trash: `url('assets/images/trash.svg')`,
 }
