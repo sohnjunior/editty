@@ -7,6 +7,7 @@ template.innerHTML = `
   <style>
     :host > v-container {
       display: flex;
+      flex-direction: column;
       gap: 14px;
     }
 
