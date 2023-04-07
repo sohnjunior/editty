@@ -1,3 +1,5 @@
+import { CanvasContext } from '@/contexts/canvas-context/context'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -7,9 +9,9 @@ template.innerHTML = `
     }
   </style>
   <v-container>
-    <v-icon-button icon="back-arrow" size="medium"></v-icon-button>
-    <v-icon-button icon="forward-arrow" size="medium"></v-icon-button>
-    <v-icon-button icon="trash" size="medium"></v-icon-button>
+    <v-icon-button data-icon="back" icon="back-arrow" size="medium"></v-icon-button>
+    <v-icon-button data-icon="forward" icon="forward-arrow" size="medium"></v-icon-button>
+    <v-icon-button data-icon="trash" icon="trash" size="medium"></v-icon-button>
   </v-container>
 `
 
@@ -26,5 +28,29 @@ export default class VHistoryContainer extends HTMLElement {
 
     super()
     initShadowRoot()
+  }
+
+  connectedCallback() {
+    const initEvents = () => {
+      const $container = this.$root.querySelector('v-container')
+
+      $container?.addEventListener('click', (e) => {
+        const $target = e.target as HTMLElement
+
+        switch ($target.dataset.icon) {
+          case 'back':
+            CanvasContext.dispatch({ action: 'POP_SNAPSHOT' })
+            break
+          case 'forward':
+            break
+          case 'trash':
+            break
+          default:
+            return
+        }
+      })
+    }
+
+    initEvents()
   }
 }
