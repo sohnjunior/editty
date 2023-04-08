@@ -11,8 +11,8 @@ type State = {
 type Action =
   | { action: 'SET_PHASE'; data: State['phase'] }
   | { action: 'PUSH_SNAPSHOT'; data: State['snapshots'] }
-  | { action: 'POP_SNAPSHOT' }
-  | { action: 'POP_STASH' }
+  | { action: 'HISTORY_BACK' }
+  | { action: 'HISTORY_FORWARD' }
 
 const initState: State = {
   phase: 'draw',
@@ -29,7 +29,7 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
       snapshots.push(...payload.data)
       return { ...state, snapshots }
     }
-    case 'POP_SNAPSHOT': {
+    case 'HISTORY_BACK': {
       const snapshots = [...state.snapshots]
       const stash = [...state.stash]
 
@@ -40,7 +40,7 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
 
       return { ...state, snapshots, stash }
     }
-    case 'POP_STASH': {
+    case 'HISTORY_FORWARD': {
       const snapshots = [...state.snapshots]
       const stash = [...state.stash]
 

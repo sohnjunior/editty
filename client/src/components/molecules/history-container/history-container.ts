@@ -39,10 +39,10 @@ export default class VHistoryContainer extends HTMLElement {
 
         switch ($target.dataset.icon) {
           case 'back':
-            CanvasContext.dispatch({ action: 'POP_SNAPSHOT' })
+            CanvasContext.dispatch({ action: 'HISTORY_BACK' })
             break
           case 'forward':
-            CanvasContext.dispatch({ action: 'POP_STASH' })
+            CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
             break
           case 'trash':
             break

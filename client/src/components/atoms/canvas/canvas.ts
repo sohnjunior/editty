@@ -107,7 +107,7 @@ export default class VCanvas extends HTMLElement {
 
     const subscribeContext = () => {
       CanvasContext.subscribe({
-        action: 'POP_SNAPSHOT',
+        action: 'HISTORY_BACK',
         effect: (context) => {
           const snapshot = lastOf(context.state.snapshots)
 
@@ -120,7 +120,7 @@ export default class VCanvas extends HTMLElement {
       })
 
       CanvasContext.subscribe({
-        action: 'POP_STASH',
+        action: 'HISTORY_FORWARD',
         effect: (context) => {
           const snapshot = lastOf(context.state.snapshots)
 
