@@ -42,6 +42,7 @@ export default class VHistoryContainer extends HTMLElement {
             CanvasContext.dispatch({ action: 'POP_SNAPSHOT' })
             break
           case 'forward':
+            CanvasContext.dispatch({ action: 'POP_STASH' })
             break
           case 'trash':
             break

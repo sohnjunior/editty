@@ -111,7 +111,6 @@ export default class VCanvas extends HTMLElement {
         effect: (context) => {
           const snapshot = lastOf(context.state.snapshots)
 
-          console.log(context.state.snapshots)
           if (snapshot) {
             setSnapshot(this.$canvas, snapshot)
           } else {
@@ -121,9 +120,15 @@ export default class VCanvas extends HTMLElement {
       })
 
       CanvasContext.subscribe({
-        action: 'PUSH_SNAPSHOT',
+        action: 'POP_STASH',
         effect: (context) => {
-          console.log(context.state.snapshots)
+          const snapshot = lastOf(context.state.snapshots)
+
+          if (snapshot) {
+            setSnapshot(this.$canvas, snapshot)
+          } else {
+            clearCanvas(this.$canvas)
+          }
         },
       })
     }
