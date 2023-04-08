@@ -4,7 +4,7 @@ import CanvasDrawingLayer from './canvas-drawing-layer'
 customElements.define(CanvasDrawingLayer.tag, CanvasDrawingLayer)
 
 export default {
-  title: 'Elements / Canvas drawing layer',
+  title: 'Elements / Canvas Drawing Layer',
 }
 
 export const Basic = () => html`<v-canvas-drawing-layer></v-canvas-drawing-layer>`
