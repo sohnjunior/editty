@@ -6,7 +6,7 @@ template.innerHTML = `
       padding: 8px 10px;
       outline: none;
       font-weight: 500;
-      font-size: 16px;
+      font-size: 14px;
       letter-spacing: 0.15em;
       background-color: transparent;
     }

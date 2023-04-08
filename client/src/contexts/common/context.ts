@@ -2,7 +2,7 @@ type IndexableObject = Record<string, unknown>
 type PrimitiveType = string | number | boolean | null | undefined | symbol | bigint
 type BaseAction = {
   action: string
-  data: PrimitiveType | IndexableObject | Array<unknown>
+  data?: PrimitiveType | IndexableObject | Array<unknown>
 }
 
 export type Reducer<State extends IndexableObject, Action extends BaseAction> = (param: {

@@ -1,0 +1,1 @@
+export type Phase = 'cursor' | 'draw' | 'erase' | 'emoji'

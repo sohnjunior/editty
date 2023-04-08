@@ -7,13 +7,27 @@ export type Size = BaseSize
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
+    :host {
+      height: 19px;
+    }
+
     :host > button {
       cursor: pointer;
       border: none;
+      border-radius: 3px;
       background: transparent;
       background-repeat: no-repeat;
-      background-position: center;
+      background-position: center center;
       background-size: contain;
+      padding: 2px;
+    }
+
+    :host > button:hover {
+      background-color: rgba(151, 222, 255, 0.3);
+    }
+
+    :host > button:active {
+      background-color: rgba(151, 222, 255, 0.2);
     }
   </style>
   <button type="button">
