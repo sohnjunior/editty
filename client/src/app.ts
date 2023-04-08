@@ -27,7 +27,7 @@ template.innerHTML = `
 
   <v-mobile-layout>
     <main slot="main">
-      <v-canvas></v-canvas>
+      <v-canvas-container></v-canvas-container>
       <v-input-container class="input-container"></v-input-container>
       <v-control-container class="control-container"></v-control-container>
       <v-history-container class="history-container"></v-history-container>

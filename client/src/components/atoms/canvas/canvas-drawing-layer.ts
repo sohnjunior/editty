@@ -14,44 +14,23 @@ import type { PencilPoint } from './canvas.types'
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host #canvas-container {
-      display: block;
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-
-    :host #canvas-container > canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    :host #background-layer {
-      background-color: #f8f8f8;
-      z-index: ${Z_INDEX.CANVAS_LAYER.BACKGROUND};
-      position: absolute;
-    }
-
     :host #drawing-layer {
+      width: 100%;
+      height: 100%;
       z-index: ${Z_INDEX.CANVAS_LAYER.DRAWING};
       position: absolute;
     }
   </style>
-  <div id="canvas-container">
-    <canvas id="background-layer"></canvas>
-    <canvas id="drawing-layer"></canvas>
-  </div>
+  <canvas id="drawing-layer"></canvas>
 `
 
-export default class VCanvas extends HTMLElement {
+export default class VCanvasDrawingLayer extends HTMLElement {
   private $root!: ShadowRoot
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private points: PencilPoint[] = []
 
-  static tag = 'v-canvas'
+  static tag = 'v-canvas-drawing-layer'
 
   get phase() {
     return CanvasContext.state.phase
