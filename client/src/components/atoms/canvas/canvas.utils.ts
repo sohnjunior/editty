@@ -30,6 +30,11 @@ export function getSyntheticTouchPoint(canvas: HTMLCanvasElement, ev: MouseEvent
   }
 }
 
+/**
+ * 2차원 평면좌표에서 두 지점 사이의 중간 지점을 반환합니다.
+ * @param p1 2차원 평면좌표 A
+ * @param p2 2차원 평면좌표 B
+ */
 export function getMiddlePoint(p1: PencilPoint, p2: PencilPoint) {
   return {
     x: p1.x + (p2.x - p1.x) / 2,
@@ -65,6 +70,10 @@ export function setSnapshot(canvas: HTMLCanvasElement, snapshot: ImageData) {
   context.putImageData(snapshot, 0, 0)
 }
 
+/**
+ * 캔버스를 초기화합니다.
+ * @param canvas 대상 캔버스 요소
+ */
 export function clearCanvas(canvas: HTMLCanvasElement) {
   const context = canvas.getContext('2d')
   if (!context) {
