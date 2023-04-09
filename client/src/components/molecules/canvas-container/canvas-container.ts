@@ -12,6 +12,7 @@ template.innerHTML = `
   </style>
   <div id="canvas-container">
     <v-canvas-background-layer></v-canvas-background-layer>
+    <v-canvas-image-layer></v-canvas-image-layer>
     <v-canvas-drawing-layer></v-canvas-drawing-layer>
   </div>
 `
