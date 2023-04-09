@@ -1,3 +1,6 @@
+import VCanvasImageLayer from '@atoms/canvas/canvas-image-layer'
+import VCanvasDrawingLayer from '@atoms/canvas/canvas-drawing-layer'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -19,6 +22,8 @@ template.innerHTML = `
 
 export default class VCanvasContainer extends HTMLElement {
   private $root!: ShadowRoot
+  private imageLayer!: VCanvasImageLayer
+  private drawingLayer!: VCanvasDrawingLayer
 
   static tag = 'v-canvas-container'
 
@@ -28,7 +33,38 @@ export default class VCanvasContainer extends HTMLElement {
       this.$root.appendChild(template.content.cloneNode(true))
     }
 
+    const initLayer = () => {
+      const imageLayer = this.$root.querySelector('v-canvas-image-layer') as VCanvasImageLayer
+      const drawingLayer = this.$root.querySelector('v-canvas-drawing-layer') as VCanvasDrawingLayer
+
+      if (!imageLayer || !drawingLayer) {
+        console.error('🚨 canvas container need drawing and image layer')
+        return
+      }
+
+      this.imageLayer = imageLayer
+      this.drawingLayer = drawingLayer
+    }
+
     super()
     initShadowRoot()
+    initLayer()
+  }
+
+  connectedCallback() {
+    const propagateEvents = () => {
+      const propagateEventToImageLayer = (ev: Event) => {
+        this.imageLayer.listenExternalEvent(ev)
+      }
+
+      this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)
+      this.drawingLayer.addEventListener('mousemove', propagateEventToImageLayer)
+      this.drawingLayer.addEventListener('mouseup', propagateEventToImageLayer)
+      this.drawingLayer.addEventListener('touchstart', propagateEventToImageLayer)
+      this.drawingLayer.addEventListener('touchmove', propagateEventToImageLayer)
+      this.drawingLayer.addEventListener('touchend', propagateEventToImageLayer)
+    }
+
+    propagateEvents()
   }
 }
