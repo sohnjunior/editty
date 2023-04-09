@@ -68,3 +68,16 @@ export function clearCanvas(canvas: HTMLCanvasElement) {
 
   context.clearRect(0, 0, canvas.width, canvas.height)
 }
+
+export function refineCanvasRatio(canvas: HTMLCanvasElement) {
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return
+  }
+
+  const ratio = window.devicePixelRatio
+  const { width, height } = getComputedStyle(canvas)
+
+  canvas.width = parseInt(width) * ratio
+  canvas.height = parseInt(height) * ratio
+}

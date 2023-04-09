@@ -6,8 +6,8 @@ import {
   getSnapshot,
   getSyntheticTouchPoint,
   setSnapshot,
-  fillBackgroundColor,
   clearCanvas,
+  refineCanvasRatio,
 } from './canvas.utils'
 import type { PencilPoint } from './canvas.types'
 
@@ -53,9 +53,6 @@ export default class VCanvasDrawingLayer extends HTMLElement {
         throw new Error('🚨 canvas load fail')
       }
       this.context = ctx
-
-      this.context.fillStyle = '#f8f8f8'
-      this.context.fillRect(0, 0, this.$canvas.width, this.$canvas.height)
     }
 
     super()
@@ -72,16 +69,6 @@ export default class VCanvasDrawingLayer extends HTMLElement {
 
       this.addEventListener('touchstart', this.setup)
       this.addEventListener('touchend', this.cleanup)
-    }
-
-    const refineCanvasRatio = () => {
-      const ratio = window.devicePixelRatio
-      const { width, height } = getComputedStyle(this.$canvas)
-
-      this.$canvas.width = parseInt(width) * ratio
-      this.$canvas.height = parseInt(height) * ratio
-
-      fillBackgroundColor(this.$canvas, '#f8f8f8')
     }
 
     const subscribeContext = () => {
@@ -113,7 +100,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     }
 
     initEvents()
-    refineCanvasRatio()
+    refineCanvasRatio(this.$canvas)
     subscribeContext()
   }
 

@@ -1,4 +1,5 @@
 import { Z_INDEX } from '@/utils/constant'
+import { fillBackgroundColor, refineCanvasRatio } from './canvas.utils'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -15,6 +16,7 @@ template.innerHTML = `
 
 export default class VCanvasBackgroundLayer extends HTMLElement {
   private $root!: ShadowRoot
+  private $canvas!: HTMLCanvasElement
 
   static tag = 'v-canvas-background-layer'
 
@@ -32,8 +34,17 @@ export default class VCanvasBackgroundLayer extends HTMLElement {
       this.$root.appendChild(template.content.cloneNode(true))
     }
 
+    const initCanvas = () => {
+      this.$canvas = this.$root.getElementById('background-layer') as HTMLCanvasElement
+      const ctx = this.$canvas.getContext('2d')
+      if (!ctx) {
+        throw new Error('🚨 canvas load fail')
+      }
+    }
+
     super()
     initShadowRoot()
+    initCanvas()
   }
 
   connectedCallback() {
@@ -41,11 +52,11 @@ export default class VCanvasBackgroundLayer extends HTMLElement {
       const { colorAttribute } = this
 
       if (colorAttribute) {
-        this.updateStyle({ attribute: 'color', value: colorAttribute })
+        fillBackgroundColor(this.$canvas, colorAttribute)
       }
     }
 
-    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
+    refineCanvasRatio(this.$canvas)
     requestAnimationFrame(initStyle)
   }
 
@@ -54,15 +65,9 @@ export default class VCanvasBackgroundLayer extends HTMLElement {
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
-    const $canvas = this.$root.querySelector('canvas')
-
-    if (!$canvas) {
-      return
-    }
-
     switch (attribute) {
       case 'color': {
-        $canvas.style.backgroundColor = value
+        fillBackgroundColor(this.$canvas, value)
         break
       }
     }
