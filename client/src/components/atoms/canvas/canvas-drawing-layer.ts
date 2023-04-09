@@ -3,9 +3,9 @@ import { CanvasContext } from '@/contexts'
 import { lastOf } from '@/utils/ramda'
 import {
   getMiddlePoint,
-  getSnapshot,
   getSyntheticTouchPoint,
-  setSnapshot,
+  takeSnapshot,
+  reflectSnapshot,
   clearCanvas,
   refineCanvasRatio,
 } from './canvas.utils'
@@ -78,7 +78,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
           const snapshot = lastOf(context.state.snapshots)
 
           if (snapshot) {
-            setSnapshot(this.$canvas, snapshot)
+            reflectSnapshot(this.$canvas, snapshot)
           } else {
             clearCanvas(this.$canvas)
           }
@@ -91,7 +91,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
           const snapshot = lastOf(context.state.snapshots)
 
           if (snapshot) {
-            setSnapshot(this.$canvas, snapshot)
+            reflectSnapshot(this.$canvas, snapshot)
           } else {
             clearCanvas(this.$canvas)
           }
@@ -118,7 +118,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
 
     const setupSnapshots = () => {
       if (this.snapshots.length > 0) {
-        this.snapshots.forEach((snapshot) => setSnapshot(this.$canvas, snapshot))
+        this.snapshots.forEach((snapshot) => reflectSnapshot(this.$canvas, snapshot))
       }
     }
 
@@ -130,8 +130,8 @@ export default class VCanvasDrawingLayer extends HTMLElement {
   }
 
   cleanup() {
-    const takeSnapshot = () => {
-      const snapshot = getSnapshot(this.$canvas)
+    const takeCanvasSnapshot = () => {
+      const snapshot = takeSnapshot(this.$canvas)
       if (snapshot) {
         CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
       }
@@ -141,7 +141,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
       this.points = []
     }
 
-    takeSnapshot()
+    takeCanvasSnapshot()
     resetPencilPoints()
     this.removeEventListener('mousemove', this.draw)
     this.removeEventListener('touchmove', this.draw)

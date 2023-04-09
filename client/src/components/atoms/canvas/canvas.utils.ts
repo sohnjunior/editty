@@ -52,7 +52,7 @@ export function fillBackgroundColor(canvas: HTMLCanvasElement, color: string) {
   context.fillRect(0, 0, canvas.width, canvas.height)
 }
 
-export function getSnapshot(canvas: HTMLCanvasElement) {
+export function takeSnapshot(canvas: HTMLCanvasElement) {
   const context = canvas.getContext('2d')
   if (!context) {
     return
@@ -61,7 +61,7 @@ export function getSnapshot(canvas: HTMLCanvasElement) {
   return context.getImageData(0, 0, canvas.width, canvas.height)
 }
 
-export function setSnapshot(canvas: HTMLCanvasElement, snapshot: ImageData) {
+export function reflectSnapshot(canvas: HTMLCanvasElement, snapshot: ImageData) {
   const context = canvas.getContext('2d')
   if (!context) {
     return
