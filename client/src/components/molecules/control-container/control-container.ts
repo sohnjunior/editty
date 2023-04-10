@@ -1,7 +1,8 @@
 import { CanvasContext } from '@/contexts'
 import type { Phase } from '@/contexts'
+import { selectImageFromDevice } from '@/utils/file'
 
-const OPTIONS: Phase[] = ['cursor', 'draw', 'erase', 'emoji']
+const OPTIONS: Phase[] = ['cursor', 'draw', 'erase', 'emoji', 'gallery']
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -53,15 +54,21 @@ export default class VControlContainer extends HTMLElement {
     const initEvents = () => {
       const $container = this.#$root.querySelector('v-container')
 
-      $container?.addEventListener('click', (e) => {
+      $container?.addEventListener('click', async (e) => {
         const $target = e.target as HTMLElement
 
         switch ($target.dataset.icon) {
+          case 'cursor':
+            CanvasContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+            break
           case 'draw':
             CanvasContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
             break
           case 'erase':
             CanvasContext.dispatch({ action: 'SET_PHASE', data: 'erase' })
+            break
+          case 'gallery':
+            this.uploadImage()
             break
           default:
             return
@@ -91,5 +98,10 @@ export default class VControlContainer extends HTMLElement {
 
     this.#$selectRef = $target
     this.#$selectRef.dataset.selected = 'true'
+  }
+
+  async uploadImage() {
+    const dataUrls = await selectImageFromDevice()
+    console.log(dataUrls) // TODO: 선택된 파일 데이터를 이용해서
   }
 }
