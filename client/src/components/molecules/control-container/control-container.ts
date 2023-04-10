@@ -42,7 +42,7 @@ export default class VControlContainer extends HTMLElement {
     }
 
     const initSelectedOption = () => {
-      this.setControlOption('draw')
+      this.toggleOption('draw')
     }
 
     super()
@@ -80,7 +80,7 @@ export default class VControlContainer extends HTMLElement {
       CanvasContext.subscribe({
         action: 'SET_PHASE',
         effect: (context) => {
-          this.setControlOption(context.state.phase)
+          this.toggleOption(context.state.phase)
         },
       })
     }
@@ -89,7 +89,7 @@ export default class VControlContainer extends HTMLElement {
     subscribeContext()
   }
 
-  setControlOption(type: Phase) {
+  toggleOption(type: Phase) {
     const $target = this.#$root.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
 
     if (this.#$selectRef) {
