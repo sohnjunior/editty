@@ -8,6 +8,7 @@ const icon = [
   'erase',
   'emoji',
   'trash',
+  'gallery',
 ] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
@@ -36,6 +37,7 @@ const ASSET_URL: Record<Icon, string> = {
   erase: `url('assets/images/eraser.svg')`,
   emoji: `url('assets/images/emoji.svg')`,
   trash: `url('assets/images/trash.svg')`,
+  gallery: `url('assets/images/gallery.svg')`,
 }
 
 const SIZE: Record<Size, string> = {
