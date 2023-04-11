@@ -1,4 +1,4 @@
-import type { PencilPoint } from './canvas.types'
+import type { PencilPoint, ImageObject } from './canvas.types'
 
 export function isTouchEvent(e: unknown): e is TouchEvent {
   return window.TouchEvent && e instanceof TouchEvent
@@ -125,4 +125,76 @@ export function isPointInsideRect({
   }
 
   return false
+}
+
+/**
+ * 이미지 비율을 유지하되 canvas 너비(portrait) 혹은 높이(landscape)에 맞춰서 크기를 재산정합니다.
+ * @param canvas 캔버스 요소 및 최대 적용 비율 (default: 60%)
+ * @param original 원본 이미지 너비, 높이
+ */
+export function refineImageScale(
+  canvas: { ref: HTMLCanvasElement; threshold?: number },
+  original: { width: number; height: number }
+) {
+  function gcd(a: number, b: number): number {
+    return b == 0 ? a : gcd(b, a % b)
+  }
+
+  function getImageRatio() {
+    const divisor = gcd(original.width, original.height)
+    return { width: original.width / divisor, height: original.height / divisor }
+  }
+
+  const criterion = Math.floor(
+    Math.min(
+      canvas.ref.width / window.devicePixelRatio,
+      canvas.ref.height / window.devicePixelRatio
+    ) * (canvas.threshold || 0.6)
+  )
+  const { width: ratioWidth, height: ratioHeight } = getImageRatio()
+
+  // FIXME: 이미지 비율 근사치 적용 필요
+
+  const isPortrait = canvas.ref.width < canvas.ref.height
+  const quotient = isPortrait
+    ? Math.floor(criterion / ratioWidth)
+    : Math.floor(criterion / ratioHeight)
+
+  const expected = { width: ratioWidth * quotient, height: ratioHeight * quotient }
+  if (original.width < expected.width && original.height < expected.height) {
+    return original
+  }
+
+  return expected
+}
+
+/**
+ * ImageObject 를 생성합니다.
+ * @param image base64 인코딩된 dataUrl 이미지
+ * @param position image top-left 좌표값
+ * @param size image 사이즈
+ */
+export async function createImageObject(
+  image: { dataUrl: string },
+  position: { sx: number; sy: number }
+): Promise<ImageObject> {
+  return new Promise((resolve, reject) => {
+    const $image = new Image()
+    $image.src = image.dataUrl
+
+    $image.onload = () => {
+      resolve({
+        dataUrl: image.dataUrl,
+        sx: position.sx,
+        sy: position.sy,
+        width: $image.width,
+        height: $image.height,
+        ref: $image,
+      })
+    }
+
+    $image.onerror = () => {
+      reject()
+    }
+  })
 }

@@ -1,3 +1,4 @@
+import { EventBus, EVENT_KEY } from '@/event-bus'
 import { CanvasContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
@@ -102,6 +103,6 @@ export default class VControlContainer extends HTMLElement {
 
   async uploadImage() {
     const dataUrls = await selectImageFromDevice()
-    console.log(dataUrls) // TODO: 선택된 파일 데이터를 이용해서
+    EventBus.getInstance().emit(EVENT_KEY.UPLOAD_IMAGE, dataUrls)
   }
 }
