@@ -70,6 +70,7 @@ export default class VControlContainer extends HTMLElement {
             break
           case 'gallery':
             this.uploadImage()
+            CanvasContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
             break
           default:
             return
