@@ -1,4 +1,5 @@
 import { EventBus, EVENT_KEY } from '@/event-bus'
+import { CanvasContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -33,6 +34,14 @@ export default class VCanvasImageLayer extends HTMLElement {
 
   static tag = 'v-canvas-image-layer'
 
+  get phase() {
+    return CanvasContext.state.phase
+  }
+
+  get isActivePhase() {
+    return ['cursor', 'gallery'].includes(this.phase)
+  }
+
   constructor() {
     const initShadowRoot = () => {
       this.$root = this.attachShadow({ mode: 'open' })
@@ -54,6 +63,10 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   listenExternalEvent(ev: Event) {
+    if (!this.isActivePhase) {
+      return
+    }
+
     switch (ev.type) {
       case 'mousedown':
       case 'touchstart':
