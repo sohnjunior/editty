@@ -3,55 +3,34 @@ import { CanvasContext } from '@/contexts'
 import { lastOf } from '@/utils/ramda'
 import {
   getMiddlePoint,
-  getSnapshot,
   getSyntheticTouchPoint,
-  setSnapshot,
-  fillBackgroundColor,
+  takeSnapshot,
+  reflectSnapshot,
   clearCanvas,
+  refineCanvasRatio,
 } from './canvas.utils'
 import type { PencilPoint } from './canvas.types'
 
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host #canvas-container {
-      display: block;
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-
-    :host #canvas-container > canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    :host #background-layer {
-      background-color: #f8f8f8;
-      z-index: ${Z_INDEX.CANVAS_LAYER.BACKGROUND};
-      position: absolute;
-    }
-
     :host #drawing-layer {
+      width: 100%;
+      height: 100%;
       z-index: ${Z_INDEX.CANVAS_LAYER.DRAWING};
       position: absolute;
     }
   </style>
-  <div id="canvas-container">
-    <canvas id="background-layer"></canvas>
-    <canvas id="drawing-layer"></canvas>
-  </div>
+  <canvas id="drawing-layer"></canvas>
 `
 
-export default class VCanvas extends HTMLElement {
+export default class VCanvasDrawingLayer extends HTMLElement {
   private $root!: ShadowRoot
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private points: PencilPoint[] = []
 
-  static tag = 'v-canvas'
+  static tag = 'v-canvas-drawing-layer'
 
   get phase() {
     return CanvasContext.state.phase
@@ -74,9 +53,6 @@ export default class VCanvas extends HTMLElement {
         throw new Error('🚨 canvas load fail')
       }
       this.context = ctx
-
-      this.context.fillStyle = '#f8f8f8'
-      this.context.fillRect(0, 0, this.$canvas.width, this.$canvas.height)
     }
 
     super()
@@ -95,16 +71,6 @@ export default class VCanvas extends HTMLElement {
       this.addEventListener('touchend', this.cleanup)
     }
 
-    const refineCanvasRatio = () => {
-      const ratio = window.devicePixelRatio
-      const { width, height } = getComputedStyle(this.$canvas)
-
-      this.$canvas.width = parseInt(width) * ratio
-      this.$canvas.height = parseInt(height) * ratio
-
-      fillBackgroundColor(this.$canvas, '#f8f8f8')
-    }
-
     const subscribeContext = () => {
       CanvasContext.subscribe({
         action: 'HISTORY_BACK',
@@ -112,7 +78,7 @@ export default class VCanvas extends HTMLElement {
           const snapshot = lastOf(context.state.snapshots)
 
           if (snapshot) {
-            setSnapshot(this.$canvas, snapshot)
+            reflectSnapshot(this.$canvas, snapshot)
           } else {
             clearCanvas(this.$canvas)
           }
@@ -125,7 +91,7 @@ export default class VCanvas extends HTMLElement {
           const snapshot = lastOf(context.state.snapshots)
 
           if (snapshot) {
-            setSnapshot(this.$canvas, snapshot)
+            reflectSnapshot(this.$canvas, snapshot)
           } else {
             clearCanvas(this.$canvas)
           }
@@ -134,7 +100,7 @@ export default class VCanvas extends HTMLElement {
     }
 
     initEvents()
-    refineCanvasRatio()
+    refineCanvasRatio(this.$canvas)
     subscribeContext()
   }
 
@@ -152,7 +118,7 @@ export default class VCanvas extends HTMLElement {
 
     const setupSnapshots = () => {
       if (this.snapshots.length > 0) {
-        this.snapshots.forEach((snapshot) => setSnapshot(this.$canvas, snapshot))
+        this.snapshots.forEach((snapshot) => reflectSnapshot(this.$canvas, snapshot))
       }
     }
 
@@ -164,8 +130,8 @@ export default class VCanvas extends HTMLElement {
   }
 
   cleanup() {
-    const takeSnapshot = () => {
-      const snapshot = getSnapshot(this.$canvas)
+    const takeCanvasSnapshot = () => {
+      const snapshot = takeSnapshot(this.$canvas)
       if (snapshot) {
         CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
       }
@@ -175,7 +141,7 @@ export default class VCanvas extends HTMLElement {
       this.points = []
     }
 
-    takeSnapshot()
+    takeCanvasSnapshot()
     resetPencilPoints()
     this.removeEventListener('mousemove', this.draw)
     this.removeEventListener('touchmove', this.draw)

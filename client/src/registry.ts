@@ -1,6 +1,9 @@
 import MobileLayout from '@layouts/mobile'
 import Button from '@atoms/button/button'
-import Canvas from '@atoms/canvas/canvas'
+import CanvasContainer from '@/components/molecules/canvas-container/canvas-container'
+import CanvasBackgroundLayer from '@atoms/canvas/canvas-background-layer'
+import CanvasDrawingLayer from '@atoms/canvas/canvas-drawing-layer'
+import CanvasImageLayer from '@atoms/canvas/canvas-image-layer'
 import Icon from '@atoms/icon/icon'
 import Container from '@atoms/container/container'
 import TextInput from '@atoms/text-input/text-input'
@@ -16,7 +19,10 @@ export function defineCustomElements() {
   customElements.define(Button.tag, Button)
   customElements.define(Icon.tag, Icon)
   customElements.define(IconButton.tag, IconButton)
-  customElements.define(Canvas.tag, Canvas)
+  customElements.define(CanvasContainer.tag, CanvasContainer)
+  customElements.define(CanvasBackgroundLayer.tag, CanvasBackgroundLayer)
+  customElements.define(CanvasDrawingLayer.tag, CanvasDrawingLayer)
+  customElements.define(CanvasImageLayer.tag, CanvasImageLayer)
   customElements.define(Container.tag, Container)
   customElements.define(TextInput.tag, TextInput)
   customElements.define(ControlContainer.tag, ControlContainer)

@@ -1,7 +1,9 @@
+import { EventBus, EVENT_KEY } from '@/event-bus'
 import { CanvasContext } from '@/contexts'
 import type { Phase } from '@/contexts'
+import { selectImageFromDevice } from '@/utils/file'
 
-const OPTIONS: Phase[] = ['cursor', 'draw', 'erase', 'emoji']
+const OPTIONS: Phase[] = ['cursor', 'draw', 'erase', 'emoji', 'gallery']
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -41,7 +43,7 @@ export default class VControlContainer extends HTMLElement {
     }
 
     const initSelectedOption = () => {
-      this.setControlOption('draw')
+      this.toggleOption('draw')
     }
 
     super()
@@ -53,15 +55,21 @@ export default class VControlContainer extends HTMLElement {
     const initEvents = () => {
       const $container = this.#$root.querySelector('v-container')
 
-      $container?.addEventListener('click', (e) => {
+      $container?.addEventListener('click', async (e) => {
         const $target = e.target as HTMLElement
 
         switch ($target.dataset.icon) {
+          case 'cursor':
+            CanvasContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+            break
           case 'draw':
             CanvasContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
             break
           case 'erase':
             CanvasContext.dispatch({ action: 'SET_PHASE', data: 'erase' })
+            break
+          case 'gallery':
+            this.uploadImage()
             break
           default:
             return
@@ -73,7 +81,7 @@ export default class VControlContainer extends HTMLElement {
       CanvasContext.subscribe({
         action: 'SET_PHASE',
         effect: (context) => {
-          this.setControlOption(context.state.phase)
+          this.toggleOption(context.state.phase)
         },
       })
     }
@@ -82,7 +90,7 @@ export default class VControlContainer extends HTMLElement {
     subscribeContext()
   }
 
-  setControlOption(type: Phase) {
+  toggleOption(type: Phase) {
     const $target = this.#$root.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
 
     if (this.#$selectRef) {
@@ -91,5 +99,10 @@ export default class VControlContainer extends HTMLElement {
 
     this.#$selectRef = $target
     this.#$selectRef.dataset.selected = 'true'
+  }
+
+  async uploadImage() {
+    const dataUrls = await selectImageFromDevice()
+    EventBus.getInstance().emit(EVENT_KEY.UPLOAD_IMAGE, dataUrls)
   }
 }
