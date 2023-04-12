@@ -29,6 +29,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private points: PencilPoint[] = []
+  private isDrawing = false
 
   static tag = 'v-canvas-drawing-layer'
 
@@ -38,6 +39,10 @@ export default class VCanvasDrawingLayer extends HTMLElement {
 
   get snapshots() {
     return CanvasContext.state.snapshots
+  }
+
+  get isActivePhase() {
+    return ['draw', 'erase'].includes(this.phase)
   }
 
   constructor() {
@@ -64,14 +69,22 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     const initEvents = () => {
       this.addEventListener('mousedown', this.setup)
       this.addEventListener('mouseup', this.cleanup)
+      this.addEventListener('mousemove', this.draw)
       /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
       // this.addEventListener('mouseleave', this.cleanup)
 
       this.addEventListener('touchstart', this.setup)
       this.addEventListener('touchend', this.cleanup)
+      this.addEventListener('touchmove', this.draw)
     }
 
     const subscribeContext = () => {
+      CanvasContext.subscribe({
+        action: 'PUSH_SNAPSHOT',
+        effect: (context) => {
+          console.log(context.state.snapshots)
+        },
+      })
       CanvasContext.subscribe({
         action: 'HISTORY_BACK',
         effect: (context) => {
@@ -105,11 +118,19 @@ export default class VCanvasDrawingLayer extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.removeEventListener('mousedown', this.setup)
+    this.removeEventListener('mouseup', this.cleanup)
     this.removeEventListener('mousemove', this.draw)
+    this.removeEventListener('touchstart', this.setup)
+    this.removeEventListener('touchend', this.cleanup)
     this.removeEventListener('touchmove', this.draw)
   }
 
   setup() {
+    if (!this.isActivePhase) {
+      return
+    }
+
     const setupLineStyle = () => {
       this.context.lineWidth = 10
       this.context.lineCap = 'round'
@@ -122,14 +143,16 @@ export default class VCanvasDrawingLayer extends HTMLElement {
       }
     }
 
+    this.isDrawing = true
     setupLineStyle()
     setupSnapshots()
-
-    this.addEventListener('mousemove', this.draw)
-    this.addEventListener('touchmove', this.draw)
   }
 
   cleanup() {
+    if (!this.isActivePhase) {
+      return
+    }
+
     const takeCanvasSnapshot = () => {
       const snapshot = takeSnapshot(this.$canvas)
       if (snapshot) {
@@ -141,13 +164,16 @@ export default class VCanvasDrawingLayer extends HTMLElement {
       this.points = []
     }
 
+    this.isDrawing = false
     takeCanvasSnapshot()
     resetPencilPoints()
-    this.removeEventListener('mousemove', this.draw)
-    this.removeEventListener('touchmove', this.draw)
   }
 
   draw(e: MouseEvent | TouchEvent) {
+    if (!this.isDrawing) {
+      return
+    }
+
     e.preventDefault()
 
     const trackTouchPoint = () => {
