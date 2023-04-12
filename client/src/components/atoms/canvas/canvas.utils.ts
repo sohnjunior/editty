@@ -136,31 +136,17 @@ export function refineImageScale(
   canvas: { ref: HTMLCanvasElement; threshold?: number },
   original: { width: number; height: number }
 ) {
-  function gcd(a: number, b: number): number {
-    return b == 0 ? a : gcd(b, a % b)
-  }
-
-  function getImageRatio() {
-    const divisor = gcd(original.width, original.height)
-    return { width: original.width / divisor, height: original.height / divisor }
-  }
-
-  const criterion = Math.floor(
-    Math.min(
-      canvas.ref.width / window.devicePixelRatio,
-      canvas.ref.height / window.devicePixelRatio
-    ) * (canvas.threshold || 0.6)
-  )
-  const { width: ratioWidth, height: ratioHeight } = getImageRatio()
-
-  // FIXME: 이미지 비율 근사치 적용 필요
-
   const isPortrait = canvas.ref.width < canvas.ref.height
-  const quotient = isPortrait
-    ? Math.floor(criterion / ratioWidth)
-    : Math.floor(criterion / ratioHeight)
+  const threshold = canvas.threshold || 0.6
+  const criterion = isPortrait ? canvas.ref.width * threshold : canvas.ref.height * threshold
+  const aspectRatio = isPortrait
+    ? Math.round((original.height / original.width) * 100) / 100
+    : Math.round((original.width / original.height) * 100) / 100
 
-  const expected = { width: ratioWidth * quotient, height: ratioHeight * quotient }
+  const expected = isPortrait
+    ? { width: criterion, height: Math.floor(criterion * aspectRatio) }
+    : { width: Math.floor(criterion * aspectRatio), height: criterion }
+
   if (original.width < expected.width && original.height < expected.height) {
     return original
   }
