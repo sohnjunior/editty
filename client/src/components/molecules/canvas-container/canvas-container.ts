@@ -54,7 +54,7 @@ export default class VCanvasContainer extends HTMLElement {
   connectedCallback() {
     const propagateEvents = () => {
       const propagateEventToImageLayer = (ev: Event) => {
-        this.imageLayer.listenExternalEvent(ev)
+        this.imageLayer.listenSiblingLayerEvent(ev)
       }
 
       this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)

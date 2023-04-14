@@ -62,7 +62,7 @@ export default class VCanvasImageLayer extends HTMLElement {
     initCanvas()
   }
 
-  listenExternalEvent(ev: Event) {
+  listenSiblingLayerEvent(ev: Event) {
     if (!this.isActivePhase) {
       return
     }
@@ -86,7 +86,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   connectedCallback() {
-    const initEventBus = () => {
+    const subscribeEventBus = () => {
       const onImageUpload = async (dataUrls: string[]) => {
         const jobs = dataUrls.map(async (dataUrl) => {
           const image = await createImageObject({ dataUrl }, { sx: 50, sy: 50 })
@@ -113,7 +113,7 @@ export default class VCanvasImageLayer extends HTMLElement {
     }
 
     refineCanvasRatio(this.$canvas)
-    initEventBus()
+    subscribeEventBus()
   }
 
   touch(ev: MouseEvent | TouchEvent) {
