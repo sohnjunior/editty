@@ -13,6 +13,7 @@ module.exports = {
     config.resolve.alias['@atoms'] = path.resolve(__dirname, '../src/components/atoms')
     config.resolve.alias['@layouts'] = path.resolve(__dirname, '../src/components/layouts')
     config.resolve.alias['@molecules'] = path.resolve(__dirname, '../src/components/molecules')
+    config.resolve.alias['@organisms'] = path.resolve(__dirname, '../src/components/organisms')
     return config
   },
 }
