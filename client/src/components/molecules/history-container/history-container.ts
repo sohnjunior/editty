@@ -1,4 +1,5 @@
 import { CanvasContext } from '@/contexts/canvas-context/context'
+import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -44,8 +45,13 @@ export default class VHistoryContainer extends HTMLElement {
           case 'forward':
             CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
             break
-          case 'trash':
+          case 'trash': {
+            const isConfirmed = window.confirm(
+              '지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?'
+            )
+            isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
             break
+          }
           default:
             return
         }

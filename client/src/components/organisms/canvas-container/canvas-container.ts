@@ -1,5 +1,5 @@
-import VCanvasImageLayer from '@atoms/canvas/canvas-image-layer'
-import VCanvasDrawingLayer from '@atoms/canvas/canvas-drawing-layer'
+import VCanvasImageLayer from '@/components/molecules/canvas/canvas-image-layer'
+import VCanvasDrawingLayer from '@/components/molecules/canvas/canvas-drawing-layer'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -54,7 +54,7 @@ export default class VCanvasContainer extends HTMLElement {
   connectedCallback() {
     const propagateEvents = () => {
       const propagateEventToImageLayer = (ev: Event) => {
-        this.imageLayer.listenExternalEvent(ev)
+        this.imageLayer.listenSiblingLayerEvent(ev)
       }
 
       this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)

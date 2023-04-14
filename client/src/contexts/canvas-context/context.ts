@@ -13,6 +13,7 @@ type Action =
   | { action: 'PUSH_SNAPSHOT'; data: State['snapshots'] }
   | { action: 'HISTORY_BACK' }
   | { action: 'HISTORY_FORWARD' }
+  | { action: 'CLEAR_ALL' }
 
 const initState: State = {
   phase: 'draw',
@@ -50,6 +51,9 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
       }
 
       return { ...state, snapshots, stash }
+    }
+    case 'CLEAR_ALL': {
+      return { ...state, snapshots: [], stash: [] }
     }
     default:
       return { ...state }
