@@ -1,5 +1,6 @@
 import { Z_INDEX } from '@/utils/constant'
 import { CanvasContext } from '@/contexts'
+import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
   getMiddlePoint,
@@ -97,7 +98,6 @@ export default class VCanvasDrawingLayer extends HTMLElement {
           }
         },
       })
-
       CanvasContext.subscribe({
         action: 'HISTORY_FORWARD',
         effect: (context) => {
@@ -112,9 +112,17 @@ export default class VCanvasDrawingLayer extends HTMLElement {
       })
     }
 
+    const subscribeEventBus = () => {
+      EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
+        clearCanvas(this.$canvas)
+        CanvasContext.dispatch({ action: 'CLEAR_ALL' })
+      })
+    }
+
     initEvents()
     refineCanvasRatio(this.$canvas)
     subscribeContext()
+    subscribeEventBus()
   }
 
   disconnectedCallback() {

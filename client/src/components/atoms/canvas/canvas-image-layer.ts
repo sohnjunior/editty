@@ -108,8 +108,15 @@ export default class VCanvasImageLayer extends HTMLElement {
           console.error('🚨 fail to upload image')
         }
       }
+      const onClearAll = () => {
+        this.draggedIndex = -1
+        this.draggedImage = null
+        this.images = []
+        this.paintImages()
+      }
 
       EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
+      EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
     }
 
     refineCanvasRatio(this.$canvas)
@@ -168,7 +175,7 @@ export default class VCanvasImageLayer extends HTMLElement {
     paint()
   }
 
-  paintImages() {
+  private paintImages() {
     clearCanvas(this.$canvas)
 
     this.images.forEach(({ ref, sx, sy, width, height }) => {
