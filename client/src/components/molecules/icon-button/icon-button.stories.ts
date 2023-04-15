@@ -8,7 +8,7 @@ customElements.define(IconButton.tag, IconButton)
 export default {
   title: 'Elements / Icon Button',
   argTypes: {
-    icon: { control: 'select', options: ['delete', 'cursor', 'pen'] },
+    icon: { control: 'select', options: ['trash', 'cursor', 'pen'] },
     size: { control: 'select', options: ['small', 'medium', 'large'] },
   },
 }
@@ -21,6 +21,6 @@ interface BasicProps {
 export const Basic = ({ icon, size }: BasicProps) =>
   html`<v-icon-button icon="${icon}" size="${size}"></v-icon-button>`
 Basic.args = {
-  icon: 'delete',
+  icon: 'trash',
   size: 'medium',
 }
