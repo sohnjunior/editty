@@ -98,12 +98,6 @@ export function refineCanvasRatio(canvas: HTMLCanvasElement) {
 
 /**
  * (sx, sy) 를 좌측 최상단으로 하는 width 너비, height 높이를 가지는 정사각형 영역에 (x, y) 가 포함되는지 판단합니다.
- * @param pivot.sx 정사각형 좌측 최상단 x 값
- * @param pivot.sy 정사각형 좌측 최상단 y 값
- * @param pivot.width 정사각형 너비
- * @param pivot.height 정사각형 높이
- * @param pos.x 판단하고자 하는 좌표 x 값
- * @param pos.y 판단하고자 하는 좌표 y 값
  */
 export function isPointInsideRect({
   pivot,
