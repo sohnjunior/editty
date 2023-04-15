@@ -63,7 +63,7 @@ jobs:
         uses: tj-actions/changed-files@v35
         id: changed-files
         with:
-          files: client/src/components/**
+          files: src/components/**
 
       - name: Use Node.js ${{ matrix.node-version }}
         if: steps.changed-files-specific.outputs.any_changed == 'true'
