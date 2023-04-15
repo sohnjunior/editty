@@ -13,7 +13,7 @@ template.innerHTML = `
       margin: 0 auto;
     }
   </style>
-  <slot name="main">main slot</slot>
+  <slot name="main">main</slot>
 `
 
 export default class MobileTemplate extends HTMLElement {

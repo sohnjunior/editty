@@ -44,7 +44,7 @@ export default class VIconButton extends HTMLElement {
   }
 
   get iconAttribute() {
-    return this.getAttribute('icon') || 'delete'
+    return this.getAttribute('icon') || 'trash'
   }
 
   get sizeAttribute() {
