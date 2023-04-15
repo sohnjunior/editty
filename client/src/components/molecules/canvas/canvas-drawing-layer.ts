@@ -162,6 +162,11 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     }
 
     const takeCanvasSnapshot = () => {
+      const hasPencilPoints = this.points.length > 0
+      if (!hasPencilPoints) {
+        return
+      }
+
       const snapshot = takeSnapshot(this.$canvas)
       if (snapshot) {
         CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
