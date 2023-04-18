@@ -1,0 +1,58 @@
+name: milestone release
+
+on:
+  milestone:
+    types: [closed]
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    name: Release
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get milestone info
+        id: milestone-info
+        run: |
+          echo "NEXT_VERSION=$(jq -r '.milestone.title' $GITHUB_EVENT_PATH)" >> "$GITHUB_OUTPUT"
+
+      - name: Create Annotated Tag And Generate Release Note
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            try {
+              const tagName = '${{ steps.milestone-info.outputs.NEXT_VERSION }}'
+
+              const tagObject = await github.rest.git.createTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: tagName,
+                message: `:rocket: release ${tagName}`,
+                object: '${{ github.sha }}',
+                type: 'commit',
+              })
+
+              await github.rest.git.createRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `refs/tags/${tagName}`,
+                sha: tagObject.data.sha,
+              })
+
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: tagName,
+                generate_release_notes: true,
+              })
+            } catch (err) {
+              core.setFailed(`❌ Request failed with error ${err}`)
+            }
