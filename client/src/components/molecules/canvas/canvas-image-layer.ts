@@ -31,7 +31,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   private images: ImageObject[] = []
   private draggedImage: DragTarget | null = null
   private draggedIndex = -1
-  private controlledIndex = -1
+  private focused: { index: number; anchors: Path2D[] } | null = null
 
   static tag = 'v-canvas-image-layer'
 
@@ -126,8 +126,8 @@ export default class VCanvasImageLayer extends HTMLElement {
 
   touch(ev: MouseEvent | TouchEvent) {
     const setControlledImage = (index: number) => {
-      this.controlledIndex = index
-      this.paintImageControlBorder()
+      this.focused = { index, anchors: [] }
+      this.paintFocusedImageAnchorBorder()
     }
 
     const setDraggedImage = (index: number, sx: number, sy: number) => {
@@ -185,7 +185,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       this.draggedImage.sy = y
 
       this.paintImages()
-      this.paintImageControlBorder()
+      this.paintFocusedImageAnchorBorder()
     }
 
     paint()
@@ -201,9 +201,12 @@ export default class VCanvasImageLayer extends HTMLElement {
     })
   }
 
-  private paintImageControlBorder() {
-    const { width, height, sx, sy } = this.images[this.controlledIndex]
+  private paintFocusedImageAnchorBorder() {
+    if (!this.focused) {
+      return
+    }
 
+    const { width, height, sx, sy } = this.images[this.focused.index]
     drawAnchorBorder({
       canvas: this.$canvas,
       size: { width, height },
@@ -253,6 +256,8 @@ function drawBorder({ canvas, corners, start }: DrawBorderProps) {
   context.lineWidth = 5
   context.lineCap = 'round'
   context.stroke(path)
+
+  return path
 }
 
 interface DrawAnchorProps {
@@ -261,27 +266,25 @@ interface DrawAnchorProps {
 }
 
 function drawAnchor({ canvas, corners }: DrawAnchorProps) {
-  corners.forEach(([x, y]) => drawCircle({ canvas, position: { x, y }, radius: 10 }))
+  return corners.map(([x, y]) => drawCircle({ canvas, position: { x, y }, radius: 10 }))
 }
 
 interface DrawCircleProps {
   canvas: HTMLCanvasElement
   position: { x: number; y: number }
   radius: number
-  fill?: boolean
 }
 
-function drawCircle({ canvas, position, radius, fill = true }: DrawCircleProps) {
+function drawCircle({ canvas, position, radius }: DrawCircleProps) {
   const context = canvas.getContext('2d')
   if (!context) {
     return
   }
 
-  context.beginPath()
-  context.arc(position.x, position.y, radius, 0, Math.PI * 2)
-  if (fill) {
-    context.fillStyle = '#ffffff'
-    context.fill()
-  }
-  context.stroke()
+  const path = new Path2D()
+  path.arc(position.x, position.y, radius, 0, Math.PI * 2)
+  context.fillStyle = 'rgba(151, 222, 255, 0.7)'
+  context.fill(path)
+
+  return path
 }
