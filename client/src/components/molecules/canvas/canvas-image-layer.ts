@@ -6,7 +6,7 @@ import {
   refineCanvasRatio,
   clearCanvas,
   isPointInsideRect,
-  refineImageScale,
+  resizeImageScale,
   createImageObject,
 } from './canvas.utils'
 import type { ImageObject, DragTarget } from './canvas.types'
@@ -31,6 +31,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   private images: ImageObject[] = []
   private draggedImage: DragTarget | null = null
   private draggedIndex = -1
+  private controlledIndex = -1
 
   static tag = 'v-canvas-image-layer'
 
@@ -90,13 +91,13 @@ export default class VCanvasImageLayer extends HTMLElement {
       const onImageUpload = async (dataUrls: string[]) => {
         const jobs = dataUrls.map(async (dataUrl) => {
           const image = await createImageObject({ dataUrl }, { sx: 50, sy: 50 })
-          const calibration = refineImageScale(
+          const resized = resizeImageScale(
             { ref: this.$canvas },
             { width: image.width, height: image.height }
           )
 
-          image.width = calibration.width
-          image.height = calibration.height
+          image.width = resized.width
+          image.height = resized.height
 
           this.images.push(image)
           this.paintImages()
@@ -124,9 +125,24 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   touch(ev: MouseEvent | TouchEvent) {
-    const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+    const setControlledImage = (index: number) => {
+      this.controlledIndex = index
+      this.paintImageControlBorder()
+    }
+
+    const setDraggedImage = (index: number, sx: number, sy: number) => {
+      this.draggedIndex = index
+      this.draggedImage = { sx, sy, image: this.images[index] }
+    }
+
+    const resetDraggedImage = () => {
+      this.draggedIndex = -1
+      this.draggedImage = null
+    }
 
     const setDraggableImageObjectAtTouchPoint = () => {
+      const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+
       /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
       const index = this.images.findIndex((image) =>
         isPointInsideRect({
@@ -141,11 +157,10 @@ export default class VCanvasImageLayer extends HTMLElement {
       )
 
       if (index > -1) {
-        this.draggedIndex = index
-        this.draggedImage = { sx: x, sy: y, image: this.images[index] }
+        setDraggedImage(index, x, y)
+        setControlledImage(index)
       } else {
-        this.draggedIndex = -1
-        this.draggedImage = null
+        resetDraggedImage()
       }
     }
 
@@ -170,6 +185,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       this.draggedImage.sy = y
 
       this.paintImages()
+      this.paintImageControlBorder()
     }
 
     paint()
@@ -184,4 +200,88 @@ export default class VCanvasImageLayer extends HTMLElement {
       }
     })
   }
+
+  private paintImageControlBorder() {
+    const { width, height, sx, sy } = this.images[this.controlledIndex]
+
+    drawAnchorBorder({
+      canvas: this.$canvas,
+      size: { width, height },
+      position: { sx, sy },
+    })
+  }
+}
+
+interface DrawAnchorBorderProps {
+  canvas: HTMLCanvasElement
+  position: { sx: number; sy: number }
+  size: { width: number; height: number }
+}
+
+function drawAnchorBorder({ canvas, position, size }: DrawAnchorBorderProps) {
+  const corners: [number, number][] = [
+    [position.sx, position.sy],
+    [position.sx + size.width, position.sy],
+    [position.sx + size.width, position.sy + size.height],
+    [position.sx, position.sy + size.height],
+  ]
+
+  drawBorder({ canvas, corners, start: { x: position.sx, y: position.sy } })
+  drawAnchor({ canvas, corners })
+}
+
+interface DrawBorderProps {
+  canvas: HTMLCanvasElement
+  corners: [number, number][]
+  start: { x: number; y: number }
+}
+
+function drawBorder({ canvas, corners, start }: DrawBorderProps) {
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return
+  }
+
+  const path = new Path2D()
+  path.moveTo(start.x, start.y)
+  path.lineTo(...corners[1])
+  path.lineTo(...corners[2])
+  path.lineTo(...corners[3])
+  path.lineTo(...corners[0])
+
+  context.strokeStyle = 'rgba(151, 222, 255, 0.7)'
+  context.lineWidth = 5
+  context.lineCap = 'round'
+  context.stroke(path)
+}
+
+interface DrawAnchorProps {
+  canvas: HTMLCanvasElement
+  corners: [number, number][]
+}
+
+function drawAnchor({ canvas, corners }: DrawAnchorProps) {
+  corners.forEach(([x, y]) => drawCircle({ canvas, position: { x, y }, radius: 10 }))
+}
+
+interface DrawCircleProps {
+  canvas: HTMLCanvasElement
+  position: { x: number; y: number }
+  radius: number
+  fill?: boolean
+}
+
+function drawCircle({ canvas, position, radius, fill = true }: DrawCircleProps) {
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return
+  }
+
+  context.beginPath()
+  context.arc(position.x, position.y, radius, 0, Math.PI * 2)
+  if (fill) {
+    context.fillStyle = '#ffffff'
+    context.fill()
+  }
+  context.stroke()
 }
