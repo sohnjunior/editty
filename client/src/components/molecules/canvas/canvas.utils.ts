@@ -126,7 +126,7 @@ export function isPointInsideRect({
  * @param canvas 캔버스 요소 및 최대 적용 비율 (default: 60%)
  * @param original 원본 이미지 너비, 높이
  */
-export function refineImageScale(
+export function resizeImageScale(
   canvas: { ref: HTMLCanvasElement; threshold?: number },
   original: { width: number; height: number }
 ) {
