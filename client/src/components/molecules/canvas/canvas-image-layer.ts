@@ -10,6 +10,7 @@ import {
   createImageObject,
 } from './canvas.utils'
 import type { ImageObject, DragTarget } from './canvas.types'
+import { filterNullish } from '@/utils/ramda'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -32,6 +33,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   private draggedImage: DragTarget | null = null
   private draggedIndex = -1
   private focused: { index: number; anchors: Path2D[] } | null = null
+  private isPressed = false
 
   static tag = 'v-canvas-image-layer'
 
@@ -71,14 +73,16 @@ export default class VCanvasImageLayer extends HTMLElement {
     switch (ev.type) {
       case 'mousedown':
       case 'touchstart':
+        this.isPressed = true
         this.touch(ev as MouseEvent)
         break
       case 'mousemove':
       case 'touchmove':
-        this.draggedImage && this.drag(ev as MouseEvent | TouchEvent)
+        this.isPressed && this.move(ev as MouseEvent | TouchEvent)
         break
       case 'mouseup':
       case 'touchend':
+        this.isPressed = false
         this.draggedImage = null
         break
       default:
@@ -125,9 +129,14 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   touch(ev: MouseEvent | TouchEvent) {
-    const setControlledImage = (index: number) => {
+    const setFocusedImage = (index: number) => {
       this.focused = { index, anchors: [] }
       this.paintFocusedImageAnchorBorder()
+    }
+
+    const resetFocusedImage = () => {
+      this.focused = null
+      this.paintImages()
     }
 
     const setDraggedImage = (index: number, sx: number, sy: number) => {
@@ -140,9 +149,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       this.draggedImage = null
     }
 
-    const setDraggableImageObjectAtTouchPoint = () => {
-      const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
-
+    const findTouchedImage = (x: number, y: number) => {
       /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
       const index = this.images.findIndex((image) =>
         isPointInsideRect({
@@ -156,23 +163,40 @@ export default class VCanvasImageLayer extends HTMLElement {
         })
       )
 
-      if (index > -1) {
-        setDraggedImage(index, x, y)
-        setControlledImage(index)
-      } else {
-        resetDraggedImage()
-      }
+      return index
     }
 
-    setDraggableImageObjectAtTouchPoint()
+    const isPointInsideAnchorArea = (x: number, y: number) => {
+      if (!this.focused) {
+        return false
+      }
+      return isInAnchorPath({
+        canvas: this.$canvas,
+        anchors: this.focused.anchors,
+        position: { x, y },
+      })
+    }
+
+    // const startTransformImage = (x, y) => {}
+
+    const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+
+    const index = findTouchedImage(x, y)
+    const isPointInsideImageArea = index > -1
+    if (isPointInsideImageArea) {
+      setDraggedImage(index, x, y)
+      setFocusedImage(index)
+    } else if (isPointInsideAnchorArea(x, y)) {
+      console.log('이미지 리사이즈 시작')
+    } else {
+      resetDraggedImage()
+      resetFocusedImage()
+    }
   }
 
-  drag(ev: MouseEvent | TouchEvent) {
-    const paint = () => {
-      if (!this.draggedImage) {
-        return
-      }
-
+  move(ev: MouseEvent | TouchEvent) {
+    if (this.draggedImage) {
+      /** 💡 drag image */
       const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
       const dx = x - this.draggedImage.sx
       const dy = y - this.draggedImage.sy
@@ -185,10 +209,10 @@ export default class VCanvasImageLayer extends HTMLElement {
       this.draggedImage.sy = y
 
       this.paintImages()
-      this.paintFocusedImageAnchorBorder()
+    } else if (this.focused) {
+      /** 💡 resize image */
+      console.log('선택된 상태에서 드래그')
     }
-
-    paint()
   }
 
   private paintImages() {
@@ -199,6 +223,10 @@ export default class VCanvasImageLayer extends HTMLElement {
         this.context.drawImage(ref, sx, sy, width, height)
       }
     })
+
+    if (this.focused) {
+      this.paintFocusedImageAnchorBorder()
+    }
   }
 
   private paintFocusedImageAnchorBorder() {
@@ -207,11 +235,12 @@ export default class VCanvasImageLayer extends HTMLElement {
     }
 
     const { width, height, sx, sy } = this.images[this.focused.index]
-    drawAnchorBorder({
+    const anchors = drawAnchorBorder({
       canvas: this.$canvas,
       size: { width, height },
       position: { sx, sy },
     })
+    this.focused.anchors = filterNullish(anchors)
   }
 }
 
@@ -230,7 +259,9 @@ function drawAnchorBorder({ canvas, position, size }: DrawAnchorBorderProps) {
   ]
 
   drawBorder({ canvas, corners, start: { x: position.sx, y: position.sy } })
-  drawAnchor({ canvas, corners })
+  const anchorPaths = drawAnchor({ canvas, corners })
+
+  return anchorPaths
 }
 
 interface DrawBorderProps {
@@ -242,17 +273,48 @@ interface DrawBorderProps {
 function drawBorder({ canvas, corners, start }: DrawBorderProps) {
   const context = canvas.getContext('2d')
   if (!context) {
+    return []
+  }
+
+  drawLine({
+    canvas,
+    from: { x: start.x, y: start.y },
+    to: { x: corners[1][0], y: corners[1][1] },
+  })
+  drawLine({
+    canvas,
+    from: { x: corners[1][0], y: corners[1][1] },
+    to: { x: corners[2][0], y: corners[2][1] },
+  })
+  drawLine({
+    canvas,
+    from: { x: corners[2][0], y: corners[2][1] },
+    to: { x: corners[3][0], y: corners[3][1] },
+  })
+  drawLine({
+    canvas,
+    from: { x: corners[3][0], y: corners[3][1] },
+    to: { x: corners[0][0], y: corners[0][1] },
+  })
+}
+
+interface DrawLineProps {
+  canvas: HTMLCanvasElement
+  from: { x: number; y: number }
+  to: { x: number; y: number }
+}
+
+function drawLine({ canvas, from, to }: DrawLineProps) {
+  const context = canvas.getContext('2d')
+  if (!context) {
     return
   }
 
   const path = new Path2D()
-  path.moveTo(start.x, start.y)
-  path.lineTo(...corners[1])
-  path.lineTo(...corners[2])
-  path.lineTo(...corners[3])
-  path.lineTo(...corners[0])
+  path.moveTo(from.x, from.y)
+  path.lineTo(to.x, to.y)
 
-  context.strokeStyle = 'rgba(151, 222, 255, 0.7)'
+  context.strokeStyle = 'rgba(151, 222, 255)'
   context.lineWidth = 5
   context.lineCap = 'round'
   context.stroke(path)
@@ -283,8 +345,23 @@ function drawCircle({ canvas, position, radius }: DrawCircleProps) {
 
   const path = new Path2D()
   path.arc(position.x, position.y, radius, 0, Math.PI * 2)
-  context.fillStyle = 'rgba(151, 222, 255, 0.7)'
+  context.fillStyle = 'rgba(151, 222, 255)'
   context.fill(path)
 
   return path
+}
+
+interface IsInAnchorPathProps {
+  canvas: HTMLCanvasElement
+  anchors: Path2D[]
+  position: { x: number; y: number }
+}
+
+function isInAnchorPath({ canvas, anchors, position }: IsInAnchorPathProps) {
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return false
+  }
+
+  return anchors.some((anchor) => context.isPointInPath(anchor, position.x, position.y))
 }
