@@ -1,4 +1,4 @@
-import type { PencilPoint, ImageObject } from './canvas.types'
+import type { Point, ImageObject } from './canvas.types'
 
 export function isTouchEvent(e: unknown): e is TouchEvent {
   return window.TouchEvent && e instanceof TouchEvent
@@ -32,10 +32,8 @@ export function getSyntheticTouchPoint(canvas: HTMLCanvasElement, ev: MouseEvent
 
 /**
  * 2차원 평면좌표에서 두 지점 사이의 중간 지점을 반환합니다.
- * @param p1 2차원 평면좌표 A
- * @param p2 2차원 평면좌표 B
  */
-export function getMiddlePoint(p1: PencilPoint, p2: PencilPoint) {
+export function getMiddlePoint(p1: Point, p2: Point) {
   return {
     x: p1.x + (p2.x - p1.x) / 2,
     y: p1.y + (p2.y - p1.y) / 2,

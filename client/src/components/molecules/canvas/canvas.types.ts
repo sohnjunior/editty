@@ -1,4 +1,4 @@
-export interface PencilPoint {
+export interface Point {
   x: number
   y: number
 }
