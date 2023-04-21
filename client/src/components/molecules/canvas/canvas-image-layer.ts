@@ -30,8 +30,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private images: ImageObject[] = []
-  private draggedImage: DragTarget | null = null
-  private draggedIndex = -1
+  private dragged: { index: number; target: DragTarget | null } = { index: -1, target: null }
   private focused: { index: number; anchors: Path2D[] } | null = null
   private isPressed = false
 
@@ -83,7 +82,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       case 'mouseup':
       case 'touchend':
         this.isPressed = false
-        this.draggedImage = null
+        this.resetDraggedImage()
         break
       default:
         break
@@ -114,9 +113,8 @@ export default class VCanvasImageLayer extends HTMLElement {
         }
       }
       const onClearAll = () => {
-        this.draggedIndex = -1
-        this.draggedImage = null
         this.images = []
+        this.dragged = { index: -1, target: null }
         this.paintImages()
       }
 
@@ -128,27 +126,25 @@ export default class VCanvasImageLayer extends HTMLElement {
     subscribeEventBus()
   }
 
+  setFocusedImage(index: number) {
+    this.focused = { index, anchors: [] }
+    this.paintFocusedImageAnchorBorder()
+  }
+
+  resetFocusedImage() {
+    this.focused = null
+    this.paintImages()
+  }
+
+  setDraggedImage(index: number, sx: number, sy: number) {
+    this.dragged = { index, target: { sx, sy, image: this.images[index] } }
+  }
+
+  resetDraggedImage() {
+    this.dragged = { index: -1, target: null }
+  }
+
   touch(ev: MouseEvent | TouchEvent) {
-    const setFocusedImage = (index: number) => {
-      this.focused = { index, anchors: [] }
-      this.paintFocusedImageAnchorBorder()
-    }
-
-    const resetFocusedImage = () => {
-      this.focused = null
-      this.paintImages()
-    }
-
-    const setDraggedImage = (index: number, sx: number, sy: number) => {
-      this.draggedIndex = index
-      this.draggedImage = { sx, sy, image: this.images[index] }
-    }
-
-    const resetDraggedImage = () => {
-      this.draggedIndex = -1
-      this.draggedImage = null
-    }
-
     const findTouchedImage = (x: number, y: number) => {
       /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
       const index = this.images.findIndex((image) =>
@@ -184,29 +180,29 @@ export default class VCanvasImageLayer extends HTMLElement {
     const index = findTouchedImage(x, y)
     const isPointInsideImageArea = index > -1
     if (isPointInsideImageArea) {
-      setDraggedImage(index, x, y)
-      setFocusedImage(index)
+      this.setDraggedImage(index, x, y)
+      this.setFocusedImage(index)
     } else if (isPointInsideAnchorArea(x, y)) {
       console.log('이미지 리사이즈 시작')
     } else {
-      resetDraggedImage()
-      resetFocusedImage()
+      this.resetDraggedImage()
+      this.resetFocusedImage()
     }
   }
 
   move(ev: MouseEvent | TouchEvent) {
-    if (this.draggedImage) {
+    if (this.dragged.target) {
       /** 💡 drag image */
       const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
-      const dx = x - this.draggedImage.sx
-      const dy = y - this.draggedImage.sy
+      const dx = x - this.dragged.target.sx
+      const dy = y - this.dragged.target.sy
 
-      const draggedImageEntity = this.images[this.draggedIndex]
+      const draggedImageEntity = this.images[this.dragged.index]
       draggedImageEntity.sx += dx
       draggedImageEntity.sy += dy
 
-      this.draggedImage.sx = x
-      this.draggedImage.sy = y
+      this.dragged.target.sx = x
+      this.dragged.target.sy = y
 
       this.paintImages()
     } else if (this.focused) {
