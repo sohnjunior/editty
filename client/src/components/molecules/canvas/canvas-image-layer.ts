@@ -9,9 +9,20 @@ import {
   refineImageScale,
   createImageObject,
   resizeRect,
+  drawCircle,
+  drawLine,
 } from './canvas.utils'
 import type { ImageObject, DragTarget, Point, Resize, Anchor } from './canvas.types'
 import { filterNullish } from '@/utils/ramda'
+import { setDeviceCursor } from '@/utils/device'
+
+/** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
+const MOUSE_CURSOR: Record<Anchor['type'], string> = {
+  TOP_LEFT: 'nw-resize',
+  TOP_RIGHT: 'ne-resize',
+  BOTTOM_LEFT: 'sw-resize',
+  BOTTOM_RIGHT: 'se-resize',
+}
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -64,31 +75,6 @@ export default class VCanvasImageLayer extends HTMLElement {
     super()
     initShadowRoot()
     initCanvas()
-  }
-
-  listenSiblingLayerEvent(ev: Event) {
-    if (!this.isActivePhase) {
-      return
-    }
-
-    switch (ev.type) {
-      case 'mousedown':
-      case 'touchstart':
-        this.isPressed = true
-        this.touch(ev as MouseEvent)
-        break
-      case 'mousemove':
-      case 'touchmove':
-        this.isPressed && this.move(ev as MouseEvent | TouchEvent)
-        break
-      case 'mouseup':
-      case 'touchend':
-        this.isPressed = false
-        this.resetDraggedImage()
-        break
-      default:
-        break
-    }
   }
 
   connectedCallback() {
@@ -154,6 +140,32 @@ export default class VCanvasImageLayer extends HTMLElement {
     this.transformType = null
   }
 
+  listenSiblingLayerEvent(ev: Event) {
+    if (!this.isActivePhase) {
+      return
+    }
+
+    switch (ev.type) {
+      case 'mousedown':
+      case 'touchstart':
+        this.isPressed = true
+        this.touch(ev as MouseEvent)
+        break
+      case 'mousemove':
+      case 'touchmove':
+        this.isPressed && this.moveWithPressed(ev as MouseEvent | TouchEvent)
+        this.hover(ev as MouseEvent | TouchEvent) // TODO: cursor 가 있는 디바이스에서만 적용되도록 하기
+        break
+      case 'mouseup':
+      case 'touchend':
+        this.isPressed = false
+        this.resetDraggedImage()
+        break
+      default:
+        break
+    }
+  }
+
   touch(ev: MouseEvent | TouchEvent) {
     const findTouchedImage = (point: Point) => {
       /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
@@ -202,7 +214,26 @@ export default class VCanvasImageLayer extends HTMLElement {
     }
   }
 
-  move(ev: MouseEvent | TouchEvent) {
+  hover(ev: MouseEvent | TouchEvent) {
+    if (this.focused) {
+      const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+
+      const anchor = findAnchorInPath({
+        context: this.context,
+        anchors: this.focused.anchors,
+        point: touchPoint,
+      })
+
+      if (anchor) {
+        setDeviceCursor(MOUSE_CURSOR[anchor.type])
+        return
+      }
+    }
+
+    setDeviceCursor('default')
+  }
+
+  moveWithPressed(ev: MouseEvent | TouchEvent) {
     if (this.dragged.target) {
       this.dragImage(ev)
       this.paintImages()
@@ -283,13 +314,15 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 }
 
-interface DrawAnchorBorderProps {
+function drawAnchorBorder({
+  context,
+  topLeftPoint,
+  size,
+}: {
   context: CanvasRenderingContext2D
   topLeftPoint: Point
   size: { width: number; height: number }
-}
-
-function drawAnchorBorder({ context, topLeftPoint, size }: DrawAnchorBorderProps): Anchor[] {
+}): Anchor[] {
   const corners: Record<Resize, Point> = {
     TOP_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y },
     TOP_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y },
@@ -310,13 +343,15 @@ function drawAnchorBorder({ context, topLeftPoint, size }: DrawAnchorBorderProps
   return anchors
 }
 
-interface DrawBorderProps {
+function drawBorder({
+  context,
+  corners,
+  start,
+}: {
   context: CanvasRenderingContext2D
   corners: Point[]
   start: Point
-}
-
-function drawBorder({ context, corners, start }: DrawBorderProps) {
+}) {
   drawLine({
     context,
     from: { x: start.x, y: start.y },
@@ -339,55 +374,18 @@ function drawBorder({ context, corners, start }: DrawBorderProps) {
   })
 }
 
-interface DrawLineProps {
-  context: CanvasRenderingContext2D
-  from: Point
-  to: Point
-}
-
-function drawLine({ context, from, to }: DrawLineProps) {
-  const path = new Path2D()
-  path.moveTo(from.x, from.y)
-  path.lineTo(to.x, to.y)
-
-  context.strokeStyle = 'rgba(151, 222, 255)'
-  context.lineWidth = 5
-  context.lineCap = 'round'
-  context.stroke(path)
-
-  return path
-}
-
-interface DrawAnchorProps {
-  context: CanvasRenderingContext2D
-  corners: Point[]
-}
-
-function drawAnchor({ context, corners }: DrawAnchorProps) {
+function drawAnchor({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
   return corners.map((point) => drawCircle({ context, point, radius: 10 }))
 }
 
-interface DrawCircleProps {
-  context: CanvasRenderingContext2D
-  point: Point
-  radius: number
-}
-
-function drawCircle({ context, point, radius }: DrawCircleProps) {
-  const path = new Path2D()
-  path.arc(point.x, point.y, radius, 0, Math.PI * 2)
-  context.fillStyle = 'rgba(151, 222, 255)'
-  context.fill(path)
-
-  return path
-}
-
-interface findAnchorInPathProps {
+function findAnchorInPath({
+  context,
+  anchors,
+  point,
+}: {
   context: CanvasRenderingContext2D
   anchors: Anchor[]
   point: Point
-}
-
-function findAnchorInPath({ context, anchors, point }: findAnchorInPathProps) {
+}) {
   return anchors.find((anchor) => context.isPointInPath(anchor.path2d, point.x, point.y))
 }
