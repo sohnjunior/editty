@@ -11,6 +11,7 @@
     "build": "webpack --mode production",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .js,.ts",
     "prettier": "prettier --check --write src/**/*.{js,ts}",
     "prepare": "cd .. && husky install client/.husky",
