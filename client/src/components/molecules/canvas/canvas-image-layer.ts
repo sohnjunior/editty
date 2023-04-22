@@ -81,7 +81,7 @@ export default class VCanvasImageLayer extends HTMLElement {
     const subscribeEventBus = () => {
       const onImageUpload = async (dataUrls: string[]) => {
         const jobs = dataUrls.map(async (dataUrl) => {
-          const image = await createImageObject({ dataUrl }, { sx: 50, sy: 50 })
+          const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
           const rescaled = refineImageScale(
             { ref: this.$canvas },
             { width: image.width, height: image.height }
