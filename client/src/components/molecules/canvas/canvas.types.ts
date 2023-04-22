@@ -29,3 +29,8 @@ export interface DragTarget {
 }
 
 export type Resize = 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT'
+
+export interface Anchor {
+  type: Resize
+  path2d: Path2D
+}

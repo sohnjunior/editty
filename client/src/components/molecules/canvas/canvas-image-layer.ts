@@ -10,13 +10,8 @@ import {
   createImageObject,
   resizeRect,
 } from './canvas.utils'
-import type { ImageObject, DragTarget, Point, Resize } from './canvas.types'
+import type { ImageObject, DragTarget, Point, Resize, Anchor } from './canvas.types'
 import { filterNullish } from '@/utils/ramda'
-
-interface Anchor {
-  type: Resize
-  path2d: Path2D
-}
 
 const template = document.createElement('template')
 template.innerHTML = `
