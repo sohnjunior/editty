@@ -264,3 +264,41 @@ function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point
     height,
   }
 }
+
+export function drawCircle({
+  context,
+  point,
+  radius,
+}: {
+  context: CanvasRenderingContext2D
+  point: Point
+  radius: number
+}) {
+  const path = new Path2D()
+  path.arc(point.x, point.y, radius, 0, Math.PI * 2)
+  context.fillStyle = 'rgba(151, 222, 255)'
+  context.fill(path)
+
+  return path
+}
+
+export function drawLine({
+  context,
+  from,
+  to,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  to: Point
+}) {
+  const path = new Path2D()
+  path.moveTo(from.x, from.y)
+  path.lineTo(to.x, to.y)
+
+  context.strokeStyle = 'rgba(151, 222, 255)'
+  context.lineWidth = 5
+  context.lineCap = 'round'
+  context.stroke(path)
+
+  return path
+}
