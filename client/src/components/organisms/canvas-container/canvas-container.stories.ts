@@ -4,7 +4,7 @@ import CanvasContainer from './canvas-container'
 customElements.define(CanvasContainer.tag, CanvasContainer)
 
 export default {
-  title: 'Molecules / Canvas Container',
+  title: 'Organisms / Canvas Container',
 }
 
 export const Basic = () =>

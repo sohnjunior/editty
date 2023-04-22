@@ -4,7 +4,7 @@ import CanvasBackgroundLayer from './canvas-background-layer'
 customElements.define(CanvasBackgroundLayer.tag, CanvasBackgroundLayer)
 
 export default {
-  title: 'Elements / Canvas Background Layer',
+  title: 'Molecules / Canvas Background Layer',
 }
 
 interface Props {
