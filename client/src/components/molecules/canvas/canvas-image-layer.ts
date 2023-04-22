@@ -290,11 +290,11 @@ interface DrawAnchorBorderProps {
 }
 
 function drawAnchorBorder({ context, position, size }: DrawAnchorBorderProps): Anchor[] {
-  const corners: Record<Resize, [number, number]> = {
-    TOP_LEFT: [position.sx, position.sy],
-    TOP_RIGHT: [position.sx + size.width, position.sy],
-    BOTTOM_RIGHT: [position.sx + size.width, position.sy + size.height],
-    BOTTOM_LEFT: [position.sx, position.sy + size.height],
+  const corners: Record<Resize, Point> = {
+    TOP_LEFT: { x: position.sx, y: position.sy },
+    TOP_RIGHT: { x: position.sx + size.width, y: position.sy },
+    BOTTOM_RIGHT: { x: position.sx + size.width, y: position.sy + size.height },
+    BOTTOM_LEFT: { x: position.sx, y: position.sy + size.height },
   }
 
   drawBorder({
@@ -312,7 +312,7 @@ function drawAnchorBorder({ context, position, size }: DrawAnchorBorderProps): A
 
 interface DrawBorderProps {
   context: CanvasRenderingContext2D
-  corners: [number, number][]
+  corners: Point[]
   start: Point
 }
 
@@ -320,22 +320,22 @@ function drawBorder({ context, corners, start }: DrawBorderProps) {
   drawLine({
     context,
     from: { x: start.x, y: start.y },
-    to: { x: corners[1][0], y: corners[1][1] },
+    to: { x: corners[1].x, y: corners[1].y },
   })
   drawLine({
     context,
-    from: { x: corners[1][0], y: corners[1][1] },
-    to: { x: corners[2][0], y: corners[2][1] },
+    from: { x: corners[1].x, y: corners[1].y },
+    to: { x: corners[2].x, y: corners[2].y },
   })
   drawLine({
     context,
-    from: { x: corners[2][0], y: corners[2][1] },
-    to: { x: corners[3][0], y: corners[3][1] },
+    from: { x: corners[2].x, y: corners[2].y },
+    to: { x: corners[3].x, y: corners[3].y },
   })
   drawLine({
     context,
-    from: { x: corners[3][0], y: corners[3][1] },
-    to: { x: corners[0][0], y: corners[0][1] },
+    from: { x: corners[3].x, y: corners[3].y },
+    to: { x: corners[0].x, y: corners[0].y },
   })
 }
 
@@ -360,11 +360,11 @@ function drawLine({ context, from, to }: DrawLineProps) {
 
 interface DrawAnchorProps {
   context: CanvasRenderingContext2D
-  corners: [number, number][]
+  corners: Point[]
 }
 
 function drawAnchor({ context, corners }: DrawAnchorProps) {
-  return corners.map(([x, y]) => drawCircle({ context, position: { x, y }, radius: 10 }))
+  return corners.map((point) => drawCircle({ context, position: point, radius: 10 }))
 }
 
 interface DrawCircleProps {
