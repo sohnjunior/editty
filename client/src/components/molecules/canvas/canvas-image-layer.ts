@@ -180,7 +180,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       return findAnchorInPath({
         context: this.context,
         anchors: this.focused.anchors,
-        position: point,
+        point,
       })
     }
 
@@ -277,7 +277,7 @@ export default class VCanvasImageLayer extends HTMLElement {
     const anchors = drawAnchorBorder({
       context: this.context,
       size: { width, height },
-      position: { sx, sy },
+      topLeftPoint: { x: sx, y: sy },
     })
     this.focused.anchors = filterNullish(anchors)
   }
@@ -285,22 +285,22 @@ export default class VCanvasImageLayer extends HTMLElement {
 
 interface DrawAnchorBorderProps {
   context: CanvasRenderingContext2D
-  position: { sx: number; sy: number }
+  topLeftPoint: Point
   size: { width: number; height: number }
 }
 
-function drawAnchorBorder({ context, position, size }: DrawAnchorBorderProps): Anchor[] {
+function drawAnchorBorder({ context, topLeftPoint, size }: DrawAnchorBorderProps): Anchor[] {
   const corners: Record<Resize, Point> = {
-    TOP_LEFT: { x: position.sx, y: position.sy },
-    TOP_RIGHT: { x: position.sx + size.width, y: position.sy },
-    BOTTOM_RIGHT: { x: position.sx + size.width, y: position.sy + size.height },
-    BOTTOM_LEFT: { x: position.sx, y: position.sy + size.height },
+    TOP_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y },
+    TOP_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y },
+    BOTTOM_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y + size.height },
+    BOTTOM_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y + size.height },
   }
 
   drawBorder({
     context,
     corners: Object.values(corners),
-    start: { x: position.sx, y: position.sy },
+    start: { x: topLeftPoint.x, y: topLeftPoint.y },
   })
 
   const anchorTypes = Object.keys(corners) as Resize[]
@@ -364,18 +364,18 @@ interface DrawAnchorProps {
 }
 
 function drawAnchor({ context, corners }: DrawAnchorProps) {
-  return corners.map((point) => drawCircle({ context, position: point, radius: 10 }))
+  return corners.map((point) => drawCircle({ context, point, radius: 10 }))
 }
 
 interface DrawCircleProps {
   context: CanvasRenderingContext2D
-  position: Point
+  point: Point
   radius: number
 }
 
-function drawCircle({ context, position, radius }: DrawCircleProps) {
+function drawCircle({ context, point, radius }: DrawCircleProps) {
   const path = new Path2D()
-  path.arc(position.x, position.y, radius, 0, Math.PI * 2)
+  path.arc(point.x, point.y, radius, 0, Math.PI * 2)
   context.fillStyle = 'rgba(151, 222, 255)'
   context.fill(path)
 
@@ -385,9 +385,9 @@ function drawCircle({ context, position, radius }: DrawCircleProps) {
 interface findAnchorInPathProps {
   context: CanvasRenderingContext2D
   anchors: Anchor[]
-  position: Point
+  point: Point
 }
 
-function findAnchorInPath({ context, anchors, position }: findAnchorInPathProps) {
-  return anchors.find((anchor) => context.isPointInPath(anchor.path2d, position.x, position.y))
+function findAnchorInPath({ context, anchors, point }: findAnchorInPathProps) {
+  return anchors.find((anchor) => context.isPointInPath(anchor.path2d, point.x, point.y))
 }
