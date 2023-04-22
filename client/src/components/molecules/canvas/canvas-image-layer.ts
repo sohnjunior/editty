@@ -143,8 +143,8 @@ export default class VCanvasImageLayer extends HTMLElement {
     this.paintImages()
   }
 
-  setDraggedImage(index: number, sx: number, sy: number) {
-    this.dragged = { index, target: { sx, sy, image: this.images[index] } }
+  setDraggedImage(index: number, { x, y }: Point) {
+    this.dragged = { index, target: { sx: x, sy: y, image: this.images[index] } }
   }
 
   resetDraggedImage() {
@@ -160,7 +160,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   touch(ev: MouseEvent | TouchEvent) {
-    const findTouchedImage = (x: number, y: number) => {
+    const findTouchedImage = (point: Point) => {
       /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
       const index = this.images.findIndex((image) =>
         isPointInsideRect({
@@ -170,14 +170,14 @@ export default class VCanvasImageLayer extends HTMLElement {
             width: image.width,
             height: image.height,
           },
-          pos: { x, y },
+          pos: point,
         })
       )
 
       return index
     }
 
-    const findTouchedAnchor = ({ x, y }: Point) => {
+    const findTouchedAnchor = (point: Point) => {
       if (!this.focused) {
         return
       }
@@ -185,18 +185,18 @@ export default class VCanvasImageLayer extends HTMLElement {
       return findAnchorInPath({
         context: this.context,
         anchors: this.focused.anchors,
-        position: { x, y },
+        position: point,
       })
     }
 
-    const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+    const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
 
-    const imageIndex = findTouchedImage(x, y)
-    const anchor = findTouchedAnchor({ x, y })
+    const imageIndex = findTouchedImage(touchPoint)
+    const anchor = findTouchedAnchor(touchPoint)
 
     const isImageArea = imageIndex > -1
     if (isImageArea) {
-      this.setDraggedImage(imageIndex, x, y)
+      this.setDraggedImage(imageIndex, touchPoint)
       this.setFocusedImage(imageIndex)
     } else if (anchor) {
       this.setTransformType(anchor.type)
@@ -239,7 +239,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       return
     }
 
-    const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+    const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
     const image = this.images[this.focused.index]
 
     const resizedBoundingRect = resizeRect({
@@ -250,7 +250,7 @@ export default class VCanvasImageLayer extends HTMLElement {
         width: image.width,
         height: image.height,
       },
-      vectorTerminalPoint: { x, y },
+      vectorTerminalPoint: touchPoint,
     })
 
     image.sx = resizedBoundingRect.sx
