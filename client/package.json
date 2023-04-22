@@ -10,6 +10,7 @@
     "dev": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
     "test": "jest",
+    "test:watch": "jest --watch",
     "lint": "eslint . --ext .js,.ts",
     "prettier": "prettier --check --write src/**/*.{js,ts}",
     "prepare": "cd .. && husky install client/.husky",

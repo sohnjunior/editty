@@ -1,4 +1,4 @@
-import { lastOf } from './ramda'
+import { filterNullish, lastOf } from './ramda'
 
 describe('ramda functions', () => {
   describe('lastOf', () => {
@@ -8,6 +8,12 @@ describe('ramda functions', () => {
 
     it('should return undefined for empty array', () => {
       expect(lastOf([])).toBe(undefined)
+    })
+  })
+
+  describe('filterNullish', () => {
+    it('should remove nullish element from array', () => {
+      expect(filterNullish([1, 2, 3, null, undefined, false, ''])).toStrictEqual([1, 2, 3])
     })
   })
 })

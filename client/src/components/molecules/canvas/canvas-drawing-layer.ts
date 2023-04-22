@@ -10,7 +10,7 @@ import {
   clearCanvas,
   refineCanvasRatio,
 } from './canvas.utils'
-import type { PencilPoint } from './canvas.types'
+import type { Point } from './canvas.types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -29,7 +29,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
   private $root!: ShadowRoot
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
-  private points: PencilPoint[] = []
+  private points: Point[] = []
   private isDrawing = false
 
   static tag = 'v-canvas-drawing-layer'
