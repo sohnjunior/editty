@@ -6,7 +6,7 @@ import {
   refineCanvasRatio,
   clearCanvas,
   isPointInsideRect,
-  resizeImageScale,
+  refineImageScale,
   createImageObject,
   resizeRect,
 } from './canvas.utils'
@@ -101,13 +101,13 @@ export default class VCanvasImageLayer extends HTMLElement {
       const onImageUpload = async (dataUrls: string[]) => {
         const jobs = dataUrls.map(async (dataUrl) => {
           const image = await createImageObject({ dataUrl }, { sx: 50, sy: 50 })
-          const resized = resizeImageScale(
+          const rescaled = refineImageScale(
             { ref: this.$canvas },
             { width: image.width, height: image.height }
           )
 
-          image.width = resized.width
-          image.height = resized.height
+          image.width = rescaled.width
+          image.height = rescaled.height
 
           this.images.push(image)
           this.paintImages()
