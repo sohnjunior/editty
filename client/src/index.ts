@@ -1,6 +1,6 @@
 import { defineCustomElements } from './registry'
 
-import './global.css'
+import './reset.css'
 
 function mountApp() {
   const $app = document.getElementById('app')
