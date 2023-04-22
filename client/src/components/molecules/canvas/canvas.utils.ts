@@ -108,7 +108,7 @@ export function isPointInsideRect({
   pos,
 }: {
   pivot: { sx: number; sy: number; width: number; height: number }
-  pos: { x: number; y: number }
+  pos: Point
 }) {
   const { sx, sy, width, height } = pivot
   const [ex, ey] = [sx + width, sy + height]

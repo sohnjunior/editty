@@ -318,7 +318,7 @@ function drawAnchorBorder({ context, position, size }: DrawAnchorBorderProps): A
 interface DrawBorderProps {
   context: CanvasRenderingContext2D
   corners: [number, number][]
-  start: { x: number; y: number }
+  start: Point
 }
 
 function drawBorder({ context, corners, start }: DrawBorderProps) {
@@ -346,8 +346,8 @@ function drawBorder({ context, corners, start }: DrawBorderProps) {
 
 interface DrawLineProps {
   context: CanvasRenderingContext2D
-  from: { x: number; y: number }
-  to: { x: number; y: number }
+  from: Point
+  to: Point
 }
 
 function drawLine({ context, from, to }: DrawLineProps) {
@@ -374,7 +374,7 @@ function drawAnchor({ context, corners }: DrawAnchorProps) {
 
 interface DrawCircleProps {
   context: CanvasRenderingContext2D
-  position: { x: number; y: number }
+  position: Point
   radius: number
 }
 
@@ -390,7 +390,7 @@ function drawCircle({ context, position, radius }: DrawCircleProps) {
 interface findAnchorInPathProps {
   context: CanvasRenderingContext2D
   anchors: Anchor[]
-  position: { x: number; y: number }
+  position: Point
 }
 
 function findAnchorInPath({ context, anchors, position }: findAnchorInPathProps) {
