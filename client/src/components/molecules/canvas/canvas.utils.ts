@@ -1,4 +1,4 @@
-import type { Point, ImageObject } from './canvas.types'
+import type { Point, ImageObject, BoundingRect, Resize } from './canvas.types'
 
 export function isTouchEvent(e: unknown): e is TouchEvent {
   return window.TouchEvent && e instanceof TouchEvent
@@ -9,7 +9,10 @@ export function isTouchEvent(e: unknown): e is TouchEvent {
  * @param canvas 대상 캔버스 요소
  * @param ev MouseEvent 혹은 TouchEvent
  */
-export function getSyntheticTouchPoint(canvas: HTMLCanvasElement, ev: MouseEvent | TouchEvent) {
+export function getSyntheticTouchPoint(
+  canvas: HTMLCanvasElement,
+  ev: MouseEvent | TouchEvent
+): Point {
   const rect = canvas.getBoundingClientRect()
   const scaleX = canvas.width / rect.width
   const scaleY = canvas.height / rect.height
@@ -30,14 +33,17 @@ export function getSyntheticTouchPoint(canvas: HTMLCanvasElement, ev: MouseEvent
   }
 }
 
-/**
- * 2차원 평면좌표에서 두 지점 사이의 중간 지점을 반환합니다.
- */
+/** 2차원 평면좌표에서 두점 사이의 중간 지점을 반환합니다. */
 export function getMiddlePoint(p1: Point, p2: Point) {
   return {
     x: p1.x + (p2.x - p1.x) / 2,
     y: p1.y + (p2.y - p1.y) / 2,
   }
+}
+
+/** 2차원 평면좌표에서 두점 사이의 거리를 반환합니다. */
+export function getDistance2dPoint(p1: Point, p2: Point) {
+  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
 }
 
 export function fillBackgroundColor(canvas: HTMLCanvasElement, color: string) {
@@ -175,4 +181,86 @@ export async function createImageObject(
       reject()
     }
   })
+}
+
+/** 사각형 꼭지점을 기준으로 사이즈 조절된 결과를 반환합니다. */
+export function resizeRect({
+  type,
+  originalBoundingRect,
+  vectorTerminalPoint,
+}: {
+  type: Resize
+  originalBoundingRect: BoundingRect
+  vectorTerminalPoint: Point
+}) {
+  switch (type) {
+    case 'TOP_LEFT':
+      return resizeTL(originalBoundingRect, vectorTerminalPoint)
+    case 'TOP_RIGHT':
+      return resizeTR(originalBoundingRect, vectorTerminalPoint)
+    case 'BOTTOM_LEFT':
+      return resizeBL(originalBoundingRect, vectorTerminalPoint)
+    case 'BOTTOM_RIGHT':
+      return resizeBR(originalBoundingRect, vectorTerminalPoint)
+  }
+}
+
+function resizeTL(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
+  const { sx, sy, width: oWidth, height: oHeight } = originalBoundingRect
+  const vectorInitialPoint: Point = { x: sx + oWidth, y: sy + oHeight }
+
+  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
+  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
+
+  return {
+    sx: vectorTerminalPoint.x,
+    sy: vectorTerminalPoint.y,
+    width,
+    height,
+  }
+}
+
+function resizeTR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
+  const { sx, sy, height: oHeight } = originalBoundingRect
+  const vectorInitialPoint: Point = { x: sx, y: sy + oHeight }
+
+  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
+  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
+
+  return {
+    sx,
+    sy: vectorTerminalPoint.y,
+    width,
+    height,
+  }
+}
+
+function resizeBL(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
+  const { sx, sy, width: oWidth } = originalBoundingRect
+  const vectorInitialPoint: Point = { x: sx + oWidth, y: sy }
+
+  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
+  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
+
+  return {
+    sx: vectorTerminalPoint.x,
+    sy: vectorInitialPoint.y,
+    width,
+    height,
+  }
+}
+
+function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
+  const { sx, sy } = originalBoundingRect
+  const vectorInitialPoint: Point = { x: sx, y: sy }
+
+  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
+  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
+
+  return {
+    sx: vectorInitialPoint.x,
+    sy: vectorInitialPoint.y,
+    width,
+    height,
+  }
 }
