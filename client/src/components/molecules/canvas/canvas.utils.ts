@@ -1,4 +1,4 @@
-import { isTouchEvent } from '@/utils/device'
+import { isTouchEvent } from '@/utils/dom'
 import type { Point, ImageObject, BoundingRect, Resize } from './canvas.types'
 
 /**

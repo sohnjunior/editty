@@ -142,7 +142,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     const setupLineStyle = () => {
       this.context.lineWidth = 10
       this.context.lineCap = 'round'
-      this.context.strokeStyle = '#ACD3ED'
+      this.context.strokeStyle = getComputedStyle(this.$canvas).getPropertyValue('--color-primary')
     }
 
     const setupSnapshots = () => {

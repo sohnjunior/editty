@@ -1,5 +1,5 @@
 import Button from './button'
-import { getSlotNodes } from '@/utils/query'
+import { getSlotNodes } from '@/utils/dom'
 
 describe('button', () => {
   beforeAll(() => {
