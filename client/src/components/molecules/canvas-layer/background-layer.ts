@@ -1,5 +1,5 @@
 import { Z_INDEX } from '@/utils/constant'
-import { fillBackgroundColor, refineCanvasRatio } from '../../../modules/canvas.utils'
+import { fillBackgroundColor, refineCanvasRatio } from '@/modules/canvas.utils'
 
 const template = document.createElement('template')
 template.innerHTML = `
