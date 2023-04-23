@@ -1,11 +1,11 @@
 export function getGlobalColorPalette({
   canvas,
-  colorVariable,
+  color,
 }: {
   canvas: HTMLCanvasElement
-  colorVariable: `--color-${string}`
+  color: `--color-${string}`
 }) {
-  return getComputedStyle(canvas).getPropertyValue(colorVariable)
+  return getComputedStyle(canvas).getPropertyValue(color)
 }
 
 export function setMouseCursor(cursorType: string) {

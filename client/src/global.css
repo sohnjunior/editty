@@ -1,4 +1,5 @@
 :root {
+  /** component design unit */
   --color-black: #0a0a0a;
   --color-gray: #f3f3f3;
   --color-white: #fafafa;
@@ -11,4 +12,59 @@
   --color-success: #6ee7bf;
   --color-warning: #fdcf72;
   --color-danger: #fca6ad;
+
+  /** canvas palette */
+  --color-teal-blue: #264653;
+  --color-java: #2a9d8f;
+  --color-golden-sand: #e9c46a;
+  --color-sandy-brown: #f4a261;
+  --color-burnt-sienna: #e76f51;
+  --color-amaranth: #e63946;
+  --color-panache: #f1faee;
+  --color-charlotte: #a8dadc;
+  --color-jelly-bean: #457b9d;
+  --color-catalina-blue: #1d3557;
+  --color-anakiwa: #8ecae6;
+  --color-pelorous: #219ebc;
+  --color-selective-yellow: #ffb703;
+  --color-dark-orange: #fb8500;
+  --color-rice-cake: #f4f1de;
+  --color-terra-cotta: #e07a5f;
+  --color-bay-of-many: #3d405b;
+  --color-padua: #81b29a;
+  --color-cherokee: #f2cc8f;
+  --color-matisse: #3d5a80;
+  --color-regent-st-blue: #98c1d9;
+  --color-light-cyan: #e0fbfc;
+  --color-burnt-sienna: #ee6c4d;
+  --color-bunting: #293241;
+  --color-prelude: #cdb4db;
+  --color-classic-rose: #ffc8dd;
+  --color-carnation-pink: #ffafcc;
+  --color-pattens-blue: #bde0fe;
+  --color-columbia-blue: #a2d2ff;
+  --color-scarpa-flow: #6d6875;
+  --color-tapestry: #b5838d;
+  --color-wewak: #e5989b;
+  --color-rose-bud: #ffb4a2;
+  --color-apricot: #ffcdb2;
+  --color-blue-lagoon: #006d77;
+  --color-monte-carlo: #83c5be;
+  --color-alice-blue: #edf6f9;
+  --color-pippin: #ffddd2;
+  --color-dark-salmon: #e29578;
+  --color-woodland: #606c38;
+  --color-pine-tree: #283618;
+  --color-corn-silk: #fefae0;
+  --color-porsche: #dda15e;
+  --color-christine: #bc6c25;
+  --color-blue-whale: #003049;
+  --color-persian-red: #d62828;
+  --color-tangerine: #f77f00;
+  --color-golden-tainoi: #fcbf49;
+  --color-coconut-cream: #eae2b7;
+  --color-amber: #ffbe0b;
+  --color-international-orange: #fb5607;
+  --color-blue-violet: #8338ec;
+  --color-dodger-blue: #3a86ff;
 }
