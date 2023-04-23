@@ -5,7 +5,7 @@ template.innerHTML = `
       display: block;
       width: fit-content;
       padding: 15px 20px;
-      background: #fafafa;
+      background: var(--color-white);
       border-radius: 20px;
       filter: drop-shadow(0px 9px 17px rgba(125, 159, 192, 0.12));
     }

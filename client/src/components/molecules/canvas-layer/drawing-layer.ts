@@ -9,8 +9,8 @@ import {
   reflectSnapshot,
   clearCanvas,
   refineCanvasRatio,
-} from './canvas.utils'
-import type { Point } from './canvas.types'
+} from '@/modules/canvas.utils'
+import type { Point } from './types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -142,7 +142,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     const setupLineStyle = () => {
       this.context.lineWidth = 10
       this.context.lineCap = 'round'
-      this.context.strokeStyle = '#ACD3ED'
+      this.context.strokeStyle = getComputedStyle(this.$canvas).getPropertyValue('--color-primary')
     }
 
     const setupSnapshots = () => {

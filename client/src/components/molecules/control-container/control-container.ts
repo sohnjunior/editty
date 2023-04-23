@@ -15,7 +15,7 @@ template.innerHTML = `
 
     :host v-icon-button[data-selected="true"] {
       border-radius: 3px;
-      background-color: rgba(151, 222, 255, 0.4);
+      background-color: var(--color-primary40);
     }
   </style>
   <v-container>

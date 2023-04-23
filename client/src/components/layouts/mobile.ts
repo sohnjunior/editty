@@ -4,7 +4,7 @@ template.innerHTML = `
     :host {
       display: block;
       height: 100%;
-      background-color: #f3f3f3;
+      background-color: var(--color-gray);
     }
 
     ::slotted([slot="main"]) {

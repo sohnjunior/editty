@@ -1,8 +1,5 @@
-import type { Point, ImageObject, BoundingRect, Resize } from './canvas.types'
-
-export function isTouchEvent(e: unknown): e is TouchEvent {
-  return window.TouchEvent && e instanceof TouchEvent
-}
+import { isTouchEvent } from '@/utils/dom'
+import type { Point, ImageObject, BoundingRect, Resize } from '@molecules/canvas-layer/types'
 
 /**
  * 캔버스 요소 기준으로 선택된 터치(혹은 클릭) 지점을 px 단위로 반환합니다.
@@ -103,13 +100,7 @@ export function refineCanvasRatio(canvas: HTMLCanvasElement) {
 /**
  * (sx, sy) 를 좌측 최상단으로 하는 width 너비, height 높이를 가지는 정사각형 영역에 (x, y) 가 포함되는지 판단합니다.
  */
-export function isPointInsideRect({
-  pivot,
-  pos,
-}: {
-  pivot: { sx: number; sy: number; width: number; height: number }
-  pos: Point
-}) {
+export function isPointInsideRect({ pivot, pos }: { pivot: BoundingRect; pos: Point }) {
   const { sx, sy, width, height } = pivot
   const [ex, ey] = [sx + width, sy + height]
 
@@ -154,23 +145,25 @@ export function refineImageScale(
 
 /**
  * ImageObject 를 생성합니다.
- * @param image base64 인코딩된 dataUrl 이미지
- * @param position image top-left 좌표값
- * @param size image 사이즈
+ * @param dataUrl base64 인코딩된 dataUrl 이미지
+ * @param topLeftPoint image top-left 좌표값
  */
-export async function createImageObject(
-  image: { dataUrl: string },
-  position: { sx: number; sy: number }
-): Promise<ImageObject> {
+export async function createImageObject({
+  dataUrl,
+  topLeftPoint,
+}: {
+  dataUrl: string
+  topLeftPoint: Point
+}): Promise<ImageObject> {
   return new Promise((resolve, reject) => {
     const $image = new Image()
-    $image.src = image.dataUrl
+    $image.src = dataUrl
 
     $image.onload = () => {
       resolve({
-        dataUrl: image.dataUrl,
-        sx: position.sx,
-        sy: position.sy,
+        dataUrl,
+        sx: topLeftPoint.x,
+        sy: topLeftPoint.y,
         width: $image.width,
         height: $image.height,
         ref: $image,

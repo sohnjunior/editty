@@ -1,5 +1,6 @@
 import { defineCustomElements } from './registry'
 
+import './reset.css'
 import './global.css'
 
 function mountApp() {

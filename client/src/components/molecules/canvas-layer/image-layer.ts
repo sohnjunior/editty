@@ -11,10 +11,10 @@ import {
   resizeRect,
   drawCircle,
   drawLine,
-} from './canvas.utils'
-import type { ImageObject, DragTarget, Point, Resize, Anchor } from './canvas.types'
+} from '@/modules/canvas.utils'
+import type { ImageObject, DragTarget, Point, Resize, Anchor } from './types'
 import { filterNullish } from '@/utils/ramda'
-import { setDeviceCursor } from '@/utils/device'
+import { setMouseCursor } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<Anchor['type'], string> = {
@@ -81,7 +81,7 @@ export default class VCanvasImageLayer extends HTMLElement {
     const subscribeEventBus = () => {
       const onImageUpload = async (dataUrls: string[]) => {
         const jobs = dataUrls.map(async (dataUrl) => {
-          const image = await createImageObject({ dataUrl }, { sx: 50, sy: 50 })
+          const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
           const rescaled = refineImageScale(
             { ref: this.$canvas },
             { width: image.width, height: image.height }
@@ -225,12 +225,12 @@ export default class VCanvasImageLayer extends HTMLElement {
       })
 
       if (anchor) {
-        setDeviceCursor(MOUSE_CURSOR[anchor.type])
+        setMouseCursor(MOUSE_CURSOR[anchor.type])
         return
       }
     }
 
-    setDeviceCursor('default')
+    setMouseCursor('default')
   }
 
   moveWithPressed(ev: MouseEvent | TouchEvent) {

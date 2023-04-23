@@ -23,11 +23,11 @@ template.innerHTML = `
     }
 
     :host > button:hover {
-      background-color: rgba(151, 222, 255, 0.3);
+      background-color: var(--color-primary30);
     }
 
     :host > button:active {
-      background-color: rgba(151, 222, 255, 0.2);
+      background-color: var(--color-primary20);
     }
   </style>
   <button type="button">
