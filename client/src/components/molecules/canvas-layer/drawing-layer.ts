@@ -9,8 +9,8 @@ import {
   reflectSnapshot,
   clearCanvas,
   refineCanvasRatio,
-} from './canvas.utils'
-import type { Point } from './canvas.types'
+} from '../../../modules/canvas.utils'
+import type { Point } from './types'
 
 const template = document.createElement('template')
 template.innerHTML = `

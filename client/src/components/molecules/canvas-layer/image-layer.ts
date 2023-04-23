@@ -11,8 +11,8 @@ import {
   resizeRect,
   drawCircle,
   drawLine,
-} from './canvas.utils'
-import type { ImageObject, DragTarget, Point, Resize, Anchor } from './canvas.types'
+} from '../../../modules/canvas.utils'
+import type { ImageObject, DragTarget, Point, Resize, Anchor } from './types'
 import { filterNullish } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 

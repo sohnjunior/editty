@@ -1,5 +1,5 @@
 import { html } from 'lit-html'
-import CanvasImageLayer from './canvas-image-layer'
+import CanvasImageLayer from './image-layer'
 
 customElements.define(CanvasImageLayer.tag, CanvasImageLayer)
 

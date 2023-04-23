@@ -1,5 +1,10 @@
 import { isTouchEvent } from '@/utils/dom'
-import type { Point, ImageObject, BoundingRect, Resize } from './canvas.types'
+import type {
+  Point,
+  ImageObject,
+  BoundingRect,
+  Resize,
+} from '../components/molecules/canvas-layer/types'
 
 /**
  * 캔버스 요소 기준으로 선택된 터치(혹은 클릭) 지점을 px 단위로 반환합니다.

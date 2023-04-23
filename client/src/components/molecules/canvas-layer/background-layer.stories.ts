@@ -1,5 +1,5 @@
 import { html } from 'lit-html'
-import CanvasBackgroundLayer from './canvas-background-layer'
+import CanvasBackgroundLayer from './background-layer'
 
 customElements.define(CanvasBackgroundLayer.tag, CanvasBackgroundLayer)
 
