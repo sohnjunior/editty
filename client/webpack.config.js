@@ -41,9 +41,6 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
-      new webpack.ProvidePlugin({
-        React: 'react',
-      }),
       new HtmlWebpackPlugin({
         template: './public/index.html',
         favicon: './public/assets/favicon.ico',
