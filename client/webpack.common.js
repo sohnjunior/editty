@@ -15,7 +15,7 @@ module.exports = {
       '@atoms': path.resolve(__dirname, 'src/components/atoms'),
       '@molecules': path.resolve(__dirname, 'src/components/molecules'),
       '@organisms': path.resolve(__dirname, 'src/components/organisms'),
-      '@layouts': path.resolve(__dirname, 'src/components/layouts'),
+      '@templates': path.resolve(__dirname, 'src/components/templates'),
     },
   },
   module: {

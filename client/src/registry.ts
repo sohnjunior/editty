@@ -1,4 +1,4 @@
-import MobileLayout from '@layouts/mobile'
+import MobileLayout from '@templates/mobile'
 import Button from '@atoms/button/button'
 import ColorTile from '@atoms/color-tile/color-tile'
 import Container from '@atoms/container/container'
