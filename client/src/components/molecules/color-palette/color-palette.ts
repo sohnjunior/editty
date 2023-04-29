@@ -58,6 +58,7 @@ export default class VColorPalette extends HTMLElement {
             new CustomEvent('select:color', {
               detail: { value: color },
               bubbles: true,
+              composed: true,
             })
           )
         }

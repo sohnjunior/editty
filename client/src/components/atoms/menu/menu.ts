@@ -107,6 +107,6 @@ export default class VMenu extends HTMLElement {
   }
 
   onClose() {
-    this.dispatchEvent(new CustomEvent('close:menu'))
+    this.dispatchEvent(new CustomEvent('close:menu', { bubbles: true, composed: true }))
   }
 }
