@@ -26,6 +26,7 @@ function waitRAF() {
   return new Promise((resolve) => requestAnimationFrame(resolve))
 }
 
+/** @deprecated document 를 로드한 뒤 data-testid 로 노드를 찾도록 변경해주세요. */
 export function getSlotNodes(target: Element | null, slotName?: string) {
   const selector = slotName ? `slot[name="${slotName}"]` : 'slot'
   const slotElement: HTMLSlotElement | null = target?.shadowRoot?.querySelector(selector) ?? null
@@ -33,6 +34,7 @@ export function getSlotNodes(target: Element | null, slotName?: string) {
   return slotElement?.assignedNodes() ?? []
 }
 
+/** @deprecated document 를 로드한 뒤 data-testid 로 노드를 찾도록 변경해주세요. */
 export function getSlotElements(target: Element | null, slotName?: string) {
   const selector = slotName ? `slot[name="${slotName}"]` : 'slot'
   const slotElement: HTMLSlotElement | null = target?.shadowRoot?.querySelector(selector) ?? null
