@@ -17,7 +17,7 @@ template.innerHTML = `
       z-index: ${Z_INDEX.MENU_LAYER};
     }
 
-    :host .history-container {
+    :host .history-toolbox {
       position: fixed;
       right: 20px;
       bottom: 40px;
@@ -30,7 +30,7 @@ template.innerHTML = `
       <v-canvas-container></v-canvas-container>
       <v-input-container class="input-container"></v-input-container>
       <v-draw-toolbox class="draw-toolbox"></v-draw-toolbox>
-      <v-history-container class="history-container"></v-history-container>
+      <v-history-toolbox class="history-toolbox"></v-history-toolbox>
     </main>
   </v-mobile-layout>
 `
