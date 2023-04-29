@@ -12,9 +12,14 @@ export function getTemplateRootElement<T>(element: HTMLElement) {
 
 /** 대상 web component 의 initStyle 훅에서 설정된 스타일값을 가져옵니다.  */
 export async function getInitialStyle(element: HTMLElement) {
-  await waitRAF()
+  await waitWCStyleInit()
 
   return element.style
+}
+
+/** web component initial style 이 적용되는 것을 기다립니다. */
+export async function waitWCStyleInit() {
+  await waitRAF()
 }
 
 function waitRAF() {
