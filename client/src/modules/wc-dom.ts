@@ -25,3 +25,17 @@ export async function waitWCStyleInit() {
 function waitRAF() {
   return new Promise((resolve) => requestAnimationFrame(resolve))
 }
+
+export function getSlotNodes(target: Element | null, slotName?: string) {
+  const selector = slotName ? `slot[name="${slotName}"]` : 'slot'
+  const slotElement: HTMLSlotElement | null = target?.shadowRoot?.querySelector(selector) ?? null
+
+  return slotElement?.assignedNodes() ?? []
+}
+
+export function getSlotElements(target: Element | null, slotName?: string) {
+  const selector = slotName ? `slot[name="${slotName}"]` : 'slot'
+  const slotElement: HTMLSlotElement | null = target?.shadowRoot?.querySelector(selector) ?? null
+
+  return slotElement?.assignedElements() ?? []
+}

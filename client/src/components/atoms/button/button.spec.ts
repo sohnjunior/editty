@@ -1,5 +1,5 @@
 import Button from './button'
-import { getSlotNodes } from '@/utils/dom'
+import { getSlotNodes } from '@/modules/wc-dom'
 
 describe('button', () => {
   beforeAll(() => {

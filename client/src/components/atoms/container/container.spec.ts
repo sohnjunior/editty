@@ -1,5 +1,5 @@
 import Container from './container'
-import { getSlotElements } from '@/utils/dom'
+import { getSlotElements } from '@/modules/wc-dom'
 
 describe('container', () => {
   beforeAll(() => {
