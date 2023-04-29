@@ -42,6 +42,10 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     return CanvasContext.state.snapshots
   }
 
+  get pencilColor() {
+    return CanvasContext.state.pencilColor
+  }
+
   get isActivePhase() {
     return ['draw', 'erase'].includes(this.phase)
   }
@@ -110,6 +114,12 @@ export default class VCanvasDrawingLayer extends HTMLElement {
           }
         },
       })
+      CanvasContext.subscribe({
+        action: 'SET_PENCIL_COLOR',
+        effect: (context) => {
+          this.context.strokeStyle = context.state.pencilColor
+        },
+      })
     }
 
     const subscribeEventBus = () => {
@@ -142,7 +152,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     const setupLineStyle = () => {
       this.context.lineWidth = 10
       this.context.lineCap = 'round'
-      this.context.strokeStyle = getComputedStyle(this.$canvas).getPropertyValue('--color-primary')
+      this.context.strokeStyle = this.pencilColor
     }
 
     const setupSnapshots = () => {
