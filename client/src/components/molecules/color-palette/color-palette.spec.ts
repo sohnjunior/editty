@@ -15,8 +15,6 @@ describe('color-palette', () => {
   })
 
   it('should propagate selected color', async () => {
-    const user = userEvent.setup()
-
     document.body.innerHTML = `
       <v-color-palette data-testid="color-palette"></v-color-palette>
     `
@@ -33,6 +31,7 @@ describe('color-palette', () => {
     })
     colorPaletteElement.addEventListener('select:color', mockListener)
 
+    const user = userEvent.setup()
     await user.click(colorTileElement)
 
     expect(selectedColor).toBe('golden-sand')
