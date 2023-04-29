@@ -1,0 +1,54 @@
+import ColorTile from './color-tile'
+import { screen } from '@testing-library/dom'
+import { getTemplateRootElement, getInitialStyle } from '@/modules/wc-dom'
+
+describe('color-tile', () => {
+  beforeAll(() => {
+    customElements.define(ColorTile.tag, ColorTile)
+  })
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('should has default size', async () => {
+    document.body.innerHTML = `
+      <v-color-tile data-testid="color-tile" color="anakiwa"></v-color-tile>
+    `
+
+    const colorTile = screen.getByTestId('color-tile')
+    const rootElement = getTemplateRootElement<HTMLDivElement>(colorTile)
+
+    const style = await getInitialStyle(rootElement)
+
+    expect(style.width).toBe('10px')
+    expect(style.height).toBe('10px')
+  })
+
+  it('should accept color attribute', () => {
+    const color = {
+      name: 'anakiwa',
+      rgb: 'rgb(142, 202, 230)',
+    }
+
+    document.body.innerHTML = `
+      <v-color-tile data-testid="color-tile" color="${color.name}"></v-color-tile>
+    `
+
+    const colorTile = screen.getByTestId('color-tile') as ColorTile
+    const rootElement = getTemplateRootElement<HTMLDivElement>(colorTile)
+
+    expect(rootElement.style.backgroundColor).toBe(color.rgb)
+  })
+
+  it('should accept size attribute', () => {
+    document.body.innerHTML = `
+      <v-color-tile data-testid="color-tile" color="anakiwa" size="20px"></v-color-tile>
+    `
+
+    const colorTile = screen.getByTestId('color-tile')
+    const rootElement = getTemplateRootElement<HTMLDivElement>(colorTile)
+
+    expect(rootElement.style.width).toBe('20px')
+    expect(rootElement.style.height).toBe('20px')
+  })
+})
