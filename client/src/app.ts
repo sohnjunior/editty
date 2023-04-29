@@ -10,11 +10,11 @@ template.innerHTML = `
       z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
-    :host .control-container {
+    :host .draw-toolbox {
       position: fixed;
       left: 20px;
       bottom: 40px;
-      z-index: ${Z_INDEX.ACTION_LAYER};
+      z-index: ${Z_INDEX.MENU_LAYER};
     }
 
     :host .history-container {
@@ -29,7 +29,7 @@ template.innerHTML = `
     <main slot="main">
       <v-canvas-container></v-canvas-container>
       <v-input-container class="input-container"></v-input-container>
-      <v-control-container class="control-container"></v-control-container>
+      <v-draw-toolbox class="draw-toolbox"></v-draw-toolbox>
       <v-history-container class="history-container"></v-history-container>
     </main>
   </v-mobile-layout>
