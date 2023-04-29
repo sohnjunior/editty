@@ -1,11 +1,13 @@
 import { Context } from '@/contexts/common/context'
 import type { Reducer } from '@/contexts/common/context'
 import { Phase } from './types'
+import { PALETTE_COLORS } from '@/utils/constant'
 
 type State = {
   phase: Phase
   snapshots: ImageData[]
   stash: ImageData[]
+  pencilColor: string
 }
 
 type Action =
@@ -14,11 +16,13 @@ type Action =
   | { action: 'HISTORY_BACK' }
   | { action: 'HISTORY_FORWARD' }
   | { action: 'CLEAR_ALL' }
+  | { action: 'SET_PENCIL_COLOR'; data: State['pencilColor'] }
 
 const initState: State = {
   phase: 'draw',
   snapshots: [],
   stash: [],
+  pencilColor: PALETTE_COLORS['teal-blue'],
 }
 
 const reducer: Reducer<State, Action> = ({ state, payload }) => {
@@ -54,6 +58,9 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
     }
     case 'CLEAR_ALL': {
       return { ...state, snapshots: [], stash: [] }
+    }
+    case 'SET_PENCIL_COLOR': {
+      return { ...state, pencilColor: PALETTE_COLORS[payload.data] }
     }
     default:
       return { ...state }

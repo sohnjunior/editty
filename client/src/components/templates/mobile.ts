@@ -8,7 +8,7 @@ template.innerHTML = `
     }
 
     ::slotted([slot="main"]) {
-      max-width: 780px;
+      max-width: 1024px;
       height: 100%;
       margin: 0 auto;
     }

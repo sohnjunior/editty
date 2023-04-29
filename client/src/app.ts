@@ -3,21 +3,21 @@ import { Z_INDEX } from '@/utils/constant'
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host .input-container {
+    :host v-input-container {
       position: fixed;
       top: 20px;
       left: 20px;
       z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
-    :host .control-container {
+    :host v-draw-toolbox {
       position: fixed;
       left: 20px;
       bottom: 40px;
-      z-index: ${Z_INDEX.ACTION_LAYER};
+      z-index: ${Z_INDEX.MENU_LAYER};
     }
 
-    :host .history-container {
+    :host v-history-toolbox {
       position: fixed;
       right: 20px;
       bottom: 40px;
@@ -28,9 +28,9 @@ template.innerHTML = `
   <v-mobile-layout>
     <main slot="main">
       <v-canvas-container></v-canvas-container>
-      <v-input-container class="input-container"></v-input-container>
-      <v-control-container class="control-container"></v-control-container>
-      <v-history-container class="history-container"></v-history-container>
+      <v-input-container></v-input-container>
+      <v-draw-toolbox></v-draw-toolbox>
+      <v-history-toolbox></v-history-toolbox>
     </main>
   </v-mobile-layout>
 `

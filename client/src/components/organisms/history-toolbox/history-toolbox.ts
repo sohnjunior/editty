@@ -16,10 +16,10 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VHistoryContainer extends HTMLElement {
+export default class VHistoryToolbox extends HTMLElement {
   private $root!: ShadowRoot
 
-  static tag = 'v-history-container'
+  static tag = 'v-history-toolbox'
 
   constructor() {
     const initShadowRoot = () => {

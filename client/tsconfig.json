@@ -19,7 +19,7 @@
       "@atoms/*": ["src/components/atoms/*"],
       "@molecules/*": ["src/components/molecules/*"],
       "@organisms/*": ["src/components/organisms/*"],
-      "@layouts/*": ["src/components/layouts/*"]
+      "@templates/*": ["src/components/templates/*"]
     }
   },
   "include": ["src"],
