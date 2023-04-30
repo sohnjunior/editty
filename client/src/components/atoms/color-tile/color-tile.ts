@@ -17,7 +17,6 @@ template.innerHTML = `
 
 export default class VColorTile extends VComponent {
   static tag = 'v-color-tile'
-  public $div!: HTMLDivElement
 
   static get observedAttributes() {
     return ['color', 'size']
@@ -34,17 +33,7 @@ export default class VColorTile extends VComponent {
   }
 
   constructor() {
-    const initInnerElement = () => {
-      const $div = this.$shadow.querySelector('div')
-      if (!$div) {
-        throw new Error('initialize fail')
-      }
-
-      this.$div = $div as HTMLDivElement
-    }
-
     super(template)
-    initInnerElement()
   }
 
   connectedCallback() {
@@ -70,11 +59,11 @@ export default class VColorTile extends VComponent {
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'color':
-        this.$div.style.backgroundColor = PALETTE_COLORS[value]
+        this.$root.style.backgroundColor = PALETTE_COLORS[value]
         break
       case 'size':
-        this.$div.style.width = value
-        this.$div.style.height = value
+        this.$root.style.width = value
+        this.$root.style.height = value
         break
     }
   }

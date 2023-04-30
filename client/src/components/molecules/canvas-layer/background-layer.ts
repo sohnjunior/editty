@@ -15,9 +15,8 @@ template.innerHTML = `
   <canvas id="background-layer"></canvas>
 `
 
-export default class VCanvasBackgroundLayer extends VComponent {
+export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-background-layer'
-  private $canvas!: HTMLCanvasElement
 
   static get observedAttributes() {
     return ['color']
@@ -28,16 +27,7 @@ export default class VCanvasBackgroundLayer extends VComponent {
   }
 
   constructor() {
-    const initCanvas = () => {
-      this.$canvas = this.$shadow.getElementById('background-layer') as HTMLCanvasElement
-      const ctx = this.$canvas.getContext('2d')
-      if (!ctx) {
-        throw new Error('🚨 canvas load fail')
-      }
-    }
-
     super(template)
-    initCanvas()
   }
 
   connectedCallback() {
@@ -45,11 +35,11 @@ export default class VCanvasBackgroundLayer extends VComponent {
       const { colorAttribute } = this
 
       if (colorAttribute) {
-        fillBackgroundColor(this.$canvas, colorAttribute)
+        fillBackgroundColor(this.$root, colorAttribute)
       }
     }
 
-    refineCanvasRatio(this.$canvas)
+    refineCanvasRatio(this.$root)
     requestAnimationFrame(initStyle)
   }
 
@@ -60,7 +50,7 @@ export default class VCanvasBackgroundLayer extends VComponent {
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'color': {
-        fillBackgroundColor(this.$canvas, value)
+        fillBackgroundColor(this.$root, value)
         break
       }
     }

@@ -24,25 +24,14 @@ template.innerHTML = `
 
 export default class VColorPalette extends VComponent {
   static tag = 'v-color-palette'
-  private $div!: HTMLElement
 
   constructor() {
-    const initInnerElement = () => {
-      const $div = this.$shadow.querySelector('div.palette')
-      if (!$div) {
-        throw new Error('initialize fail')
-      }
-
-      this.$div = $div as HTMLElement
-    }
-
     super(template)
-    initInnerElement()
   }
 
   connectedCallback() {
     const initEvents = () => {
-      this.$div.addEventListener('click', (ev) => {
+      this.$root.addEventListener('click', (ev) => {
         const tagName = (ev.target as HTMLElement).tagName
         if (tagName === 'V-COLOR-TILE') {
           const color = (ev.target as VColorTile).colorAttribute

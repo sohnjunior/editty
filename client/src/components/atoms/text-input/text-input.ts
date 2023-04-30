@@ -16,16 +16,15 @@ template.innerHTML = `
   <input type="text" />
 `
 
-export default class VTextInput extends VComponent {
+export default class VTextInput extends VComponent<HTMLInputElement> {
   static tag = 'v-text-input'
-  private $input!: HTMLInputElement
 
   static get observedAttributes() {
     return ['placeholder']
   }
 
   get value() {
-    return this.$input.value
+    return this.$root.value
   }
 
   get placeHolderAttribute() {
@@ -33,22 +32,12 @@ export default class VTextInput extends VComponent {
   }
 
   constructor() {
-    const initInnerElement = () => {
-      const $input = this.$shadow.querySelector('input[type="text"]')
-      if (!$input) {
-        throw new Error('initialize fail')
-      }
-
-      this.$input = $input as HTMLInputElement
-    }
-
     super(template)
-    initInnerElement()
   }
 
   connectedCallback() {
     const initEvents = () => {
-      this.$input.addEventListener('input', (e) => {
+      this.$root.addEventListener('input', (e) => {
         this.dispatchEvent(
           new CustomEvent('change', {
             detail: { value: (e.target as HTMLInputElement).value },
@@ -67,7 +56,7 @@ export default class VTextInput extends VComponent {
   updateAttribute({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'placeholder':
-        this.$input.placeholder = value
+        this.$root.placeholder = value
     }
   }
 }

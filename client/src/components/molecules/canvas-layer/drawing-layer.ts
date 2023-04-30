@@ -26,9 +26,8 @@ template.innerHTML = `
   <canvas id="drawing-layer"></canvas>
 `
 
-export default class VCanvasDrawingLayer extends VComponent {
+export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-drawing-layer'
-  private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private points: Point[] = []
   private isDrawing = false
@@ -50,9 +49,8 @@ export default class VCanvasDrawingLayer extends VComponent {
   }
 
   constructor() {
-    const initCanvas = () => {
-      this.$canvas = this.$shadow.getElementById('drawing-layer') as HTMLCanvasElement
-      const ctx = this.$canvas.getContext('2d')
+    const initCanvasContext = () => {
+      const ctx = this.$root.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')
       }
@@ -60,7 +58,7 @@ export default class VCanvasDrawingLayer extends VComponent {
     }
 
     super(template)
-    initCanvas()
+    initCanvasContext()
   }
 
   connectedCallback() {
@@ -89,9 +87,9 @@ export default class VCanvasDrawingLayer extends VComponent {
           const snapshot = lastOf(context.state.snapshots)
 
           if (snapshot) {
-            reflectSnapshot(this.$canvas, snapshot)
+            reflectSnapshot(this.$root, snapshot)
           } else {
-            clearCanvas(this.$canvas)
+            clearCanvas(this.$root)
           }
         },
       })
@@ -101,9 +99,9 @@ export default class VCanvasDrawingLayer extends VComponent {
           const snapshot = lastOf(context.state.snapshots)
 
           if (snapshot) {
-            reflectSnapshot(this.$canvas, snapshot)
+            reflectSnapshot(this.$root, snapshot)
           } else {
-            clearCanvas(this.$canvas)
+            clearCanvas(this.$root)
           }
         },
       })
@@ -117,13 +115,13 @@ export default class VCanvasDrawingLayer extends VComponent {
 
     const subscribeEventBus = () => {
       EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
-        clearCanvas(this.$canvas)
+        clearCanvas(this.$root)
         CanvasContext.dispatch({ action: 'CLEAR_ALL' })
       })
     }
 
     initEvents()
-    refineCanvasRatio(this.$canvas)
+    refineCanvasRatio(this.$root)
     subscribeContext()
     subscribeEventBus()
   }
@@ -150,7 +148,7 @@ export default class VCanvasDrawingLayer extends VComponent {
 
     const setupSnapshots = () => {
       if (this.snapshots.length > 0) {
-        this.snapshots.forEach((snapshot) => reflectSnapshot(this.$canvas, snapshot))
+        this.snapshots.forEach((snapshot) => reflectSnapshot(this.$root, snapshot))
       }
     }
 
@@ -170,7 +168,7 @@ export default class VCanvasDrawingLayer extends VComponent {
         return
       }
 
-      const snapshot = takeSnapshot(this.$canvas)
+      const snapshot = takeSnapshot(this.$root)
       if (snapshot) {
         CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
       }
@@ -193,7 +191,7 @@ export default class VCanvasDrawingLayer extends VComponent {
     e.preventDefault()
 
     const trackTouchPoint = () => {
-      const { x, y } = getSyntheticTouchPoint(this.$canvas, e)
+      const { x, y } = getSyntheticTouchPoint(this.$root, e)
       this.points.push({ x, y })
     }
 

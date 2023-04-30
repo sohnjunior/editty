@@ -9,7 +9,6 @@ template.innerHTML = `
 
 export default class VDrawOptionMenu extends VComponent {
   static tag = 'v-color-menu'
-  private $menu!: HTMLElement
 
   static get observedAttributes() {
     return ['open']
@@ -20,22 +19,12 @@ export default class VDrawOptionMenu extends VComponent {
   }
 
   constructor() {
-    const initInnerElement = () => {
-      const $menu = this.$shadow.querySelector('v-menu')
-      if (!$menu) {
-        throw new Error('initialize fail')
-      }
-
-      this.$menu = $menu as HTMLElement
-    }
-
     super(template)
-    initInnerElement()
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === 'open') {
-      this.$menu.setAttribute('open', newValue)
+      this.$root.setAttribute('open', newValue)
     }
   }
 }

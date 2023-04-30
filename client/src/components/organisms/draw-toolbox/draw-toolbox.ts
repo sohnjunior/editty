@@ -37,7 +37,6 @@ template.innerHTML = `
 
 export default class VDrawToolbox extends VComponent {
   static tag = 'v-draw-toolbox'
-  private $container!: HTMLElement
   private $selectRef?: HTMLElement
   private $colorMenu!: HTMLElement
 
@@ -47,13 +46,11 @@ export default class VDrawToolbox extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $container = this.$shadow.querySelector('v-container')
       const $colorMenu = this.$shadow.querySelector('v-color-menu')
-      if (!$container || !$colorMenu) {
+      if (!$colorMenu) {
         throw new Error('initialize fail')
       }
 
-      this.$container = $container as HTMLElement
       this.$colorMenu = $colorMenu as HTMLElement
     }
     const initSelectedOption = () => {
@@ -67,7 +64,7 @@ export default class VDrawToolbox extends VComponent {
 
   connectedCallback() {
     const initEvents = () => {
-      this.$container.addEventListener('click', this.handleClickOption.bind(this))
+      this.$root.addEventListener('click', this.handleClickOption.bind(this))
       this.$colorMenu.addEventListener('select:color', this.handleChangePencilColor.bind(this))
       this.$colorMenu.addEventListener('close:menu', this.handleCloseDrawOptionMenu.bind(this))
     }

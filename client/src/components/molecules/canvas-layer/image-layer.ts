@@ -38,9 +38,8 @@ template.innerHTML = `
   <canvas id="image-layer"></canvas>
 `
 
-export default class VCanvasImageLayer extends VComponent {
+export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
-  private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private images: ImageObject[] = []
   private dragged: { index: number; target: DragTarget | null } = { index: -1, target: null }
@@ -57,9 +56,8 @@ export default class VCanvasImageLayer extends VComponent {
   }
 
   constructor() {
-    const initCanvas = () => {
-      this.$canvas = this.$shadow.getElementById('image-layer') as HTMLCanvasElement
-      const ctx = this.$canvas.getContext('2d')
+    const initCanvasContext = () => {
+      const ctx = this.$root.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')
       }
@@ -67,7 +65,7 @@ export default class VCanvasImageLayer extends VComponent {
     }
 
     super(template)
-    initCanvas()
+    initCanvasContext()
   }
 
   connectedCallback() {
@@ -76,7 +74,7 @@ export default class VCanvasImageLayer extends VComponent {
         const jobs = dataUrls.map(async (dataUrl) => {
           const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
           const rescaled = refineImageScale(
-            { ref: this.$canvas },
+            { ref: this.$root },
             { width: image.width, height: image.height }
           )
 
@@ -103,7 +101,7 @@ export default class VCanvasImageLayer extends VComponent {
       EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
     }
 
-    refineCanvasRatio(this.$canvas)
+    refineCanvasRatio(this.$root)
     subscribeEventBus()
   }
 
@@ -189,7 +187,7 @@ export default class VCanvasImageLayer extends VComponent {
       })
     }
 
-    const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
 
     const imageIndex = findTouchedImage(touchPoint)
     const anchor = findTouchedAnchor(touchPoint)
@@ -209,7 +207,7 @@ export default class VCanvasImageLayer extends VComponent {
 
   hover(ev: MouseEvent | TouchEvent) {
     if (this.focused) {
-      const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+      const touchPoint = getSyntheticTouchPoint(this.$root, ev)
 
       const anchor = findAnchorInPath({
         context: this.context,
@@ -241,7 +239,7 @@ export default class VCanvasImageLayer extends VComponent {
       return
     }
 
-    const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+    const { x, y } = getSyntheticTouchPoint(this.$root, ev)
     const dx = x - this.dragged.target.sx
     const dy = y - this.dragged.target.sy
 
@@ -258,7 +256,7 @@ export default class VCanvasImageLayer extends VComponent {
       return
     }
 
-    const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
     const image = this.images[this.focused.index]
 
     const resizedBoundingRect = resizeRect({
@@ -279,7 +277,7 @@ export default class VCanvasImageLayer extends VComponent {
   }
 
   private paintImages() {
-    clearCanvas(this.$canvas)
+    clearCanvas(this.$root)
 
     this.images.forEach(({ ref, sx, sy, width, height }) => {
       if (ref) {

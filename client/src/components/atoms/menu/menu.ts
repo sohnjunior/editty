@@ -9,7 +9,6 @@ template.innerHTML = `
 
 export default class VMenu extends VComponent {
   static tag = 'v-menu'
-  private $container!: HTMLElement
 
   static get observedAttributes() {
     return ['open', 'width']
@@ -24,17 +23,7 @@ export default class VMenu extends VComponent {
   }
 
   constructor() {
-    const initInnerElement = () => {
-      const $container = this.$shadow.querySelector('v-container')
-      if (!$container) {
-        throw new Error('initialize fail')
-      }
-
-      this.$container = $container as HTMLElement
-    }
-
     super(template)
-    initInnerElement()
   }
 
   connectedCallback() {
@@ -67,16 +56,16 @@ export default class VMenu extends VComponent {
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'width':
-        this.$container.style.maxWidth = value
+        this.$root.style.maxWidth = value
         break
     }
   }
 
   setVisibility(open: string) {
     if (open === 'true') {
-      this.$container.style.display = 'block'
+      this.$root.style.display = 'block'
     } else {
-      this.$container.style.display = 'none'
+      this.$root.style.display = 'none'
     }
   }
 
@@ -85,13 +74,13 @@ export default class VMenu extends VComponent {
     const onCloseHandler = this.onClose.bind(this)
 
     if (open === 'true') {
-      this.$container.addEventListener('click', onTriggerHandler)
+      this.$root.addEventListener('click', onTriggerHandler)
       /** HACK: document event listener 가 attribute update 이후에 추가되도록 rAF 활용 */
       requestAnimationFrame(() =>
         document.addEventListener('click', onCloseHandler, { once: true })
       )
     } else {
-      this.$container.removeEventListener('click', onTriggerHandler)
+      this.$root.removeEventListener('click', onTriggerHandler)
       document.removeEventListener('click', onCloseHandler)
     }
   }
