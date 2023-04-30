@@ -29,7 +29,7 @@ export default class VCanvasBackgroundLayer extends VComponent {
 
   constructor() {
     const initCanvas = () => {
-      this.$canvas = this.$root.getElementById('background-layer') as HTMLCanvasElement
+      this.$canvas = this.$shadow.getElementById('background-layer') as HTMLCanvasElement
       const ctx = this.$canvas.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')

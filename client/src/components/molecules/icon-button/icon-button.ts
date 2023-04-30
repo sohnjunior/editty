@@ -69,7 +69,7 @@ export default class VIconButton extends VComponent {
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
-    const $icon = this.$root.querySelector('v-icon')
+    const $icon = this.$shadow.querySelector('v-icon')
     if (!$icon) {
       return
     }

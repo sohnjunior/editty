@@ -25,7 +25,7 @@ export default class VMenu extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $container = this.$root.querySelector('v-container')
+      const $container = this.$shadow.querySelector('v-container')
       if (!$container) {
         throw new Error('initialize fail')
       }

@@ -26,7 +26,7 @@ export default class VHistoryToolbox extends VComponent {
 
   connectedCallback() {
     const initEvents = () => {
-      const $container = this.$root.querySelector('v-container')
+      const $container = this.$shadow.querySelector('v-container')
 
       $container?.addEventListener('click', (e) => {
         const $target = e.target as HTMLElement

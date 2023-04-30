@@ -19,12 +19,6 @@ export default class VInputContainer extends VComponent {
   static tag = 'v-input-container'
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     super(template)
-    initShadowRoot()
   }
 }

@@ -35,7 +35,7 @@ export default class VColorTile extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $div = this.$root.querySelector('div')
+      const $div = this.$shadow.querySelector('div')
       if (!$div) {
         throw new Error('initialize fail')
       }

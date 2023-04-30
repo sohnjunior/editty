@@ -21,7 +21,7 @@ export default class VDrawOptionMenu extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $menu = this.$root.querySelector('v-menu')
+      const $menu = this.$shadow.querySelector('v-menu')
       if (!$menu) {
         throw new Error('initialize fail')
       }

@@ -47,8 +47,8 @@ export default class VDrawToolbox extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $container = this.$root.querySelector('v-container')
-      const $colorMenu = this.$root.querySelector('v-color-menu')
+      const $container = this.$shadow.querySelector('v-container')
+      const $colorMenu = this.$shadow.querySelector('v-color-menu')
       if (!$container || !$colorMenu) {
         throw new Error('initialize fail')
       }
@@ -137,7 +137,7 @@ export default class VDrawToolbox extends VComponent {
   }
 
   toggleOption(type: Phase) {
-    const $target = this.$root.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
+    const $target = this.$shadow.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
 
     if (this.$selectRef) {
       this.$selectRef.dataset.selected = 'false'

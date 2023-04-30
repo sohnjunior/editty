@@ -30,7 +30,7 @@ export default class VButton extends VComponent {
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     switch (name) {
       case 'color': {
-        const $button = this.$root.querySelector('button')
+        const $button = this.$shadow.querySelector('button')
         $button && ($button.style.color = newValue)
       }
     }

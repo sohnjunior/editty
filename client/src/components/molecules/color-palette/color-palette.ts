@@ -28,7 +28,7 @@ export default class VColorPalette extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $div = this.$root.querySelector('div.palette')
+      const $div = this.$shadow.querySelector('div.palette')
       if (!$div) {
         throw new Error('initialize fail')
       }

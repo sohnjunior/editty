@@ -51,7 +51,7 @@ export default class VCanvasDrawingLayer extends VComponent {
 
   constructor() {
     const initCanvas = () => {
-      this.$canvas = this.$root.getElementById('drawing-layer') as HTMLCanvasElement
+      this.$canvas = this.$shadow.getElementById('drawing-layer') as HTMLCanvasElement
       const ctx = this.$canvas.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')

@@ -64,6 +64,7 @@ template.innerHTML = `
 
 export default class VIcon extends VComponent {
   static tag = 'v-icon'
+  private $div!: HTMLElement
 
   static get observedAttributes() {
     return ['icon', 'size']
@@ -78,7 +79,17 @@ export default class VIcon extends VComponent {
   }
 
   constructor() {
+    const initInnerElement = () => {
+      const $div = this.$shadow.querySelector('div')
+      if (!$div) {
+        throw new Error('initialize fail')
+      }
+
+      this.$div = $div as HTMLElement
+    }
+
     super(template)
+    initInnerElement()
   }
 
   connectedCallback() {
@@ -100,23 +111,17 @@ export default class VIcon extends VComponent {
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
-    const $icon = this.$root.querySelector('div')
-
-    if (!$icon) {
-      return
-    }
-
     switch (attribute) {
       case 'icon': {
         if (isIconType(value)) {
-          $icon.style.backgroundImage = ASSET_URL[value]
+          this.$div.style.backgroundImage = ASSET_URL[value]
         }
         break
       }
       case 'size': {
         if (isSizeType(value)) {
-          $icon.style.width = SIZE[value]
-          $icon.style.height = SIZE[value]
+          this.$div.style.width = SIZE[value]
+          this.$div.style.height = SIZE[value]
         }
         break
       }

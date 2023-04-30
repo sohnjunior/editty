@@ -28,8 +28,10 @@ export default class VCanvasContainer extends VComponent {
 
   constructor() {
     const initLayer = () => {
-      const imageLayer = this.$root.querySelector('v-canvas-image-layer') as VCanvasImageLayer
-      const drawingLayer = this.$root.querySelector('v-canvas-drawing-layer') as VCanvasDrawingLayer
+      const imageLayer = this.$shadow.querySelector('v-canvas-image-layer') as VCanvasImageLayer
+      const drawingLayer = this.$shadow.querySelector(
+        'v-canvas-drawing-layer'
+      ) as VCanvasDrawingLayer
 
       if (!imageLayer || !drawingLayer) {
         console.error('🚨 canvas container need drawing and image layer')

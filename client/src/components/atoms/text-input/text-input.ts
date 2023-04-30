@@ -34,7 +34,7 @@ export default class VTextInput extends VComponent {
 
   constructor() {
     const initInnerElement = () => {
-      const $input = this.$root.querySelector('input[type="text"]')
+      const $input = this.$shadow.querySelector('input[type="text"]')
       if (!$input) {
         throw new Error('initialize fail')
       }
