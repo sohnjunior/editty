@@ -1,3 +1,5 @@
+import { VComponent } from '@/modules/v-component'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <v-menu width="200px">
@@ -5,11 +7,9 @@ template.innerHTML = `
   </v-menu>
 `
 
-export default class VDrawOptionMenu extends HTMLElement {
-  private $root!: ShadowRoot
-  private $menu!: HTMLElement
-
+export default class VDrawOptionMenu extends VComponent {
   static tag = 'v-color-menu'
+  private $menu!: HTMLElement
 
   static get observedAttributes() {
     return ['open']
@@ -20,11 +20,6 @@ export default class VDrawOptionMenu extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initInnerElement = () => {
       const $menu = this.$root.querySelector('v-menu')
       if (!$menu) {
@@ -34,8 +29,7 @@ export default class VDrawOptionMenu extends HTMLElement {
       this.$menu = $menu as HTMLElement
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initInnerElement()
   }
 

@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
 import { fillBackgroundColor, refineCanvasRatio } from '@/modules/canvas.utils'
 
@@ -14,11 +15,9 @@ template.innerHTML = `
   <canvas id="background-layer"></canvas>
 `
 
-export default class VCanvasBackgroundLayer extends HTMLElement {
-  private $root!: ShadowRoot
-  private $canvas!: HTMLCanvasElement
-
+export default class VCanvasBackgroundLayer extends VComponent {
   static tag = 'v-canvas-background-layer'
+  private $canvas!: HTMLCanvasElement
 
   static get observedAttributes() {
     return ['color']
@@ -29,11 +28,6 @@ export default class VCanvasBackgroundLayer extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initCanvas = () => {
       this.$canvas = this.$root.getElementById('background-layer') as HTMLCanvasElement
       const ctx = this.$canvas.getContext('2d')
@@ -42,8 +36,7 @@ export default class VCanvasBackgroundLayer extends HTMLElement {
       }
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initCanvas()
   }
 

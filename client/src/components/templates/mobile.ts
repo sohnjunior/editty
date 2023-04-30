@@ -1,3 +1,5 @@
+import { VComponent } from '@/modules/v-component'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -16,14 +18,10 @@ template.innerHTML = `
   <slot name="main">main</slot>
 `
 
-export default class MobileTemplate extends HTMLElement {
-  private $root: ShadowRoot
-
+export default class MobileTemplate extends VComponent {
   static tag = 'v-mobile-layout'
 
   constructor() {
-    super()
-    this.$root = this.attachShadow({ mode: 'open' })
-    this.$root.appendChild(template.content.cloneNode(true))
+    super(template)
   }
 }

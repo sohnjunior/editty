@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { isIconType, isSizeType } from '@atoms/icon/icon'
 import type { Icon as BaseIcon, Size as BaseSize } from '@atoms/icon/icon'
 
@@ -35,9 +36,7 @@ template.innerHTML = `
   </button>
 `
 
-export default class VIconButton extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class VIconButton extends VComponent {
   static tag = 'v-icon-button'
   static get observedAttributes() {
     return ['icon', 'size']
@@ -52,13 +51,7 @@ export default class VIconButton extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 
   connectedCallback() {

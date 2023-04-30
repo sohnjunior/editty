@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { CanvasContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
@@ -37,8 +38,8 @@ template.innerHTML = `
   <canvas id="image-layer"></canvas>
 `
 
-export default class VCanvasImageLayer extends HTMLElement {
-  private $root!: ShadowRoot
+export default class VCanvasImageLayer extends VComponent {
+  static tag = 'v-canvas-image-layer'
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private images: ImageObject[] = []
@@ -46,8 +47,6 @@ export default class VCanvasImageLayer extends HTMLElement {
   private focused: { index: number; anchors: Anchor[] } | null = null
   private transformType: Anchor['type'] | null = null
   private isPressed = false
-
-  static tag = 'v-canvas-image-layer'
 
   get phase() {
     return CanvasContext.state.phase
@@ -58,11 +57,6 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initCanvas = () => {
       this.$canvas = this.$root.getElementById('image-layer') as HTMLCanvasElement
       const ctx = this.$canvas.getContext('2d')
@@ -72,8 +66,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       this.context = ctx
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initCanvas()
   }
 

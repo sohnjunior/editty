@@ -1,3 +1,5 @@
+import { VComponent } from '@/modules/v-component'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <v-container class="menu">
@@ -5,11 +7,9 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VMenu extends HTMLElement {
-  private $root!: ShadowRoot
-  private $container!: HTMLElement
-
+export default class VMenu extends VComponent {
   static tag = 'v-menu'
+  private $container!: HTMLElement
 
   static get observedAttributes() {
     return ['open', 'width']
@@ -24,11 +24,6 @@ export default class VMenu extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initInnerElement = () => {
       const $container = this.$root.querySelector('v-container')
       if (!$container) {
@@ -38,8 +33,7 @@ export default class VMenu extends HTMLElement {
       this.$container = $container as HTMLElement
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initInnerElement()
   }
 

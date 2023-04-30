@@ -1,3 +1,5 @@
+import { VComponent } from '@/modules/v-component'
+
 const icon = [
   'cursor',
   'draw',
@@ -60,9 +62,7 @@ template.innerHTML = `
   <div></div>
 `
 
-export default class VIcon extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class VIcon extends VComponent {
   static tag = 'v-icon'
 
   static get observedAttributes() {
@@ -78,13 +78,7 @@ export default class VIcon extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 
   connectedCallback() {

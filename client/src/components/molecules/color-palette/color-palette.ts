@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import VColorTile from '@atoms/color-tile/color-tile'
 import { PALETTE_COLORS } from '@/utils/constant'
 
@@ -21,18 +22,11 @@ template.innerHTML = `
   </div>
 `
 
-export default class VColorPalette extends HTMLElement {
+export default class VColorPalette extends VComponent {
   static tag = 'v-color-palette'
-
-  private $root!: ShadowRoot
   private $div!: HTMLElement
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initInnerElement = () => {
       const $div = this.$root.querySelector('div.palette')
       if (!$div) {
@@ -42,8 +36,7 @@ export default class VColorPalette extends HTMLElement {
       this.$div = $div as HTMLElement
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initInnerElement()
   }
 

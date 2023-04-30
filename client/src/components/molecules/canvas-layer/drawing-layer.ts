@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
 import { CanvasContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -25,14 +26,12 @@ template.innerHTML = `
   <canvas id="drawing-layer"></canvas>
 `
 
-export default class VCanvasDrawingLayer extends HTMLElement {
-  private $root!: ShadowRoot
+export default class VCanvasDrawingLayer extends VComponent {
+  static tag = 'v-canvas-drawing-layer'
   private $canvas!: HTMLCanvasElement
   private context!: CanvasRenderingContext2D
   private points: Point[] = []
   private isDrawing = false
-
-  static tag = 'v-canvas-drawing-layer'
 
   get phase() {
     return CanvasContext.state.phase
@@ -51,11 +50,6 @@ export default class VCanvasDrawingLayer extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initCanvas = () => {
       this.$canvas = this.$root.getElementById('drawing-layer') as HTMLCanvasElement
       const ctx = this.$canvas.getContext('2d')
@@ -65,8 +59,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
       this.context = ctx
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initCanvas()
   }
 

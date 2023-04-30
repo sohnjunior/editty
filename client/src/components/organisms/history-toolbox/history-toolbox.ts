@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { CanvasContext } from '@/contexts/canvas-context/context'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
@@ -16,19 +17,11 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VHistoryToolbox extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class VHistoryToolbox extends VComponent {
   static tag = 'v-history-toolbox'
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 
   connectedCallback() {

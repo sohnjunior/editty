@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
 
@@ -20,19 +21,12 @@ template.innerHTML = `
   </div>
 `
 
-export default class VCanvasContainer extends HTMLElement {
-  private $root!: ShadowRoot
+export default class VCanvasContainer extends VComponent {
+  static tag = 'v-canvas-container'
   private imageLayer!: VCanvasImageLayer
   private drawingLayer!: VCanvasDrawingLayer
 
-  static tag = 'v-canvas-container'
-
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
     const initLayer = () => {
       const imageLayer = this.$root.querySelector('v-canvas-image-layer') as VCanvasImageLayer
       const drawingLayer = this.$root.querySelector('v-canvas-drawing-layer') as VCanvasDrawingLayer
@@ -46,8 +40,7 @@ export default class VCanvasContainer extends HTMLElement {
       this.drawingLayer = drawingLayer
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initLayer()
   }
 

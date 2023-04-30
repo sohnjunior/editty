@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { CanvasContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
@@ -34,23 +35,17 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VDrawToolbox extends HTMLElement {
-  private $root!: ShadowRoot
+export default class VDrawToolbox extends VComponent {
+  static tag = 'v-draw-toolbox'
   private $container!: HTMLElement
   private $selectRef?: HTMLElement
   private $colorMenu!: HTMLElement
-
-  static tag = 'v-draw-toolbox'
 
   get phase() {
     return CanvasContext.state.phase
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
     const initInnerElement = () => {
       const $container = this.$root.querySelector('v-container')
       const $colorMenu = this.$root.querySelector('v-color-menu')
@@ -65,8 +60,7 @@ export default class VDrawToolbox extends HTMLElement {
       this.toggleOption('draw')
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initInnerElement()
     initSelectedOption()
   }
