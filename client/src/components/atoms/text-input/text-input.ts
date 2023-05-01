@@ -56,7 +56,8 @@ export default class VTextInput extends VComponent<HTMLInputElement> {
   updateAttribute({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'placeholder':
-        this.$root.placeholder = value
+        this.$root.setAttribute('placeholder', value)
+        break
     }
   }
 }
