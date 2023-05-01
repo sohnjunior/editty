@@ -66,6 +66,9 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     super(template)
     initCanvasContext()
+  }
+
+  afterCreated() {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 

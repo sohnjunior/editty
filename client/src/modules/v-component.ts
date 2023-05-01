@@ -26,6 +26,14 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
     super()
     initShadowRoot()
     initRootElement()
+    this.afterCreated()
+  }
+
+  /**
+   * Define functions to be called after object creation
+   */
+  protected afterCreated() {
+    return
   }
 
   protected attributeChangedCallback(name: string, oldValue: string, newValue: string) {
