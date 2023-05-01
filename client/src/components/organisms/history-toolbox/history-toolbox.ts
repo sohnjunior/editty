@@ -25,9 +25,7 @@ export default class VHistoryToolbox extends VComponent {
   }
 
   bindEventListener() {
-    const $container = this.$shadow.querySelector('v-container')
-
-    $container?.addEventListener('click', (e) => {
+    this.$root.addEventListener('click', (e) => {
       const $target = e.target as HTMLElement
 
       switch ($target.dataset.icon) {
