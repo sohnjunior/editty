@@ -27,6 +27,10 @@ export default class VCanvasContainer extends VComponent {
   private drawingLayer!: VCanvasDrawingLayer
 
   constructor() {
+    super(template)
+  }
+
+  afterCreated() {
     const initLayer = () => {
       const imageLayer = this.$shadow.querySelector('v-canvas-image-layer') as VCanvasImageLayer
       const drawingLayer = this.$shadow.querySelector(
@@ -42,20 +46,19 @@ export default class VCanvasContainer extends VComponent {
       this.drawingLayer = drawingLayer
     }
 
-    super(template)
     initLayer()
   }
 
-  afterMount() {
-    const propagateEventToImageLayer = (ev: Event) => {
-      this.imageLayer.listenSiblingLayerEvent(ev)
-    }
+  bindEventListener() {
+    this.drawingLayer.addEventListener('mousedown', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('mousemove', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('mouseup', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('touchstart', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('touchmove', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('touchend', this.propagateEventToImageLayer.bind(this))
+  }
 
-    this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)
-    this.drawingLayer.addEventListener('mousemove', propagateEventToImageLayer)
-    this.drawingLayer.addEventListener('mouseup', propagateEventToImageLayer)
-    this.drawingLayer.addEventListener('touchstart', propagateEventToImageLayer)
-    this.drawingLayer.addEventListener('touchmove', propagateEventToImageLayer)
-    this.drawingLayer.addEventListener('touchend', propagateEventToImageLayer)
+  propagateEventToImageLayer(ev: Event) {
+    this.imageLayer.listenSiblingLayerEvent(ev)
   }
 }
