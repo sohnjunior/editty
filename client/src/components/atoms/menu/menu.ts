@@ -2,7 +2,7 @@ import { VComponent } from '@/modules/v-component'
 
 const template = document.createElement('template')
 template.innerHTML = `
-  <v-container class="menu">
+  <v-container>
     <slot name="content"></slot>
   </v-container>
 `
