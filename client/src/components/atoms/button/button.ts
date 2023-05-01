@@ -30,12 +30,9 @@ export default class VButton extends VComponent {
 
   updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
-      case 'color': {
-        const $button = this.$shadow.querySelector('button')
-        if ($button) {
-          $button.style.color = value
-        }
-      }
+      case 'color':
+        this.$root.style.color = value
+        break
     }
   }
 }
