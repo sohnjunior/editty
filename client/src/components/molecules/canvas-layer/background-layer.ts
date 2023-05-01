@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
-import { fillBackgroundColor, refineCanvasRatio } from '@/modules/canvas.utils'
+import { fillBackgroundColor, refineCanvasRatioForRetinaDisplay } from '@/modules/canvas.utils'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -28,6 +28,7 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
 
   constructor() {
     super(template)
+    refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
   connectedCallback() {
@@ -39,7 +40,6 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
       }
     }
 
-    refineCanvasRatio(this.$root)
     requestAnimationFrame(initStyle)
   }
 

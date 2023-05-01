@@ -4,7 +4,7 @@ import { CanvasContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
-  refineCanvasRatio,
+  refineCanvasRatioForRetinaDisplay,
   clearCanvas,
   isPointInsideRect,
   refineImageScale,
@@ -66,6 +66,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     super(template)
     initCanvasContext()
+    refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
   connectedCallback() {
@@ -101,7 +102,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
     }
 
-    refineCanvasRatio(this.$root)
     subscribeEventBus()
   }
 

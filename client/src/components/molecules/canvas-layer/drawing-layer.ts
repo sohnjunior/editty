@@ -9,7 +9,7 @@ import {
   takeSnapshot,
   reflectSnapshot,
   clearCanvas,
-  refineCanvasRatio,
+  refineCanvasRatioForRetinaDisplay,
 } from '@/modules/canvas.utils'
 import type { Point } from './types'
 
@@ -59,6 +59,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
 
     super(template)
     initCanvasContext()
+    refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
   connectedCallback() {
@@ -121,7 +122,6 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     }
 
     initEvents()
-    refineCanvasRatio(this.$root)
     subscribeContext()
     subscribeEventBus()
   }

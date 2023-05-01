@@ -84,7 +84,8 @@ export function clearCanvas(canvas: HTMLCanvasElement) {
   context.clearRect(0, 0, canvas.width, canvas.height)
 }
 
-export function refineCanvasRatio(canvas: HTMLCanvasElement) {
+/** retina display 에서 더 많은 픽셀로 렌더링합니다. */
+export function refineCanvasRatioForRetinaDisplay(canvas: HTMLCanvasElement) {
   const context = canvas.getContext('2d')
   if (!context) {
     return
