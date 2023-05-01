@@ -43,10 +43,6 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
     requestAnimationFrame(initStyle)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'color': {

@@ -1,4 +1,5 @@
 import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
 import { PALETTE_COLORS } from '@/utils/constant'
 
 const template = document.createElement('template')
@@ -52,11 +53,7 @@ export default class VColorTile extends VComponent {
     requestAnimationFrame(initStyle)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
+  updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'color':
         this.$root.style.backgroundColor = PALETTE_COLORS[value]

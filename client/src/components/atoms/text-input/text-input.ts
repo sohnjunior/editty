@@ -49,11 +49,7 @@ export default class VTextInput extends VComponent<HTMLInputElement> {
     initEvents()
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateAttribute({ attribute: name, value: newValue })
-  }
-
-  updateAttribute({ attribute, value }: { attribute: string; value: string }) {
+  updateProperty({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'placeholder':
         this.$root.setAttribute('placeholder', value)

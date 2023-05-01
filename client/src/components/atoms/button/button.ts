@@ -28,10 +28,6 @@ export default class VButton extends VComponent {
     super(template)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
   updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'color': {

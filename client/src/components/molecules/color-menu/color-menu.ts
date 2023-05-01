@@ -22,11 +22,7 @@ export default class VDrawOptionMenu extends VComponent {
     super(template)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateAttribute({ attribute: name, value: newValue })
-  }
-
-  updateAttribute({ attribute, value }: { attribute: string; value: string }) {
+  updateProperty({ attribute, value }: { attribute: string; value: string }) {
     switch (attribute) {
       case 'open':
         this.$root.setAttribute('open', value)

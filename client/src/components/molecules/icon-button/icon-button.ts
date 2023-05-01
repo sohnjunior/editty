@@ -64,10 +64,6 @@ export default class VIconButton extends VComponent {
     requestAnimationFrame(initStyle)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
     const $icon = this.$shadow.querySelector('v-icon')
     if (!$icon) {
