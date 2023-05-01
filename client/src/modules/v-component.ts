@@ -47,10 +47,13 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
   }
 
   protected connectedCallback() {
+    // HACK: dom mount 이후에 속성 가져와서 스타일적용하기 위해 이벤트루프 사용
+    requestAnimationFrame(this.bindInitialStyle.bind(this))
     this.bindEventListener()
     this.subscribeEventBus()
     this.subscribeContext()
-    requestAnimationFrame(this.bindInitialStyle.bind(this)) // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
+
+    this.afterMount()
   }
 
   /**
@@ -97,6 +100,13 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
    * }
    */
   subscribeContext() {
+    return
+  }
+
+  /**
+   * Define functions to be called after component DOM mounted
+   */
+  protected afterMount() {
     return
   }
 

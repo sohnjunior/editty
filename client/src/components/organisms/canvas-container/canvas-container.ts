@@ -46,20 +46,16 @@ export default class VCanvasContainer extends VComponent {
     initLayer()
   }
 
-  connectedCallback() {
-    const propagateEvents = () => {
-      const propagateEventToImageLayer = (ev: Event) => {
-        this.imageLayer.listenSiblingLayerEvent(ev)
-      }
-
-      this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('mousemove', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('mouseup', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('touchstart', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('touchmove', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('touchend', propagateEventToImageLayer)
+  afterMount() {
+    const propagateEventToImageLayer = (ev: Event) => {
+      this.imageLayer.listenSiblingLayerEvent(ev)
     }
 
-    propagateEvents()
+    this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)
+    this.drawingLayer.addEventListener('mousemove', propagateEventToImageLayer)
+    this.drawingLayer.addEventListener('mouseup', propagateEventToImageLayer)
+    this.drawingLayer.addEventListener('touchstart', propagateEventToImageLayer)
+    this.drawingLayer.addEventListener('touchmove', propagateEventToImageLayer)
+    this.drawingLayer.addEventListener('touchend', propagateEventToImageLayer)
   }
 }
