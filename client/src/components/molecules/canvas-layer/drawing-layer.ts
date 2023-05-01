@@ -180,46 +180,41 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     resetPencilPoints()
   }
 
-  draw(e: MouseEvent | TouchEvent) {
+  draw(ev: MouseEvent | TouchEvent) {
     if (!this.isDrawing) {
       return
     }
 
-    e.preventDefault()
+    this.trackTouchPoint(ev)
+    this.paintPath()
+  }
 
-    const trackTouchPoint = () => {
-      const { x, y } = getSyntheticTouchPoint(this.$root, e)
-      this.points.push({ x, y })
+  private trackTouchPoint(ev: MouseEvent | TouchEvent) {
+    ev.preventDefault()
+
+    const { x, y } = getSyntheticTouchPoint(this.$root, ev)
+    this.points.push({ x, y })
+  }
+
+  private paintPath() {
+    this.context.beginPath()
+
+    if (this.phase === 'draw') {
+      this.context.globalCompositeOperation = 'source-over'
+    } else {
+      this.context.globalCompositeOperation = 'destination-out'
     }
 
-    const paint = () => {
-      this.context.beginPath()
+    // we can insure coordinate is exist because paint is called after track touch point
+    const { x: startX, y: startY } = this.points[0]
+    this.context.moveTo(startX, startY)
 
-      if (this.phase === 'draw') {
-        this.context.globalCompositeOperation = 'source-over'
-      } else {
-        this.context.globalCompositeOperation = 'destination-out'
-      }
-
-      // we can insure coordinate is exist because paint is called after track touch point
-      const { x: startX, y: startY } = this.points[0]
-      this.context.moveTo(startX, startY)
-
-      // draw smooth line with quadratic Bézier curve
-      for (let idx = 1; idx < this.points.length - 1; idx += 1) {
-        const endpoint = getMiddlePoint(this.points[idx], this.points[idx + 1])
-        this.context.quadraticCurveTo(
-          this.points[idx].x,
-          this.points[idx].y,
-          endpoint.x,
-          endpoint.y
-        )
-      }
-
-      this.context.stroke()
+    // draw smooth line with quadratic Bézier curve
+    for (let idx = 1; idx < this.points.length - 1; idx += 1) {
+      const endpoint = getMiddlePoint(this.points[idx], this.points[idx + 1])
+      this.context.quadraticCurveTo(this.points[idx].x, this.points[idx].y, endpoint.x, endpoint.y)
     }
 
-    trackTouchPoint()
-    paint()
+    this.context.stroke()
   }
 }
