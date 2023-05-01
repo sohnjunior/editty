@@ -38,20 +38,59 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
     this.updateProperty({ attribute: name, value: newValue })
   }
 
-  // protected connectedCallback() {
-  //   this.initEvents()
-  // }
+  protected connectedCallback() {
+    this.bindEventListener()
+    this.subscribeEventBus()
+    this.subscribeContext()
+    requestAnimationFrame(this.bindInitialStyle.bind(this)) // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
+  }
 
-  // /**
-  //  * Define event listeners to assign to this component.
-  //  * @example
-  //  * initEvents() {
-  //  *  this.addEventListener('mousedown', this.setup)
-  //  * }
-  //  */
-  // initEvents() {
-  //   return
-  // }
+  /**
+   *
+   * @example
+   * bindInitialStyle() {
+   *  this.fillColor(this.colorAttribute)
+   * }
+   */
+  bindInitialStyle() {
+    return
+  }
+
+  /**
+   * Define event listener to assign to this component.
+   * @example
+   * bindEventListener() {
+   *  this.addEventListener('mousedown', this.handler)
+   * }
+   */
+  bindEventListener() {
+    return
+  }
+
+  /**
+   * Define the event bus that the component subscribes to.
+   * @example
+   * subscribeEventBus() {
+   *   EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {...})
+   * }
+   */
+  subscribeEventBus() {
+    return
+  }
+
+  /**
+   * Define the context events that the component subscribes to.
+   * @example
+   * subscribeContext() {
+   *  CanvasContext.subscribe({
+   *    action: 'PUSH_STATE',
+   *    effect: (context) => {...}
+   *  })
+   * }
+   */
+  subscribeContext() {
+    return
+  }
 
   /**
    * Defines when style update is required according to attribute change.
