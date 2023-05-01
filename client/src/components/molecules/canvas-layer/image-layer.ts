@@ -69,40 +69,36 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
-  connectedCallback() {
-    const subscribeEventBus = () => {
-      const onImageUpload = async (dataUrls: string[]) => {
-        const jobs = dataUrls.map(async (dataUrl) => {
-          const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
-          const rescaled = refineImageScale(
-            { ref: this.$root },
-            { width: image.width, height: image.height }
-          )
+  subscribeEventBus() {
+    const onImageUpload = async (dataUrls: string[]) => {
+      const jobs = dataUrls.map(async (dataUrl) => {
+        const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
+        const rescaled = refineImageScale(
+          { ref: this.$root },
+          { width: image.width, height: image.height }
+        )
 
-          image.width = rescaled.width
-          image.height = rescaled.height
+        image.width = rescaled.width
+        image.height = rescaled.height
 
-          this.images.push(image)
-          this.paintImages()
-        })
-
-        try {
-          await Promise.all(jobs)
-        } catch {
-          console.error('🚨 fail to upload image')
-        }
-      }
-      const onClearAll = () => {
-        this.images = []
-        this.dragged = { index: -1, target: null }
+        this.images.push(image)
         this.paintImages()
-      }
+      })
 
-      EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
-      EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
+      try {
+        await Promise.all(jobs)
+      } catch {
+        console.error('🚨 fail to upload image')
+      }
+    }
+    const onClearAll = () => {
+      this.images = []
+      this.dragged = { index: -1, target: null }
+      this.paintImages()
     }
 
-    subscribeEventBus()
+    EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
+    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
   }
 
   setFocusedImage(index: number) {

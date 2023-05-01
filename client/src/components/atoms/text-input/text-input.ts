@@ -35,18 +35,14 @@ export default class VTextInput extends VComponent<HTMLInputElement> {
     super(template)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.$root.addEventListener('input', (e) => {
-        this.dispatchEvent(
-          new CustomEvent('change', {
-            detail: { value: (e.target as HTMLInputElement).value },
-          })
-        )
-      })
-    }
-
-    initEvents()
+  bindEventListener() {
+    this.$root.addEventListener('input', (e) => {
+      this.dispatchEvent(
+        new CustomEvent('change', {
+          detail: { value: (e.target as HTMLInputElement).value },
+        })
+      )
+    })
   }
 
   updateProperty({ attribute, value }: { attribute: string; value: string }) {

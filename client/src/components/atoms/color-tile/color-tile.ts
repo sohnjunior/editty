@@ -37,20 +37,16 @@ export default class VColorTile extends VComponent {
     super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      const { colorAttribute, sizeAttribute } = this
+  bindInitialStyle() {
+    const { colorAttribute, sizeAttribute } = this
 
-      if (colorAttribute) {
-        this.updateStyle({ attribute: 'color', value: colorAttribute })
-      }
-
-      if (sizeAttribute) {
-        this.updateStyle({ attribute: 'size', value: sizeAttribute })
-      }
+    if (colorAttribute) {
+      this.updateStyle({ attribute: 'color', value: colorAttribute })
     }
 
-    requestAnimationFrame(initStyle)
+    if (sizeAttribute) {
+      this.updateStyle({ attribute: 'size', value: sizeAttribute })
+    }
   }
 
   updateStyle({ attribute, value }: UpdateStyleParam) {

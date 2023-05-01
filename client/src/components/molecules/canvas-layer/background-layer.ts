@@ -31,16 +31,12 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      const { colorAttribute } = this
+  bindInitialStyle() {
+    const { colorAttribute } = this
 
-      if (colorAttribute) {
-        fillBackgroundColor(this.$root, colorAttribute)
-      }
+    if (colorAttribute) {
+      fillBackgroundColor(this.$root, colorAttribute)
     }
-
-    requestAnimationFrame(initStyle)
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {

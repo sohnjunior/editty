@@ -29,24 +29,20 @@ export default class VColorPalette extends VComponent {
     super(template)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.$root.addEventListener('click', (ev) => {
-        const tagName = (ev.target as HTMLElement).tagName
-        if (tagName === 'V-COLOR-TILE') {
-          const color = (ev.target as VColorTile).colorAttribute
+  bindEventListener() {
+    this.$root.addEventListener('click', (ev) => {
+      const tagName = (ev.target as HTMLElement).tagName
+      if (tagName === 'V-COLOR-TILE') {
+        const color = (ev.target as VColorTile).colorAttribute
 
-          this.dispatchEvent(
-            new CustomEvent('select:color', {
-              detail: { value: color },
-              bubbles: true,
-              composed: true,
-            })
-          )
-        }
-      })
-    }
-
-    initEvents()
+        this.dispatchEvent(
+          new CustomEvent('select:color', {
+            detail: { value: color },
+            bubbles: true,
+            composed: true,
+          })
+        )
+      }
+    })
   }
 }

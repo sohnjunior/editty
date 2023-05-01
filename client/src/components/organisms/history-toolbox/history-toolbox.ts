@@ -24,33 +24,27 @@ export default class VHistoryToolbox extends VComponent {
     super(template)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      const $container = this.$shadow.querySelector('v-container')
+  bindEventListener() {
+    const $container = this.$shadow.querySelector('v-container')
 
-      $container?.addEventListener('click', (e) => {
-        const $target = e.target as HTMLElement
+    $container?.addEventListener('click', (e) => {
+      const $target = e.target as HTMLElement
 
-        switch ($target.dataset.icon) {
-          case 'back':
-            CanvasContext.dispatch({ action: 'HISTORY_BACK' })
-            break
-          case 'forward':
-            CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
-            break
-          case 'trash': {
-            const isConfirmed = window.confirm(
-              '지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?'
-            )
-            isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
-            break
-          }
-          default:
-            return
+      switch ($target.dataset.icon) {
+        case 'back':
+          CanvasContext.dispatch({ action: 'HISTORY_BACK' })
+          break
+        case 'forward':
+          CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
+          break
+        case 'trash': {
+          const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
+          isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
+          break
         }
-      })
-    }
-
-    initEvents()
+        default:
+          return
+      }
+    })
   }
 }

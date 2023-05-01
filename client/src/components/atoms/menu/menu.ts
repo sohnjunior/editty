@@ -26,14 +26,10 @@ export default class VMenu extends VComponent {
     super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      if (this.widthAttribute) {
-        this.updateStyle({ attribute: 'width', value: this.widthAttribute })
-      }
+  bindInitialStyle() {
+    if (this.widthAttribute) {
+      this.updateStyle({ attribute: 'width', value: this.widthAttribute })
     }
-
-    requestAnimationFrame(initStyle)
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {

@@ -54,14 +54,9 @@ export default class VIconButton extends VComponent {
     super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      this.updateStyle({ attribute: 'icon', value: this.iconAttribute })
-      this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
-    }
-
-    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
-    requestAnimationFrame(initStyle)
+  bindInitialStyle() {
+    this.updateStyle({ attribute: 'icon', value: this.iconAttribute })
+    this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {

@@ -62,24 +62,19 @@ export default class VDrawToolbox extends VComponent {
     initSelectedOption()
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.$root.addEventListener('click', this.handleClickOption.bind(this))
-      this.$colorMenu.addEventListener('select:color', this.handleChangePencilColor.bind(this))
-      this.$colorMenu.addEventListener('close:menu', this.handleCloseDrawOptionMenu.bind(this))
-    }
+  bindEventListener() {
+    this.$root.addEventListener('click', this.handleClickOption.bind(this))
+    this.$colorMenu.addEventListener('select:color', this.handleChangePencilColor.bind(this))
+    this.$colorMenu.addEventListener('close:menu', this.handleCloseDrawOptionMenu.bind(this))
+  }
 
-    const subscribeContext = () => {
-      CanvasContext.subscribe({
-        action: 'SET_PHASE',
-        effect: (context) => {
-          this.toggleOption(context.state.phase)
-        },
-      })
-    }
-
-    initEvents()
-    subscribeContext()
+  subscribeContext() {
+    CanvasContext.subscribe({
+      action: 'SET_PHASE',
+      effect: (context) => {
+        this.toggleOption(context.state.phase)
+      },
+    })
   }
 
   handleClickOption(ev: Event) {

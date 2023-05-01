@@ -62,68 +62,62 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.addEventListener('mousedown', this.setup)
-      this.addEventListener('mouseup', this.cleanup)
-      this.addEventListener('mousemove', this.draw)
-      /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
-      // this.addEventListener('mouseleave', this.cleanup)
+  bindEventListener() {
+    this.addEventListener('mousedown', this.setup)
+    this.addEventListener('mouseup', this.cleanup)
+    this.addEventListener('mousemove', this.draw)
+    /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
+    // this.addEventListener('mouseleave', this.cleanup)
 
-      this.addEventListener('touchstart', this.setup)
-      this.addEventListener('touchend', this.cleanup)
-      this.addEventListener('touchmove', this.draw)
-    }
+    this.addEventListener('touchstart', this.setup)
+    this.addEventListener('touchend', this.cleanup)
+    this.addEventListener('touchmove', this.draw)
+  }
 
-    const subscribeContext = () => {
-      CanvasContext.subscribe({
-        action: 'PUSH_SNAPSHOT',
-        effect: (context) => {
-          console.log(context.state.snapshots)
-        },
-      })
-      CanvasContext.subscribe({
-        action: 'HISTORY_BACK',
-        effect: (context) => {
-          const snapshot = lastOf(context.state.snapshots)
+  subscribeContext() {
+    CanvasContext.subscribe({
+      action: 'PUSH_SNAPSHOT',
+      effect: (context) => {
+        console.log(context.state.snapshots)
+      },
+    })
+    CanvasContext.subscribe({
+      action: 'HISTORY_BACK',
+      effect: (context) => {
+        const snapshot = lastOf(context.state.snapshots)
 
-          if (snapshot) {
-            reflectSnapshot(this.$root, snapshot)
-          } else {
-            clearCanvas(this.$root)
-          }
-        },
-      })
-      CanvasContext.subscribe({
-        action: 'HISTORY_FORWARD',
-        effect: (context) => {
-          const snapshot = lastOf(context.state.snapshots)
+        if (snapshot) {
+          reflectSnapshot(this.$root, snapshot)
+        } else {
+          clearCanvas(this.$root)
+        }
+      },
+    })
+    CanvasContext.subscribe({
+      action: 'HISTORY_FORWARD',
+      effect: (context) => {
+        const snapshot = lastOf(context.state.snapshots)
 
-          if (snapshot) {
-            reflectSnapshot(this.$root, snapshot)
-          } else {
-            clearCanvas(this.$root)
-          }
-        },
-      })
-      CanvasContext.subscribe({
-        action: 'SET_PENCIL_COLOR',
-        effect: (context) => {
-          this.context.strokeStyle = context.state.pencilColor
-        },
-      })
-    }
+        if (snapshot) {
+          reflectSnapshot(this.$root, snapshot)
+        } else {
+          clearCanvas(this.$root)
+        }
+      },
+    })
+    CanvasContext.subscribe({
+      action: 'SET_PENCIL_COLOR',
+      effect: (context) => {
+        this.context.strokeStyle = context.state.pencilColor
+      },
+    })
+  }
 
-    const subscribeEventBus = () => {
-      EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
-        clearCanvas(this.$root)
-        CanvasContext.dispatch({ action: 'CLEAR_ALL' })
-      })
-    }
-
-    initEvents()
-    subscribeContext()
-    subscribeEventBus()
+  subscribeEventBus() {
+    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
+      clearCanvas(this.$root)
+      CanvasContext.dispatch({ action: 'CLEAR_ALL' })
+    })
   }
 
   disconnectedCallback() {

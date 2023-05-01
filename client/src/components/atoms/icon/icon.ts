@@ -81,18 +81,13 @@ export default class VIcon extends VComponent {
     super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      const { iconAttribute, sizeAttribute } = this
+  bindInitialStyle() {
+    const { iconAttribute, sizeAttribute } = this
 
-      if (iconAttribute && sizeAttribute) {
-        this.updateStyle({ attribute: 'icon', value: iconAttribute })
-        this.updateStyle({ attribute: 'size', value: sizeAttribute })
-      }
+    if (iconAttribute && sizeAttribute) {
+      this.updateStyle({ attribute: 'icon', value: iconAttribute })
+      this.updateStyle({ attribute: 'size', value: sizeAttribute })
     }
-
-    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
-    requestAnimationFrame(initStyle)
   }
 
   updateStyle({ attribute, value }: { attribute: string; value: string }) {
