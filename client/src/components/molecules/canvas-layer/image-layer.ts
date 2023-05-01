@@ -323,7 +323,6 @@ function drawAnchorBorder({
   drawBorder({
     context,
     corners: Object.values(corners),
-    start: { x: topLeftPoint.x, y: topLeftPoint.y },
   })
 
   const anchorTypes = Object.keys(corners) as Resize[]
@@ -333,18 +332,10 @@ function drawAnchorBorder({
   return anchors
 }
 
-function drawBorder({
-  context,
-  corners,
-  start,
-}: {
-  context: CanvasRenderingContext2D
-  corners: Point[]
-  start: Point
-}) {
+function drawBorder({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
   drawLine({
     context,
-    from: { x: start.x, y: start.y },
+    from: { x: corners[0].x, y: corners[0].y },
     to: { x: corners[1].x, y: corners[1].y },
   })
   drawLine({
