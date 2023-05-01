@@ -52,7 +52,6 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
     this.bindEventListener()
     this.subscribeEventBus()
     this.subscribeContext()
-
     this.afterMount()
   }
 
