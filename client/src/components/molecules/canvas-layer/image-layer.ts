@@ -1,9 +1,10 @@
+import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { CanvasContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
-  refineCanvasRatio,
+  refineCanvasRatioForRetinaDisplay,
   clearCanvas,
   isPointInsideRect,
   refineImageScale,
@@ -37,17 +38,14 @@ template.innerHTML = `
   <canvas id="image-layer"></canvas>
 `
 
-export default class VCanvasImageLayer extends HTMLElement {
-  private $root!: ShadowRoot
-  private $canvas!: HTMLCanvasElement
+export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
+  static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
   private images: ImageObject[] = []
   private dragged: { index: number; target: DragTarget | null } = { index: -1, target: null }
   private focused: { index: number; anchors: Anchor[] } | null = null
   private transformType: Anchor['type'] | null = null
   private isPressed = false
-
-  static tag = 'v-canvas-image-layer'
 
   get phase() {
     return CanvasContext.state.phase
@@ -58,60 +56,52 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    const initCanvas = () => {
-      this.$canvas = this.$root.getElementById('image-layer') as HTMLCanvasElement
-      const ctx = this.$canvas.getContext('2d')
+    const initCanvasContext = () => {
+      const ctx = this.$root.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')
       }
       this.context = ctx
     }
 
-    super()
-    initShadowRoot()
-    initCanvas()
+    super(template)
+    initCanvasContext()
   }
 
-  connectedCallback() {
-    const subscribeEventBus = () => {
-      const onImageUpload = async (dataUrls: string[]) => {
-        const jobs = dataUrls.map(async (dataUrl) => {
-          const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
-          const rescaled = refineImageScale(
-            { ref: this.$canvas },
-            { width: image.width, height: image.height }
-          )
+  afterCreated() {
+    refineCanvasRatioForRetinaDisplay(this.$root)
+  }
 
-          image.width = rescaled.width
-          image.height = rescaled.height
+  subscribeEventBus() {
+    const onImageUpload = async (dataUrls: string[]) => {
+      const jobs = dataUrls.map(async (dataUrl) => {
+        const image = await createImageObject({ dataUrl, topLeftPoint: { x: 50, y: 50 } })
+        const rescaled = refineImageScale(
+          { ref: this.$root },
+          { width: image.width, height: image.height }
+        )
 
-          this.images.push(image)
-          this.paintImages()
-        })
+        image.width = rescaled.width
+        image.height = rescaled.height
 
-        try {
-          await Promise.all(jobs)
-        } catch {
-          console.error('🚨 fail to upload image')
-        }
-      }
-      const onClearAll = () => {
-        this.images = []
-        this.dragged = { index: -1, target: null }
+        this.images.push(image)
         this.paintImages()
-      }
+      })
 
-      EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
-      EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
+      try {
+        await Promise.all(jobs)
+      } catch {
+        console.error('🚨 fail to upload image')
+      }
+    }
+    const onClearAll = () => {
+      this.images = []
+      this.dragged = { index: -1, target: null }
+      this.paintImages()
     }
 
-    refineCanvasRatio(this.$canvas)
-    subscribeEventBus()
+    EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
+    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
   }
 
   setFocusedImage(index: number) {
@@ -196,7 +186,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       })
     }
 
-    const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
 
     const imageIndex = findTouchedImage(touchPoint)
     const anchor = findTouchedAnchor(touchPoint)
@@ -216,7 +206,7 @@ export default class VCanvasImageLayer extends HTMLElement {
 
   hover(ev: MouseEvent | TouchEvent) {
     if (this.focused) {
-      const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+      const touchPoint = getSyntheticTouchPoint(this.$root, ev)
 
       const anchor = findAnchorInPath({
         context: this.context,
@@ -248,7 +238,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       return
     }
 
-    const { x, y } = getSyntheticTouchPoint(this.$canvas, ev)
+    const { x, y } = getSyntheticTouchPoint(this.$root, ev)
     const dx = x - this.dragged.target.sx
     const dy = y - this.dragged.target.sy
 
@@ -265,7 +255,7 @@ export default class VCanvasImageLayer extends HTMLElement {
       return
     }
 
-    const touchPoint = getSyntheticTouchPoint(this.$canvas, ev)
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
     const image = this.images[this.focused.index]
 
     const resizedBoundingRect = resizeRect({
@@ -286,7 +276,7 @@ export default class VCanvasImageLayer extends HTMLElement {
   }
 
   private paintImages() {
-    clearCanvas(this.$canvas)
+    clearCanvas(this.$root)
 
     this.images.forEach(({ ref, sx, sy, width, height }) => {
       if (ref) {
@@ -333,7 +323,6 @@ function drawAnchorBorder({
   drawBorder({
     context,
     corners: Object.values(corners),
-    start: { x: topLeftPoint.x, y: topLeftPoint.y },
   })
 
   const anchorTypes = Object.keys(corners) as Resize[]
@@ -343,18 +332,10 @@ function drawAnchorBorder({
   return anchors
 }
 
-function drawBorder({
-  context,
-  corners,
-  start,
-}: {
-  context: CanvasRenderingContext2D
-  corners: Point[]
-  start: Point
-}) {
+function drawBorder({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
   drawLine({
     context,
-    from: { x: start.x, y: start.y },
+    from: { x: corners[0].x, y: corners[0].y },
     to: { x: corners[1].x, y: corners[1].y },
   })
   drawLine({

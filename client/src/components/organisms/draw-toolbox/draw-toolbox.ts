@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { CanvasContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
@@ -34,61 +35,46 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VDrawToolbox extends HTMLElement {
-  private $root!: ShadowRoot
-  private $container!: HTMLElement
+export default class VDrawToolbox extends VComponent {
+  static tag = 'v-draw-toolbox'
   private $selectRef?: HTMLElement
   private $colorMenu!: HTMLElement
-
-  static tag = 'v-draw-toolbox'
 
   get phase() {
     return CanvasContext.state.phase
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
     const initInnerElement = () => {
-      const $container = this.$root.querySelector('v-container')
-      const $colorMenu = this.$root.querySelector('v-color-menu')
-      if (!$container || !$colorMenu) {
+      const $colorMenu = this.$shadow.querySelector('v-color-menu')
+      if (!$colorMenu) {
         throw new Error('initialize fail')
       }
 
-      this.$container = $container as HTMLElement
       this.$colorMenu = $colorMenu as HTMLElement
     }
     const initSelectedOption = () => {
       this.toggleOption('draw')
     }
 
-    super()
-    initShadowRoot()
+    super(template)
     initInnerElement()
     initSelectedOption()
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.$container.addEventListener('click', this.handleClickOption.bind(this))
-      this.$colorMenu.addEventListener('select:color', this.handleChangePencilColor.bind(this))
-      this.$colorMenu.addEventListener('close:menu', this.handleCloseDrawOptionMenu.bind(this))
-    }
+  bindEventListener() {
+    this.$root.addEventListener('click', this.handleClickOption.bind(this))
+    this.$colorMenu.addEventListener('select:color', this.handleChangePencilColor.bind(this))
+    this.$colorMenu.addEventListener('close:menu', this.handleCloseDrawOptionMenu.bind(this))
+  }
 
-    const subscribeContext = () => {
-      CanvasContext.subscribe({
-        action: 'SET_PHASE',
-        effect: (context) => {
-          this.toggleOption(context.state.phase)
-        },
-      })
-    }
-
-    initEvents()
-    subscribeContext()
+  subscribeContext() {
+    CanvasContext.subscribe({
+      action: 'SET_PHASE',
+      effect: (context) => {
+        this.toggleOption(context.state.phase)
+      },
+    })
   }
 
   handleClickOption(ev: Event) {
@@ -143,7 +129,7 @@ export default class VDrawToolbox extends HTMLElement {
   }
 
   toggleOption(type: Phase) {
-    const $target = this.$root.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
+    const $target = this.$shadow.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
 
     if (this.$selectRef) {
       this.$selectRef.dataset.selected = 'false'

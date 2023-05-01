@@ -1,14 +1,15 @@
+import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
 import { CanvasContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
-  getMiddlePoint,
+  get2dMiddlePoint,
   getSyntheticTouchPoint,
   takeSnapshot,
   reflectSnapshot,
   clearCanvas,
-  refineCanvasRatio,
+  refineCanvasRatioForRetinaDisplay,
 } from '@/modules/canvas.utils'
 import type { Point } from './types'
 
@@ -25,14 +26,11 @@ template.innerHTML = `
   <canvas id="drawing-layer"></canvas>
 `
 
-export default class VCanvasDrawingLayer extends HTMLElement {
-  private $root!: ShadowRoot
-  private $canvas!: HTMLCanvasElement
+export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
+  static tag = 'v-canvas-drawing-layer'
   private context!: CanvasRenderingContext2D
   private points: Point[] = []
   private isDrawing = false
-
-  static tag = 'v-canvas-drawing-layer'
 
   get phase() {
     return CanvasContext.state.phase
@@ -51,88 +49,78 @@ export default class VCanvasDrawingLayer extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    const initCanvas = () => {
-      this.$canvas = this.$root.getElementById('drawing-layer') as HTMLCanvasElement
-      const ctx = this.$canvas.getContext('2d')
+    const initCanvasContext = () => {
+      const ctx = this.$root.getContext('2d')
       if (!ctx) {
         throw new Error('🚨 canvas load fail')
       }
       this.context = ctx
     }
 
-    super()
-    initShadowRoot()
-    initCanvas()
+    super(template)
+    initCanvasContext()
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.addEventListener('mousedown', this.setup)
-      this.addEventListener('mouseup', this.cleanup)
-      this.addEventListener('mousemove', this.draw)
-      /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
-      // this.addEventListener('mouseleave', this.cleanup)
+  afterCreated() {
+    refineCanvasRatioForRetinaDisplay(this.$root)
+  }
 
-      this.addEventListener('touchstart', this.setup)
-      this.addEventListener('touchend', this.cleanup)
-      this.addEventListener('touchmove', this.draw)
-    }
+  bindEventListener() {
+    this.addEventListener('mousedown', this.setup)
+    this.addEventListener('mouseup', this.cleanup)
+    this.addEventListener('mousemove', this.draw)
+    /** FIXME: mouseleave 로 인해 호출된 경우에는 그리기 동작 수행중에 캔버스 벗어난 경우에만 스냅샷 저장하도록 수정 필요 */
+    // this.addEventListener('mouseleave', this.cleanup)
 
-    const subscribeContext = () => {
-      CanvasContext.subscribe({
-        action: 'PUSH_SNAPSHOT',
-        effect: (context) => {
-          console.log(context.state.snapshots)
-        },
-      })
-      CanvasContext.subscribe({
-        action: 'HISTORY_BACK',
-        effect: (context) => {
-          const snapshot = lastOf(context.state.snapshots)
+    this.addEventListener('touchstart', this.setup)
+    this.addEventListener('touchend', this.cleanup)
+    this.addEventListener('touchmove', this.draw)
+  }
 
-          if (snapshot) {
-            reflectSnapshot(this.$canvas, snapshot)
-          } else {
-            clearCanvas(this.$canvas)
-          }
-        },
-      })
-      CanvasContext.subscribe({
-        action: 'HISTORY_FORWARD',
-        effect: (context) => {
-          const snapshot = lastOf(context.state.snapshots)
+  subscribeContext() {
+    CanvasContext.subscribe({
+      action: 'PUSH_SNAPSHOT',
+      effect: (context) => {
+        console.log(context.state.snapshots)
+      },
+    })
+    CanvasContext.subscribe({
+      action: 'HISTORY_BACK',
+      effect: (context) => {
+        const snapshot = lastOf(context.state.snapshots)
 
-          if (snapshot) {
-            reflectSnapshot(this.$canvas, snapshot)
-          } else {
-            clearCanvas(this.$canvas)
-          }
-        },
-      })
-      CanvasContext.subscribe({
-        action: 'SET_PENCIL_COLOR',
-        effect: (context) => {
-          this.context.strokeStyle = context.state.pencilColor
-        },
-      })
-    }
+        if (snapshot) {
+          reflectSnapshot(this.$root, snapshot)
+        } else {
+          clearCanvas(this.$root)
+        }
+      },
+    })
+    CanvasContext.subscribe({
+      action: 'HISTORY_FORWARD',
+      effect: (context) => {
+        const snapshot = lastOf(context.state.snapshots)
 
-    const subscribeEventBus = () => {
-      EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
-        clearCanvas(this.$canvas)
-        CanvasContext.dispatch({ action: 'CLEAR_ALL' })
-      })
-    }
+        if (snapshot) {
+          reflectSnapshot(this.$root, snapshot)
+        } else {
+          clearCanvas(this.$root)
+        }
+      },
+    })
+    CanvasContext.subscribe({
+      action: 'SET_PENCIL_COLOR',
+      effect: (context) => {
+        this.context.strokeStyle = context.state.pencilColor
+      },
+    })
+  }
 
-    initEvents()
-    refineCanvasRatio(this.$canvas)
-    subscribeContext()
-    subscribeEventBus()
+  subscribeEventBus() {
+    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
+      clearCanvas(this.$root)
+      CanvasContext.dispatch({ action: 'CLEAR_ALL' })
+    })
   }
 
   disconnectedCallback() {
@@ -157,7 +145,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
 
     const setupSnapshots = () => {
       if (this.snapshots.length > 0) {
-        this.snapshots.forEach((snapshot) => reflectSnapshot(this.$canvas, snapshot))
+        this.snapshots.forEach((snapshot) => reflectSnapshot(this.$root, snapshot))
       }
     }
 
@@ -177,7 +165,7 @@ export default class VCanvasDrawingLayer extends HTMLElement {
         return
       }
 
-      const snapshot = takeSnapshot(this.$canvas)
+      const snapshot = takeSnapshot(this.$root)
       if (snapshot) {
         CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
       }
@@ -192,46 +180,41 @@ export default class VCanvasDrawingLayer extends HTMLElement {
     resetPencilPoints()
   }
 
-  draw(e: MouseEvent | TouchEvent) {
+  draw(ev: MouseEvent | TouchEvent) {
     if (!this.isDrawing) {
       return
     }
 
-    e.preventDefault()
+    this.trackTouchPoint(ev)
+    this.paintPath()
+  }
 
-    const trackTouchPoint = () => {
-      const { x, y } = getSyntheticTouchPoint(this.$canvas, e)
-      this.points.push({ x, y })
+  private trackTouchPoint(ev: MouseEvent | TouchEvent) {
+    ev.preventDefault()
+
+    const { x, y } = getSyntheticTouchPoint(this.$root, ev)
+    this.points.push({ x, y })
+  }
+
+  private paintPath() {
+    this.context.beginPath()
+
+    if (this.phase === 'draw') {
+      this.context.globalCompositeOperation = 'source-over'
+    } else {
+      this.context.globalCompositeOperation = 'destination-out'
     }
 
-    const paint = () => {
-      this.context.beginPath()
+    // we can insure coordinate is exist because paint is called after track touch point
+    const { x: startX, y: startY } = this.points[0]
+    this.context.moveTo(startX, startY)
 
-      if (this.phase === 'draw') {
-        this.context.globalCompositeOperation = 'source-over'
-      } else {
-        this.context.globalCompositeOperation = 'destination-out'
-      }
-
-      // we can insure coordinate is exist because paint is called after track touch point
-      const { x: startX, y: startY } = this.points[0]
-      this.context.moveTo(startX, startY)
-
-      // draw smooth line with quadratic Bézier curve
-      for (let idx = 1; idx < this.points.length - 1; idx += 1) {
-        const endpoint = getMiddlePoint(this.points[idx], this.points[idx + 1])
-        this.context.quadraticCurveTo(
-          this.points[idx].x,
-          this.points[idx].y,
-          endpoint.x,
-          endpoint.y
-        )
-      }
-
-      this.context.stroke()
+    // draw smooth line with quadratic Bézier curve
+    for (let idx = 1; idx < this.points.length - 1; idx += 1) {
+      const endpoint = get2dMiddlePoint(this.points[idx], this.points[idx + 1])
+      this.context.quadraticCurveTo(this.points[idx].x, this.points[idx].y, endpoint.x, endpoint.y)
     }
 
-    trackTouchPoint()
-    paint()
+    this.context.stroke()
   }
 }

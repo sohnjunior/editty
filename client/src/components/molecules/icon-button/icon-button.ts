@@ -1,3 +1,5 @@
+import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
 import { isIconType, isSizeType } from '@atoms/icon/icon'
 import type { Icon as BaseIcon, Size as BaseSize } from '@atoms/icon/icon'
 
@@ -35,9 +37,7 @@ template.innerHTML = `
   </button>
 `
 
-export default class VIconButton extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class VIconButton extends VComponent {
   static tag = 'v-icon-button'
   static get observedAttributes() {
     return ['icon', 'size']
@@ -52,31 +52,16 @@ export default class VIconButton extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      this.updateStyle({ attribute: 'icon', value: this.iconAttribute })
-      this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
-    }
-
-    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
-    requestAnimationFrame(initStyle)
+  bindInitialStyle() {
+    this.updateStyle({ attribute: 'icon', value: this.iconAttribute })
+    this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
-    const $icon = this.$root.querySelector('v-icon')
+  updateStyle({ attribute, value }: UpdateStyleParam) {
+    const $icon = this.$shadow.querySelector('v-icon')
     if (!$icon) {
       return
     }

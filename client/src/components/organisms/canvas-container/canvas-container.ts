@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
 
@@ -20,22 +21,21 @@ template.innerHTML = `
   </div>
 `
 
-export default class VCanvasContainer extends HTMLElement {
-  private $root!: ShadowRoot
+export default class VCanvasContainer extends VComponent {
+  static tag = 'v-canvas-container'
   private imageLayer!: VCanvasImageLayer
   private drawingLayer!: VCanvasDrawingLayer
 
-  static tag = 'v-canvas-container'
-
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
+    super(template)
+  }
 
+  afterCreated() {
     const initLayer = () => {
-      const imageLayer = this.$root.querySelector('v-canvas-image-layer') as VCanvasImageLayer
-      const drawingLayer = this.$root.querySelector('v-canvas-drawing-layer') as VCanvasDrawingLayer
+      const imageLayer = this.$shadow.querySelector('v-canvas-image-layer') as VCanvasImageLayer
+      const drawingLayer = this.$shadow.querySelector(
+        'v-canvas-drawing-layer'
+      ) as VCanvasDrawingLayer
 
       if (!imageLayer || !drawingLayer) {
         console.error('🚨 canvas container need drawing and image layer')
@@ -46,25 +46,19 @@ export default class VCanvasContainer extends HTMLElement {
       this.drawingLayer = drawingLayer
     }
 
-    super()
-    initShadowRoot()
     initLayer()
   }
 
-  connectedCallback() {
-    const propagateEvents = () => {
-      const propagateEventToImageLayer = (ev: Event) => {
-        this.imageLayer.listenSiblingLayerEvent(ev)
-      }
+  bindEventListener() {
+    this.drawingLayer.addEventListener('mousedown', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('mousemove', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('mouseup', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('touchstart', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('touchmove', this.propagateEventToImageLayer.bind(this))
+    this.drawingLayer.addEventListener('touchend', this.propagateEventToImageLayer.bind(this))
+  }
 
-      this.drawingLayer.addEventListener('mousedown', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('mousemove', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('mouseup', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('touchstart', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('touchmove', propagateEventToImageLayer)
-      this.drawingLayer.addEventListener('touchend', propagateEventToImageLayer)
-    }
-
-    propagateEvents()
+  propagateEventToImageLayer(ev: Event) {
+    this.imageLayer.listenSiblingLayerEvent(ev)
   }
 }

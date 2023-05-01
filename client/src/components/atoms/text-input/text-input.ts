@@ -1,3 +1,6 @@
+import { VComponent } from '@/modules/v-component'
+import type { UpdatePropertyParam } from '@/modules/v-component'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -14,17 +17,15 @@ template.innerHTML = `
   <input type="text" />
 `
 
-export default class VTextInput extends HTMLElement {
-  private $root!: ShadowRoot
-  private $input!: HTMLInputElement
-
+export default class VTextInput extends VComponent<HTMLInputElement> {
   static tag = 'v-text-input'
+
   static get observedAttributes() {
     return ['placeholder']
   }
 
   get value() {
-    return this.$input.value
+    return this.$root.value
   }
 
   get placeHolderAttribute() {
@@ -32,47 +33,24 @@ export default class VTextInput extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    const initInnerElement = () => {
-      const $input = this.$root.querySelector('input[type="text"]')
-      if (!$input) {
-        throw new Error('initialize fail')
-      }
-
-      this.$input = $input as HTMLInputElement
-    }
-
-    super()
-    initShadowRoot()
-    initInnerElement()
+    super(template)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.$input.addEventListener('input', (e) => {
-        this.dispatchEvent(
-          new CustomEvent('change', {
-            detail: { value: (e.target as HTMLInputElement).value },
-          })
-        )
-      })
-    }
-
-    initEvents()
+  bindEventListener() {
+    this.$root.addEventListener('input', (e) => {
+      this.dispatchEvent(
+        new CustomEvent('change', {
+          detail: { value: (e.target as HTMLInputElement).value },
+        })
+      )
+    })
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateAttribute({ attribute: name, value: newValue })
-  }
-
-  updateAttribute({ attribute, value }: { attribute: string; value: string }) {
+  updateProperty({ attribute, value }: UpdatePropertyParam) {
     switch (attribute) {
       case 'placeholder':
-        this.$input.placeholder = value
+        this.$root.setAttribute('placeholder', value)
+        break
     }
   }
 }

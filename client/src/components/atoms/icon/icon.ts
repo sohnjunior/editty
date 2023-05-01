@@ -1,3 +1,6 @@
+import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
+
 const icon = [
   'cursor',
   'draw',
@@ -60,9 +63,7 @@ template.innerHTML = `
   <div></div>
 `
 
-export default class VIcon extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class VIcon extends VComponent {
   static tag = 'v-icon'
 
   static get observedAttributes() {
@@ -78,51 +79,30 @@ export default class VIcon extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      const { iconAttribute, sizeAttribute } = this
+  bindInitialStyle() {
+    const { iconAttribute, sizeAttribute } = this
 
-      if (iconAttribute && sizeAttribute) {
-        this.updateStyle({ attribute: 'icon', value: iconAttribute })
-        this.updateStyle({ attribute: 'size', value: sizeAttribute })
-      }
+    if (iconAttribute && sizeAttribute) {
+      this.updateStyle({ attribute: 'icon', value: iconAttribute })
+      this.updateStyle({ attribute: 'size', value: sizeAttribute })
     }
-
-    // HACK: dom mount 이후 속성 가져오지 못하는 이슈 대응
-    requestAnimationFrame(initStyle)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
-    const $icon = this.$root.querySelector('div')
-
-    if (!$icon) {
-      return
-    }
-
+  updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'icon': {
         if (isIconType(value)) {
-          $icon.style.backgroundImage = ASSET_URL[value]
+          this.$root.style.backgroundImage = ASSET_URL[value]
         }
         break
       }
       case 'size': {
         if (isSizeType(value)) {
-          $icon.style.width = SIZE[value]
-          $icon.style.height = SIZE[value]
+          this.$root.style.width = SIZE[value]
+          this.$root.style.height = SIZE[value]
         }
         break
       }

@@ -31,7 +31,7 @@ export function getSyntheticTouchPoint(
 }
 
 /** 2차원 평면좌표에서 두점 사이의 중간 지점을 반환합니다. */
-export function getMiddlePoint(p1: Point, p2: Point) {
+export function get2dMiddlePoint(p1: Point, p2: Point) {
   return {
     x: p1.x + (p2.x - p1.x) / 2,
     y: p1.y + (p2.y - p1.y) / 2,
@@ -39,7 +39,7 @@ export function getMiddlePoint(p1: Point, p2: Point) {
 }
 
 /** 2차원 평면좌표에서 두점 사이의 거리를 반환합니다. */
-export function getDistance2dPoint(p1: Point, p2: Point) {
+export function get2dDistance(p1: Point, p2: Point) {
   return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
 }
 
@@ -84,12 +84,8 @@ export function clearCanvas(canvas: HTMLCanvasElement) {
   context.clearRect(0, 0, canvas.width, canvas.height)
 }
 
-export function refineCanvasRatio(canvas: HTMLCanvasElement) {
-  const context = canvas.getContext('2d')
-  if (!context) {
-    return
-  }
-
+/** retina display 에서 더 많은 픽셀로 렌더링합니다. */
+export function refineCanvasRatioForRetinaDisplay(canvas: HTMLCanvasElement) {
   const ratio = window.devicePixelRatio
   const { width, height } = getComputedStyle(canvas)
 

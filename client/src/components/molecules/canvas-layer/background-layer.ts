@@ -1,5 +1,8 @@
+import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
+
 import { Z_INDEX } from '@/utils/constant'
-import { fillBackgroundColor, refineCanvasRatio } from '@/modules/canvas.utils'
+import { fillBackgroundColor, refineCanvasRatioForRetinaDisplay } from '@/modules/canvas.utils'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -14,10 +17,7 @@ template.innerHTML = `
   <canvas id="background-layer"></canvas>
 `
 
-export default class VCanvasBackgroundLayer extends HTMLElement {
-  private $root!: ShadowRoot
-  private $canvas!: HTMLCanvasElement
-
+export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-background-layer'
 
   static get observedAttributes() {
@@ -29,45 +29,25 @@ export default class VCanvasBackgroundLayer extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    const initCanvas = () => {
-      this.$canvas = this.$root.getElementById('background-layer') as HTMLCanvasElement
-      const ctx = this.$canvas.getContext('2d')
-      if (!ctx) {
-        throw new Error('🚨 canvas load fail')
-      }
-    }
-
-    super()
-    initShadowRoot()
-    initCanvas()
+    super(template)
   }
 
-  connectedCallback() {
-    const initStyle = () => {
-      const { colorAttribute } = this
+  afterCreated() {
+    refineCanvasRatioForRetinaDisplay(this.$root)
+  }
 
-      if (colorAttribute) {
-        fillBackgroundColor(this.$canvas, colorAttribute)
-      }
+  bindInitialStyle() {
+    const { colorAttribute } = this
+
+    if (colorAttribute) {
+      this.updateStyle({ attribute: 'color', value: colorAttribute })
     }
-
-    refineCanvasRatio(this.$canvas)
-    requestAnimationFrame(initStyle)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.updateStyle({ attribute: name, value: newValue })
-  }
-
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
+  updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'color': {
-        fillBackgroundColor(this.$canvas, value)
+        fillBackgroundColor(this.$root, value)
         break
       }
     }

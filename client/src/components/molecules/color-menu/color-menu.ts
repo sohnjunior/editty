@@ -1,3 +1,6 @@
+import { VComponent } from '@/modules/v-component'
+import type { UpdatePropertyParam } from '@/modules/v-component'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <v-menu width="200px">
@@ -5,10 +8,7 @@ template.innerHTML = `
   </v-menu>
 `
 
-export default class VDrawOptionMenu extends HTMLElement {
-  private $root!: ShadowRoot
-  private $menu!: HTMLElement
-
+export default class VDrawOptionMenu extends VComponent {
   static tag = 'v-color-menu'
 
   static get observedAttributes() {
@@ -20,28 +20,14 @@ export default class VDrawOptionMenu extends HTMLElement {
   }
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    const initInnerElement = () => {
-      const $menu = this.$root.querySelector('v-menu')
-      if (!$menu) {
-        throw new Error('initialize fail')
-      }
-
-      this.$menu = $menu as HTMLElement
-    }
-
-    super()
-    initShadowRoot()
-    initInnerElement()
+    super(template)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'open') {
-      this.$menu.setAttribute('open', newValue)
+  updateProperty({ attribute, value }: UpdatePropertyParam) {
+    switch (attribute) {
+      case 'open':
+        this.$root.setAttribute('open', value)
+        break
     }
   }
 }

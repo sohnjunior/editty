@@ -1,3 +1,6 @@
+import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
+
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -10,9 +13,7 @@ template.innerHTML = `
   </button>
 `
 
-export default class VButton extends HTMLElement {
-  private $root: ShadowRoot
-
+export default class VButton extends VComponent {
   static tag = 'v-button'
   static get observedAttributes() {
     return ['color']
@@ -24,17 +25,14 @@ export default class VButton extends HTMLElement {
   }
 
   constructor() {
-    super()
-    this.$root = this.attachShadow({ mode: 'open' })
-    this.$root.appendChild(template.content.cloneNode(true))
+    super(template)
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    switch (name) {
-      case 'color': {
-        const $button = this.$root.querySelector('button')
-        $button && ($button.style.color = newValue)
-      }
+  updateStyle({ attribute, value }: UpdateStyleParam) {
+    switch (attribute) {
+      case 'color':
+        this.$root.style.color = value
+        break
     }
   }
 }

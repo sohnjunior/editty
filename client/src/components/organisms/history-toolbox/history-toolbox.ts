@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { CanvasContext } from '@/contexts/canvas-context/context'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
@@ -16,48 +17,32 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VHistoryToolbox extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class VHistoryToolbox extends VComponent {
   static tag = 'v-history-toolbox'
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      const $container = this.$root.querySelector('v-container')
+  bindEventListener() {
+    this.$root.addEventListener('click', (e) => {
+      const $target = e.target as HTMLElement
 
-      $container?.addEventListener('click', (e) => {
-        const $target = e.target as HTMLElement
-
-        switch ($target.dataset.icon) {
-          case 'back':
-            CanvasContext.dispatch({ action: 'HISTORY_BACK' })
-            break
-          case 'forward':
-            CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
-            break
-          case 'trash': {
-            const isConfirmed = window.confirm(
-              '지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?'
-            )
-            isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
-            break
-          }
-          default:
-            return
+      switch ($target.dataset.icon) {
+        case 'back':
+          CanvasContext.dispatch({ action: 'HISTORY_BACK' })
+          break
+        case 'forward':
+          CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
+          break
+        case 'trash': {
+          const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
+          isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
+          break
         }
-      })
-    }
-
-    initEvents()
+        default:
+          return
+      }
+    })
   }
 }

@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import VColorTile from '@atoms/color-tile/color-tile'
 import { PALETTE_COLORS } from '@/utils/constant'
 
@@ -21,50 +22,27 @@ template.innerHTML = `
   </div>
 `
 
-export default class VColorPalette extends HTMLElement {
+export default class VColorPalette extends VComponent {
   static tag = 'v-color-palette'
 
-  private $root!: ShadowRoot
-  private $div!: HTMLElement
-
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    const initInnerElement = () => {
-      const $div = this.$root.querySelector('div.palette')
-      if (!$div) {
-        throw new Error('initialize fail')
-      }
-
-      this.$div = $div as HTMLElement
-    }
-
-    super()
-    initShadowRoot()
-    initInnerElement()
+    super(template)
   }
 
-  connectedCallback() {
-    const initEvents = () => {
-      this.$div.addEventListener('click', (ev) => {
-        const tagName = (ev.target as HTMLElement).tagName
-        if (tagName === 'V-COLOR-TILE') {
-          const color = (ev.target as VColorTile).colorAttribute
+  bindEventListener() {
+    this.$root.addEventListener('click', (ev) => {
+      const tagName = (ev.target as HTMLElement).tagName
+      if (tagName === 'V-COLOR-TILE') {
+        const color = (ev.target as VColorTile).colorAttribute
 
-          this.dispatchEvent(
-            new CustomEvent('select:color', {
-              detail: { value: color },
-              bubbles: true,
-              composed: true,
-            })
-          )
-        }
-      })
-    }
-
-    initEvents()
+        this.dispatchEvent(
+          new CustomEvent('select:color', {
+            detail: { value: color },
+            bubbles: true,
+            composed: true,
+          })
+        )
+      }
+    })
   }
 }
