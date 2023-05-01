@@ -4,7 +4,7 @@ import { CanvasContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
-  getMiddlePoint,
+  get2dMiddlePoint,
   getSyntheticTouchPoint,
   takeSnapshot,
   reflectSnapshot,
@@ -211,7 +211,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
 
     // draw smooth line with quadratic Bézier curve
     for (let idx = 1; idx < this.points.length - 1; idx += 1) {
-      const endpoint = getMiddlePoint(this.points[idx], this.points[idx + 1])
+      const endpoint = get2dMiddlePoint(this.points[idx], this.points[idx + 1])
       this.context.quadraticCurveTo(this.points[idx].x, this.points[idx].y, endpoint.x, endpoint.y)
     }
 

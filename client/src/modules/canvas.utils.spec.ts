@@ -1,18 +1,18 @@
-import { isPointInsideRect, getMiddlePoint, getDistance2dPoint, resizeRect } from './canvas.utils'
+import { isPointInsideRect, get2dMiddlePoint, get2dDistance, resizeRect } from './canvas.utils'
 
 describe('geometry tool', () => {
-  it('getMiddlePoint', () => {
+  it('get2dMiddlePoint', () => {
     const pointA = { x: 0, y: 0 }
     const pointB = { x: 2, y: 0 }
 
-    expect(getMiddlePoint(pointA, pointB)).toStrictEqual({ x: 1, y: 0 })
+    expect(get2dMiddlePoint(pointA, pointB)).toStrictEqual({ x: 1, y: 0 })
   })
 
-  it('getDistance2dPoint', () => {
+  it('get2dDistance', () => {
     const pointA = { x: 0, y: 0 }
     const pointB = { x: 2, y: 0 }
 
-    expect(getDistance2dPoint(pointA, pointB)).toBe(2)
+    expect(get2dDistance(pointA, pointB)).toBe(2)
   })
 })
 
