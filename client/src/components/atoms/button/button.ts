@@ -1,4 +1,5 @@
 import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -28,10 +29,16 @@ export default class VButton extends VComponent {
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    switch (name) {
+    this.updateStyle({ attribute: name, value: newValue })
+  }
+
+  updateStyle({ attribute, value }: UpdateStyleParam) {
+    switch (attribute) {
       case 'color': {
         const $button = this.$shadow.querySelector('button')
-        $button && ($button.style.color = newValue)
+        if ($button) {
+          $button.style.color = value
+        }
       }
     }
   }
