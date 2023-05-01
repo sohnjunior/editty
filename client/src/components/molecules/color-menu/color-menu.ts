@@ -1,4 +1,5 @@
 import { VComponent } from '@/modules/v-component'
+import type { UpdatePropertyParam } from '@/modules/v-component'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -22,7 +23,7 @@ export default class VDrawOptionMenu extends VComponent {
     super(template)
   }
 
-  updateProperty({ attribute, value }: { attribute: string; value: string }) {
+  updateProperty({ attribute, value }: UpdatePropertyParam) {
     switch (attribute) {
       case 'open':
         this.$root.setAttribute('open', value)

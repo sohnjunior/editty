@@ -1,4 +1,6 @@
 import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
+
 import { Z_INDEX } from '@/utils/constant'
 import { fillBackgroundColor, refineCanvasRatioForRetinaDisplay } from '@/modules/canvas.utils'
 
@@ -39,7 +41,7 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
     }
   }
 
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
+  updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'color': {
         fillBackgroundColor(this.$root, value)

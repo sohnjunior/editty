@@ -1,4 +1,5 @@
 import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
 import { isIconType, isSizeType } from '@atoms/icon/icon'
 import type { Icon as BaseIcon, Size as BaseSize } from '@atoms/icon/icon'
 
@@ -59,7 +60,7 @@ export default class VIconButton extends VComponent {
     this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
   }
 
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
+  updateStyle({ attribute, value }: UpdateStyleParam) {
     const $icon = this.$shadow.querySelector('v-icon')
     if (!$icon) {
       return

@@ -1,4 +1,5 @@
 import { VComponent } from '@/modules/v-component'
+import type { UpdateStyleParam } from '@/modules/v-component'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -49,7 +50,7 @@ export default class VMenu extends VComponent {
     }
   }
 
-  updateStyle({ attribute, value }: { attribute: string; value: string }) {
+  updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'width':
         this.$root.style.maxWidth = value
