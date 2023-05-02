@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasContext } from '@/contexts'
+import { CanvasDrawingContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -41,7 +41,7 @@ export default class VDrawToolbox extends VComponent {
   private $colorMenu!: HTMLElement
 
   get phase() {
-    return CanvasContext.state.phase
+    return CanvasDrawingContext.state.phase
   }
 
   constructor() {
@@ -69,7 +69,7 @@ export default class VDrawToolbox extends VComponent {
   }
 
   subscribeContext() {
-    CanvasContext.subscribe({
+    CanvasDrawingContext.subscribe({
       action: 'SET_PHASE',
       effect: (context) => {
         this.toggleOption(context.state.phase)
@@ -98,26 +98,26 @@ export default class VDrawToolbox extends VComponent {
   }
 
   enterCursorPhase() {
-    CanvasContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
   }
 
   enterDrawPhase() {
     this.handleOpenDrawOptionMenu()
-    CanvasContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
   enterErasePhase() {
-    CanvasContext.dispatch({ action: 'SET_PHASE', data: 'erase' })
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'erase' })
   }
 
   enterGalleryPhase() {
     this.uploadImage()
-    CanvasContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
   }
 
   handleChangePencilColor(ev: Event) {
     const color = (ev as CustomEvent).detail.value
-    CanvasContext.dispatch({ action: 'SET_PENCIL_COLOR', data: color })
+    CanvasDrawingContext.dispatch({ action: 'SET_PENCIL_COLOR', data: color })
   }
 
   handleOpenDrawOptionMenu() {

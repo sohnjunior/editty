@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { CanvasContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasImageContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -13,16 +13,16 @@ import {
   drawCircle,
   drawLine,
 } from '@/modules/canvas.utils'
-import type { ImageObject, DragTarget, Point, Resize, Anchor } from './types'
-import { filterNullish } from '@/utils/ramda'
+import type { DragTarget, Point, Resize, Anchor, ImageTransform } from './types'
+import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
-const MOUSE_CURSOR: Record<Anchor['type'], string> = {
-  TOP_LEFT: 'nw-resize',
-  TOP_RIGHT: 'ne-resize',
-  BOTTOM_LEFT: 'sw-resize',
-  BOTTOM_RIGHT: 'se-resize',
+const MOUSE_CURSOR: Record<ImageTransform, string> = {
+  TOP_LEFT: 'nwse-resize',
+  TOP_RIGHT: 'nesw-resize',
+  BOTTOM_LEFT: 'nesw-resize',
+  BOTTOM_RIGHT: 'nwse-resize',
 }
 
 const template = document.createElement('template')
@@ -41,14 +41,17 @@ template.innerHTML = `
 export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
-  private images: ImageObject[] = []
-  private dragged: { index: number; target: DragTarget | null } = { index: -1, target: null }
+  private dragged: { index: number; target: DragTarget } | null = null
   private focused: { index: number; anchors: Anchor[] } | null = null
-  private transformType: Anchor['type'] | null = null
+  private transformType: ImageTransform | null = null
   private isPressed = false
 
   get phase() {
-    return CanvasContext.state.phase
+    return CanvasDrawingContext.state.phase
+  }
+
+  get images() {
+    return CanvasImageContext.state.images
   }
 
   get isActivePhase() {
@@ -72,6 +75,21 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
+  subscribeContext() {
+    CanvasImageContext.subscribe({
+      action: 'PUSH_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
+    CanvasImageContext.subscribe({
+      action: 'CLEAR_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
+  }
+
   subscribeEventBus() {
     const onImageUpload = async (dataUrls: string[]) => {
       const jobs = dataUrls.map(async (dataUrl) => {
@@ -84,8 +102,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         image.width = rescaled.width
         image.height = rescaled.height
 
-        this.images.push(image)
-        this.paintImages()
+        CanvasImageContext.dispatch({ action: 'PUSH_IMAGE', data: image })
       })
 
       try {
@@ -95,9 +112,9 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       }
     }
     const onClearAll = () => {
-      this.images = []
-      this.dragged = { index: -1, target: null }
-      this.paintImages()
+      this.focused = null
+      this.dragged = null
+      CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' })
     }
 
     EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
@@ -106,12 +123,11 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   setFocusedImage(index: number) {
     this.focused = { index, anchors: [] }
-    this.paintFocusedImageAnchorBorder()
+    this.paintImages()
   }
 
   resetFocusedImage() {
     this.focused = null
-    this.paintImages()
   }
 
   setDraggedImage(index: number, { x, y }: Point) {
@@ -119,10 +135,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   resetDraggedImage() {
-    this.dragged = { index: -1, target: null }
+    this.dragged = null
   }
 
-  setTransformType(type: Anchor['type']) {
+  setTransformType(type: ImageTransform) {
     this.transformType = type
   }
 
@@ -158,8 +174,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   touch(ev: MouseEvent | TouchEvent) {
     const findTouchedImage = (point: Point) => {
-      /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
-      const index = this.images.findIndex((image) =>
+      const index = findLastIndexOf(this.images, (image) =>
         isPointInsideRect({
           pivot: {
             sx: image.sx,
@@ -201,6 +216,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       this.resetDraggedImage()
       this.resetFocusedImage()
       this.resetTransformType()
+      this.paintImages()
     }
   }
 
@@ -224,7 +240,9 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   moveWithPressed(ev: MouseEvent | TouchEvent) {
-    if (this.dragged.target) {
+    ev.preventDefault()
+
+    if (this.dragged) {
       this.dragImage(ev)
       this.paintImages()
     } else if (this.focused) {
@@ -234,7 +252,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   private dragImage(ev: MouseEvent | TouchEvent) {
-    if (!this.dragged.target) {
+    if (!this.dragged) {
       return
     }
 

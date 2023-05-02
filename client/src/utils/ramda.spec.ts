@@ -1,4 +1,4 @@
-import { filterNullish, lastOf } from './ramda'
+import { filterNullish, lastOf, findLastIndexOf } from './ramda'
 
 describe('ramda functions', () => {
   describe('lastOf', () => {
@@ -14,6 +14,16 @@ describe('ramda functions', () => {
   describe('filterNullish', () => {
     it('should remove nullish element from array', () => {
       expect(filterNullish([1, 2, 3, null, undefined, false, ''])).toStrictEqual([1, 2, 3])
+    })
+  })
+
+  describe('findLastIndexOf', () => {
+    it('should find element from backward', () => {
+      expect(findLastIndexOf([1, 2, 2, 1], (el) => el > 1)).toBe(2)
+    })
+
+    it('should return -1 if not found', () => {
+      expect(findLastIndexOf([1, 2, 2, 3], (el) => el > 4))
     })
   })
 })

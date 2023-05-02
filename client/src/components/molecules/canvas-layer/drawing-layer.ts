@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
-import { CanvasContext } from '@/contexts'
+import { CanvasDrawingContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
@@ -33,15 +33,15 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   private isDrawing = false
 
   get phase() {
-    return CanvasContext.state.phase
+    return CanvasDrawingContext.state.phase
   }
 
   get snapshots() {
-    return CanvasContext.state.snapshots
+    return CanvasDrawingContext.state.snapshots
   }
 
   get pencilColor() {
-    return CanvasContext.state.pencilColor
+    return CanvasDrawingContext.state.pencilColor
   }
 
   get isActivePhase() {
@@ -78,13 +78,13 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   subscribeContext() {
-    CanvasContext.subscribe({
+    CanvasDrawingContext.subscribe({
       action: 'PUSH_SNAPSHOT',
       effect: (context) => {
         console.log(context.state.snapshots)
       },
     })
-    CanvasContext.subscribe({
+    CanvasDrawingContext.subscribe({
       action: 'HISTORY_BACK',
       effect: (context) => {
         const snapshot = lastOf(context.state.snapshots)
@@ -96,7 +96,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
         }
       },
     })
-    CanvasContext.subscribe({
+    CanvasDrawingContext.subscribe({
       action: 'HISTORY_FORWARD',
       effect: (context) => {
         const snapshot = lastOf(context.state.snapshots)
@@ -108,7 +108,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
         }
       },
     })
-    CanvasContext.subscribe({
+    CanvasDrawingContext.subscribe({
       action: 'SET_PENCIL_COLOR',
       effect: (context) => {
         this.context.strokeStyle = context.state.pencilColor
@@ -119,7 +119,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   subscribeEventBus() {
     EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {
       clearCanvas(this.$root)
-      CanvasContext.dispatch({ action: 'CLEAR_ALL' })
+      CanvasDrawingContext.dispatch({ action: 'CLEAR_ALL' })
     })
   }
 
@@ -167,7 +167,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
 
       const snapshot = takeSnapshot(this.$root)
       if (snapshot) {
-        CanvasContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
+        CanvasDrawingContext.dispatch({ action: 'PUSH_SNAPSHOT', data: [snapshot] })
       }
     }
 
