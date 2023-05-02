@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasContext } from '@/contexts/canvas-context/context'
+import { CanvasDrawingContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
@@ -30,10 +30,10 @@ export default class VHistoryToolbox extends VComponent {
 
       switch ($target.dataset.icon) {
         case 'back':
-          CanvasContext.dispatch({ action: 'HISTORY_BACK' })
+          CanvasDrawingContext.dispatch({ action: 'HISTORY_BACK' })
           break
         case 'forward':
-          CanvasContext.dispatch({ action: 'HISTORY_FORWARD' })
+          CanvasDrawingContext.dispatch({ action: 'HISTORY_FORWARD' })
           break
         case 'trash': {
           const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')

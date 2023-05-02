@@ -67,4 +67,4 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
   }
 }
 
-export const CanvasContext = new Context(initState, reducer)
+export const CanvasDrawingContext = new Context(initState, reducer)
