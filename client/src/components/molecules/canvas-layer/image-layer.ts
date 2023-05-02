@@ -19,10 +19,10 @@ import { setMouseCursor } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
-  TOP_LEFT: 'nw-resize',
-  TOP_RIGHT: 'ne-resize',
-  BOTTOM_LEFT: 'sw-resize',
-  BOTTOM_RIGHT: 'se-resize',
+  TOP_LEFT: 'nwse-resize',
+  TOP_RIGHT: 'nesw-resize',
+  BOTTOM_LEFT: 'nesw-resize',
+  BOTTOM_RIGHT: 'nwse-resize',
 }
 
 const template = document.createElement('template')
