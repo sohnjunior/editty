@@ -241,6 +241,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   moveWithPressed(ev: MouseEvent | TouchEvent) {
+    ev.preventDefault()
+
     if (this.dragged) {
       this.dragImage(ev)
       this.paintImages()
