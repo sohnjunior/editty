@@ -14,7 +14,7 @@ import {
   drawLine,
 } from '@/modules/canvas.utils'
 import type { DragTarget, Point, Resize, Anchor, ImageTransform } from './types'
-import { filterNullish } from '@/utils/ramda'
+import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
@@ -174,8 +174,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   touch(ev: MouseEvent | TouchEvent) {
     const findTouchedImage = (point: Point) => {
-      /** FIXME: 뒤쪽에서부터 찾도록 변경 필요함 (이미지 겹쳐있는 경우 더 위에 위치한 이미지를 옮겨야하기 때문에) */
-      const index = this.images.findIndex((image) =>
+      const index = findLastIndexOf(this.images, (image) =>
         isPointInsideRect({
           pivot: {
             sx: image.sx,
