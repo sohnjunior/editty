@@ -41,7 +41,7 @@ template.innerHTML = `
 export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
-  private dragged: { index: number; target: DragTarget | null } = { index: -1, target: null }
+  private dragged: { index: number; target: DragTarget } | null = null
   private focused: { index: number; anchors: Anchor[] } | null = null
   private transformType: Anchor['type'] | null = null
   private isPressed = false
@@ -113,7 +113,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     }
     const onClearAll = () => {
       this.focused = null
-      this.dragged = { index: -1, target: null }
+      this.dragged = null
       CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' })
     }
 
@@ -136,7 +136,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   resetDraggedImage() {
-    this.dragged = { index: -1, target: null }
+    this.dragged = null
   }
 
   setTransformType(type: Anchor['type']) {
@@ -241,7 +241,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   moveWithPressed(ev: MouseEvent | TouchEvent) {
-    if (this.dragged.target) {
+    if (this.dragged) {
       this.dragImage(ev)
       this.paintImages()
     } else if (this.focused) {
@@ -251,7 +251,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   private dragImage(ev: MouseEvent | TouchEvent) {
-    if (!this.dragged.target) {
+    if (!this.dragged) {
       return
     }
 
