@@ -14,10 +14,11 @@ const initState: State = {
 
 const reducer: Reducer<State, Action> = ({ state, payload }) => {
   switch (payload.action) {
-    case 'PUSH_IMAGE':
+    case 'PUSH_IMAGE': {
       const images = [...state.images]
       images.push(payload.data)
       return { ...state, images }
+    }
     case 'CLEAR_IMAGE':
       return { ...state, images: [] }
   }
