@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { CanvasContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasImageContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -13,7 +13,7 @@ import {
   drawCircle,
   drawLine,
 } from '@/modules/canvas.utils'
-import type { ImageObject, DragTarget, Point, Resize, Anchor } from './types'
+import type { DragTarget, Point, Resize, Anchor } from './types'
 import { filterNullish } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 
@@ -41,14 +41,17 @@ template.innerHTML = `
 export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
-  private images: ImageObject[] = []
   private dragged: { index: number; target: DragTarget | null } = { index: -1, target: null }
   private focused: { index: number; anchors: Anchor[] } | null = null
   private transformType: Anchor['type'] | null = null
   private isPressed = false
 
   get phase() {
-    return CanvasContext.state.phase
+    return CanvasDrawingContext.state.phase
+  }
+
+  get images() {
+    return CanvasImageContext.state.images
   }
 
   get isActivePhase() {
@@ -72,6 +75,21 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
+  subscribeContext() {
+    CanvasImageContext.subscribe({
+      action: 'PUSH_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
+    CanvasImageContext.subscribe({
+      action: 'CLEAR_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
+  }
+
   subscribeEventBus() {
     const onImageUpload = async (dataUrls: string[]) => {
       const jobs = dataUrls.map(async (dataUrl) => {
@@ -84,8 +102,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         image.width = rescaled.width
         image.height = rescaled.height
 
-        this.images.push(image)
-        this.paintImages()
+        CanvasImageContext.dispatch({ action: 'PUSH_IMAGE', data: image })
       })
 
       try {
@@ -95,9 +112,9 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       }
     }
     const onClearAll = () => {
-      this.images = []
+      this.focused = null
       this.dragged = { index: -1, target: null }
-      this.paintImages()
+      CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' })
     }
 
     EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
