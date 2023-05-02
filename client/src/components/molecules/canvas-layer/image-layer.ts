@@ -13,12 +13,12 @@ import {
   drawCircle,
   drawLine,
 } from '@/modules/canvas.utils'
-import type { DragTarget, Point, Resize, Anchor } from './types'
+import type { DragTarget, Point, Resize, Anchor, ImageTransform } from './types'
 import { filterNullish } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
-const MOUSE_CURSOR: Record<Anchor['type'], string> = {
+const MOUSE_CURSOR: Record<ImageTransform, string> = {
   TOP_LEFT: 'nw-resize',
   TOP_RIGHT: 'ne-resize',
   BOTTOM_LEFT: 'sw-resize',
@@ -43,7 +43,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private context!: CanvasRenderingContext2D
   private dragged: { index: number; target: DragTarget } | null = null
   private focused: { index: number; anchors: Anchor[] } | null = null
-  private transformType: Anchor['type'] | null = null
+  private transformType: ImageTransform | null = null
   private isPressed = false
 
   get phase() {
@@ -128,7 +128,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   resetFocusedImage() {
     this.focused = null
-    this.paintImages()
   }
 
   setDraggedImage(index: number, { x, y }: Point) {
@@ -139,7 +138,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     this.dragged = null
   }
 
-  setTransformType(type: Anchor['type']) {
+  setTransformType(type: ImageTransform) {
     this.transformType = type
   }
 
@@ -218,6 +217,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       this.resetDraggedImage()
       this.resetFocusedImage()
       this.resetTransformType()
+      this.paintImages()
     }
   }
 
