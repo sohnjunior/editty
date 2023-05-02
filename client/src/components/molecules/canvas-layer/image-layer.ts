@@ -123,7 +123,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   setFocusedImage(index: number) {
     this.focused = { index, anchors: [] }
-    this.paintFocusedImageAnchorBorder()
+    this.paintImages()
   }
 
   resetFocusedImage() {
