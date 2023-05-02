@@ -7,3 +7,15 @@ export function filterNullish<T>(array: T[]) {
     Boolean(el)
   )
 }
+
+export function findLastIndexOf<T>(array: T[], condition: (element: T) => boolean) {
+  let idx = array.length
+
+  while (--idx >= 0) {
+    if (condition(array[idx])) {
+      break
+    }
+  }
+
+  return idx
+}
