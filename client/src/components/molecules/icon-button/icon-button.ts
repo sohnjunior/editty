@@ -9,11 +9,8 @@ export type Size = BaseSize
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host {
-      height: 19px;
-    }
-
     :host > button {
+      display: block;
       cursor: pointer;
       border: none;
       border-radius: 3px;
