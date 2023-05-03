@@ -4,7 +4,6 @@ import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
-const OPTIONS: Phase[] = ['cursor', 'draw', 'erase', 'emoji', 'gallery']
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
@@ -26,10 +25,11 @@ template.innerHTML = `
     }
   </style>
   <v-container>
-    ${OPTIONS.map(
-      (control) =>
-        `<v-icon-button data-selected="false" data-icon="${control}" icon="${control}" size="medium"></v-icon-button>`
-    ).join('')}
+    <v-icon-button data-selected="false" data-icon="cursor" icon="cursor" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-icon="draw" icon="draw" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-icon="erase" icon="erase" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-icon="emoji" icon="emoji" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-icon="gallery" icon="gallery" size="medium"></v-icon-button>
 
     <v-color-menu open="false"></v-color-menu>
   </v-container>
