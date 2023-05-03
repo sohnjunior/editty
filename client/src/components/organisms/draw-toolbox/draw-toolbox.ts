@@ -132,13 +132,14 @@ export default class VDrawToolbox extends VComponent {
   }
 
   toggleOption(type: Phase) {
-    const $target = this.$shadow.querySelector(`v-icon-button[data-icon="${type}"]`) as HTMLElement
-
     if (this.$selectRef) {
       this.$selectRef.dataset.selected = 'false'
     }
 
-    this.$selectRef = $target
+    const $selected = this.$shadow.querySelector(
+      `v-icon-button[data-icon="${type}"]`
+    ) as HTMLElement
+    this.$selectRef = $selected
     this.$selectRef.dataset.selected = 'true'
   }
 
