@@ -13,7 +13,7 @@ import InputContainer from '@molecules/input-container/input-container'
 import ColorPalette from '@molecules/color-palette/color-palette'
 import ColorMenu from '@molecules/color-menu/color-menu'
 import CanvasContainer from '@organisms/canvas-container/canvas-container'
-import DrawToolbox from '@organisms/draw-toolbox/draw-toolbox'
+import CanvasToolbox from '@/components/organisms/canvas-toolbox/canvas-toolbox'
 import HistoryToolbox from '@organisms/history-toolbox/history-toolbox'
 import App from './app'
 
@@ -31,7 +31,7 @@ export function defineCustomElements() {
   customElements.define(CanvasImageLayer.tag, CanvasImageLayer)
   customElements.define(Container.tag, Container)
   customElements.define(TextInput.tag, TextInput)
-  customElements.define(DrawToolbox.tag, DrawToolbox)
+  customElements.define(CanvasToolbox.tag, CanvasToolbox)
   customElements.define(HistoryToolbox.tag, HistoryToolbox)
   customElements.define(InputContainer.tag, InputContainer)
   customElements.define(ColorPalette.tag, ColorPalette)

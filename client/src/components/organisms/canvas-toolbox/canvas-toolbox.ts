@@ -48,8 +48,8 @@ template.innerHTML = `
   </v-container>
 `
 
-export default class VDrawToolbox extends VComponent {
-  static tag = 'v-draw-toolbox'
+export default class VCanvasToolbox extends VComponent {
+  static tag = 'v-canvas-toolbox'
   private $selectRef?: HTMLElement
   private $colorMenu!: HTMLElement
   private $colorTile!: HTMLElement
