@@ -45,6 +45,10 @@ export default class VDrawToolbox extends VComponent {
   }
 
   constructor() {
+    super(template)
+  }
+
+  afterCreated(): void {
     const initInnerElement = () => {
       const $colorMenu = this.$shadow.querySelector('v-color-menu')
       if (!$colorMenu) {
@@ -57,7 +61,6 @@ export default class VDrawToolbox extends VComponent {
       this.toggleOption('draw')
     }
 
-    super(template)
     initInnerElement()
     initSelectedOption()
   }
