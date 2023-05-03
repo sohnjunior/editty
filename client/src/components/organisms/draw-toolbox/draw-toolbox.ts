@@ -3,6 +3,7 @@ import { CanvasDrawingContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
+import { PALETTE_COLORS } from '@/utils/constant'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -18,6 +19,17 @@ template.innerHTML = `
       background-color: var(--color-primary40);
     }
 
+    :host v-color-tile {
+      margin: 1px;
+      border: 1px solid var(--color-gray);
+      border-radius: 50%;
+      box-sizing: border-box;
+    }
+
+    :host v-color-tile[data-selected="true"] {
+      border: 1px solid var(--color-primary40);
+    }
+
     :host v-color-menu {
       position: absolute;
       left: 80px;
@@ -25,11 +37,12 @@ template.innerHTML = `
     }
   </style>
   <v-container>
-    <v-icon-button data-selected="false" data-icon="cursor" icon="cursor" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-icon="draw" icon="draw" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-icon="erase" icon="erase" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-icon="emoji" icon="emoji" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-icon="gallery" icon="gallery" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="cursor" icon="cursor" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="draw" icon="draw" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="erase" icon="erase" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="emoji" icon="emoji" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
+    <v-color-tile data-selected="false" data-phase="color" color="java" size="15px"></v-color-tile>
 
     <v-color-menu open="false"></v-color-menu>
   </v-container>
@@ -39,9 +52,14 @@ export default class VDrawToolbox extends VComponent {
   static tag = 'v-draw-toolbox'
   private $selectRef?: HTMLElement
   private $colorMenu!: HTMLElement
+  private $colorTile!: HTMLElement
 
   get phase() {
     return CanvasDrawingContext.state.phase
+  }
+
+  get pencilColor() {
+    return PALETTE_COLORS[CanvasDrawingContext.state.pencilColor]
   }
 
   constructor() {
@@ -51,11 +69,13 @@ export default class VDrawToolbox extends VComponent {
   afterCreated(): void {
     const initInnerElement = () => {
       const $colorMenu = this.$shadow.querySelector('v-color-menu')
-      if (!$colorMenu) {
+      const $colorTile = this.$shadow.querySelector('v-color-tile')
+      if (!$colorMenu || !$colorTile) {
         throw new Error('initialize fail')
       }
 
       this.$colorMenu = $colorMenu as HTMLElement
+      this.$colorTile = $colorTile as HTMLElement
     }
     const initSelectedOption = () => {
       this.toggleOption('draw')
@@ -63,6 +83,10 @@ export default class VDrawToolbox extends VComponent {
 
     initInnerElement()
     initSelectedOption()
+  }
+
+  bindInitialStyle() {
+    this.setPencilColor(this.pencilColor)
   }
 
   bindEventListener() {
@@ -78,10 +102,16 @@ export default class VDrawToolbox extends VComponent {
         this.toggleOption(context.state.phase)
       },
     })
+    CanvasDrawingContext.subscribe({
+      action: 'SET_PENCIL_COLOR',
+      effect: (context) => {
+        this.setPencilColor(context.state.pencilColor)
+      },
+    })
   }
 
   handleClickOption(ev: Event) {
-    const phase = (ev.target as HTMLElement).dataset.icon
+    const phase = (ev.target as HTMLElement).dataset.phase
     switch (phase) {
       case 'cursor':
         this.enterCursorPhase()
@@ -95,6 +125,9 @@ export default class VDrawToolbox extends VComponent {
       case 'gallery':
         this.enterGalleryPhase()
         break
+      case 'color':
+        this.enterColorPhase()
+        break
       default:
         break
     }
@@ -105,7 +138,6 @@ export default class VDrawToolbox extends VComponent {
   }
 
   enterDrawPhase() {
-    this.handleOpenDrawOptionMenu()
     CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
@@ -118,6 +150,14 @@ export default class VDrawToolbox extends VComponent {
     CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
   }
 
+  enterColorPhase() {
+    this.handleOpenDrawOptionMenu()
+  }
+
+  setPencilColor(color: string) {
+    this.$colorTile.setAttribute('color', color)
+  }
+
   handleChangePencilColor(ev: Event) {
     const color = (ev as CustomEvent).detail.value
     CanvasDrawingContext.dispatch({ action: 'SET_PENCIL_COLOR', data: color })
@@ -125,10 +165,12 @@ export default class VDrawToolbox extends VComponent {
 
   handleOpenDrawOptionMenu() {
     this.$colorMenu.setAttribute('open', 'true')
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
   handleCloseDrawOptionMenu() {
     this.$colorMenu.setAttribute('open', 'false')
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
   toggleOption(type: Phase) {
@@ -136,9 +178,7 @@ export default class VDrawToolbox extends VComponent {
       this.$selectRef.dataset.selected = 'false'
     }
 
-    const $selected = this.$shadow.querySelector(
-      `v-icon-button[data-icon="${type}"]`
-    ) as HTMLElement
+    const $selected = this.$shadow.querySelector(`[data-phase="${type}"]`) as HTMLElement
     this.$selectRef = $selected
     this.$selectRef.dataset.selected = 'true'
   }
