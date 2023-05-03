@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { Z_INDEX } from '@/utils/constant'
+import { Z_INDEX, PALETTE_COLORS } from '@/utils/constant'
 import { CanvasDrawingContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
@@ -41,7 +41,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   get pencilColor() {
-    return CanvasDrawingContext.state.pencilColor
+    return PALETTE_COLORS[CanvasDrawingContext.state.pencilColor]
   }
 
   get isActivePhase() {
