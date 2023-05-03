@@ -1,7 +1,6 @@
 import { Context } from '@/contexts/common/context'
 import type { Reducer } from '@/contexts/common/context'
 import { Phase } from './types'
-import { PALETTE_COLORS } from '@/utils/constant'
 
 type State = {
   phase: Phase
@@ -22,7 +21,7 @@ const initState: State = {
   phase: 'draw',
   snapshots: [],
   stash: [],
-  pencilColor: PALETTE_COLORS['teal-blue'],
+  pencilColor: 'teal-blue',
 }
 
 const reducer: Reducer<State, Action> = ({ state, payload }) => {
@@ -60,7 +59,7 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
       return { ...state, snapshots: [], stash: [] }
     }
     case 'SET_PENCIL_COLOR': {
-      return { ...state, pencilColor: PALETTE_COLORS[payload.data] }
+      return { ...state, pencilColor: payload.data }
     }
     default:
       return { ...state }
