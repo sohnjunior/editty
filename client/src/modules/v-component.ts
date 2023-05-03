@@ -12,12 +12,8 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
       const children = this.$shadow.children
       const elements = [...children].filter((element) => !(element instanceof HTMLStyleElement))
 
-      if (elements.length > 1) {
+      if (elements.length !== 1) {
         throw new Error('🚨 v-component must contain one root element')
-      }
-
-      if (elements.length === 0) {
-        throw new Error('🚨 v-component initialization fail')
       }
 
       this.$root = elements[0] as R
