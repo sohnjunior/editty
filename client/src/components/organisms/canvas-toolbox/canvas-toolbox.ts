@@ -42,7 +42,7 @@ template.innerHTML = `
     <v-icon-button data-selected="false" data-phase="erase" icon="erase" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="emoji" icon="emoji" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
-    <v-color-tile data-selected="false" data-phase="color" color="java" size="15px"></v-color-tile>
+    <v-color-tile data-selected="false" data-phase="color" color="none" size="15px"></v-color-tile>
 
     <v-color-menu open="false"></v-color-menu>
   </v-container>
@@ -86,7 +86,7 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   bindInitialStyle() {
-    this.setPencilColor(this.pencilColor)
+    this.setPencilColor(CanvasDrawingContext.state.pencilColor)
   }
 
   bindEventListener() {
