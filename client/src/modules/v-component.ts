@@ -66,7 +66,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
    * Define event listener to assign to this component.
    * @example
    * bindEventListener() {
-   *  this.addEventListener('mousedown', this.handler)
+   *  this.$root.addEventListener('mousedown', this.handler)
    * }
    */
   bindEventListener() {
