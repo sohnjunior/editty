@@ -43,6 +43,12 @@ describe('range-slider', () => {
     const rangeSliderElement = screen.getByTestId('range-slider')
     const rootElement = getTemplateRootElement<HTMLInputElement>(rangeSliderElement)
 
+    /**
+     * NOTE: range 타입 input 을 위한 userEvent 가 별도로 없기 때문에 fireEvent 를 활용합니다.
+     * @reference
+     *  https://github.com/testing-library/user-event/issues/871
+     */
+
     let currentValue = ''
     rangeSliderElement.addEventListener('input', (ev) => {
       currentValue = (ev.target as HTMLInputElement).value
