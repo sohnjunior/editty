@@ -30,7 +30,7 @@ template.innerHTML = `
       border: 1px solid var(--color-primary40);
     }
 
-    :host v-color-menu {
+    :host v-color-menu, v-stroke-menu {
       position: absolute;
       left: 80px;
       bottom: 0;
@@ -38,12 +38,13 @@ template.innerHTML = `
   </style>
   <v-container>
     <v-icon-button data-selected="false" data-phase="cursor" icon="cursor" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-phase="draw" icon="draw" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-phase="erase" icon="erase" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="stroke" icon="draw" size="medium"></v-icon-button>
+
     <v-icon-button data-selected="false" data-phase="emoji" icon="emoji" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
     <v-color-tile data-selected="false" data-phase="color" color="none" size="15px"></v-color-tile>
 
+    <v-stroke-menu open="false"></v-stroke-menu>
     <v-color-menu open="false"></v-color-menu>
   </v-container>
 `
@@ -52,7 +53,8 @@ export default class VCanvasToolbox extends VComponent {
   static tag = 'v-canvas-toolbox'
   private $selectRef?: HTMLElement
   private $colorMenu!: HTMLElement
-  private $colorTile!: HTMLElement
+  private $colorPreview!: HTMLElement
+  private $strokeMenu!: HTMLElement
 
   get phase() {
     return CanvasDrawingContext.state.phase
@@ -70,42 +72,44 @@ export default class VCanvasToolbox extends VComponent {
     const initInnerElement = () => {
       const $colorMenu = this.$shadow.querySelector('v-color-menu')
       const $colorTile = this.$shadow.querySelector('v-color-tile')
-      if (!$colorMenu || !$colorTile) {
+      const $strokeMenu = this.$shadow.querySelector('v-stroke-menu')
+      if (!$colorMenu || !$colorTile || !$strokeMenu) {
         throw new Error('initialize fail')
       }
 
       this.$colorMenu = $colorMenu as HTMLElement
-      this.$colorTile = $colorTile as HTMLElement
-    }
-    const initSelectedOption = () => {
-      this.toggleOption('draw')
+      this.$colorPreview = $colorTile as HTMLElement
+      this.$strokeMenu = $strokeMenu as HTMLElement
     }
 
     initInnerElement()
-    initSelectedOption()
+    this.toggleCanvasPhase('draw')
   }
 
   bindInitialStyle() {
-    this.setPencilColor(CanvasDrawingContext.state.pencilColor)
+    this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
   }
 
   bindEventListener() {
     this.$root.addEventListener('click', this.handleClickOption.bind(this))
     this.$colorMenu.addEventListener('select:color', this.handleChangePencilColor.bind(this))
-    this.$colorMenu.addEventListener('close:menu', this.handleCloseDrawOptionMenu.bind(this))
+    this.$colorMenu.addEventListener('close:menu', this.handleCloseColorMenu.bind(this))
+    this.$strokeMenu.addEventListener('stroke:select', this.handleSelectStroke.bind(this))
+    this.$strokeMenu.addEventListener('stroke:resize', this.handleResizeStroke.bind(this))
+    this.$strokeMenu.addEventListener('close:menu', this.handleCloseStrokeMenu.bind(this))
   }
 
   subscribeContext() {
     CanvasDrawingContext.subscribe({
       action: 'SET_PHASE',
       effect: (context) => {
-        this.toggleOption(context.state.phase)
+        this.toggleCanvasPhase(context.state.phase)
       },
     })
     CanvasDrawingContext.subscribe({
       action: 'SET_PENCIL_COLOR',
       effect: (context) => {
-        this.setPencilColor(context.state.pencilColor)
+        this.setPencilColorPreview(context.state.pencilColor)
       },
     })
   }
@@ -116,11 +120,8 @@ export default class VCanvasToolbox extends VComponent {
       case 'cursor':
         this.enterCursorPhase()
         break
-      case 'draw':
-        this.enterDrawPhase()
-        break
-      case 'erase':
-        this.enterErasePhase()
+      case 'stroke':
+        this.enterStrokePhase()
         break
       case 'gallery':
         this.enterGalleryPhase()
@@ -137,25 +138,17 @@ export default class VCanvasToolbox extends VComponent {
     CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
   }
 
-  enterDrawPhase() {
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
-  }
-
-  enterErasePhase() {
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'erase' })
+  enterStrokePhase() {
+    this.handleOpenStrokeMenu()
   }
 
   enterGalleryPhase() {
     this.uploadImage()
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+    this.enterCursorPhase()
   }
 
   enterColorPhase() {
-    this.handleOpenDrawOptionMenu()
-  }
-
-  setPencilColor(color: string) {
-    this.$colorTile.setAttribute('color', color)
+    this.handleOpenColorMenu()
   }
 
   handleChangePencilColor(ev: Event) {
@@ -163,27 +156,63 @@ export default class VCanvasToolbox extends VComponent {
     CanvasDrawingContext.dispatch({ action: 'SET_PENCIL_COLOR', data: color })
   }
 
-  handleOpenDrawOptionMenu() {
+  handleOpenColorMenu() {
     this.$colorMenu.setAttribute('open', 'true')
     CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
-  handleCloseDrawOptionMenu() {
+  handleCloseColorMenu() {
     this.$colorMenu.setAttribute('open', 'false')
     CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
-  toggleOption(type: Phase) {
+  handleOpenStrokeMenu() {
+    this.$strokeMenu.setAttribute('open', 'true')
+  }
+
+  handleCloseStrokeMenu() {
+    this.$strokeMenu.setAttribute('open', 'false')
+  }
+
+  handleSelectStroke(ev: Event) {
+    const stroke = (ev as CustomEvent).detail.value
+    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: stroke })
+  }
+
+  handleResizeStroke(ev: Event) {
+    const size = (ev as CustomEvent).detail.value
+    CanvasDrawingContext.dispatch({ action: 'SET_STROKE_SIZE', data: size })
+  }
+
+  private setPencilColorPreview(color: string) {
+    this.$colorPreview.setAttribute('color', color)
+  }
+
+  private toggleCanvasPhase(type: Phase) {
     if (this.$selectRef) {
       this.$selectRef.dataset.selected = 'false'
     }
 
-    const $selected = this.$shadow.querySelector(`[data-phase="${type}"]`) as HTMLElement
+    const optionMap = {
+      cursor: 'cursor',
+      draw: 'stroke',
+      erase: 'stroke',
+      emoji: 'emoji',
+      gallery: 'gallery',
+      color: 'color',
+    }
+
+    const $selected = this.$shadow.querySelector(`[data-phase="${optionMap[type]}"]`) as HTMLElement
+    $selected.dataset.selected = 'true'
     this.$selectRef = $selected
-    this.$selectRef.dataset.selected = 'true'
+
+    if (type === 'draw' || type === 'erase') {
+      this.$strokeMenu.setAttribute('stroke', type)
+      $selected.setAttribute('icon', type)
+    }
   }
 
-  async uploadImage() {
+  private async uploadImage() {
     const dataUrls = await selectImageFromDevice()
     EventBus.getInstance().emit(EVENT_KEY.UPLOAD_IMAGE, dataUrls)
   }
