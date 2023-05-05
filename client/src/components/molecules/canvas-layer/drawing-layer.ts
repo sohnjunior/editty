@@ -44,6 +44,10 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     return PALETTE_COLORS[CanvasDrawingContext.state.pencilColor]
   }
 
+  get strokeSize() {
+    return CanvasDrawingContext.state.strokeSize
+  }
+
   get isActivePhase() {
     return ['draw', 'erase'].includes(this.phase)
   }
@@ -114,6 +118,12 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
         this.context.strokeStyle = context.state.pencilColor
       },
     })
+    CanvasDrawingContext.subscribe({
+      action: 'SET_STROKE_SIZE',
+      effect: (context) => {
+        this.context.lineWidth = context.state.strokeSize
+      },
+    })
   }
 
   subscribeEventBus() {
@@ -138,9 +148,9 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     }
 
     const setupLineStyle = () => {
-      this.context.lineWidth = 10
       this.context.lineCap = 'round'
       this.context.strokeStyle = this.pencilColor
+      this.context.lineWidth = this.strokeSize
     }
 
     const setupSnapshots = () => {
