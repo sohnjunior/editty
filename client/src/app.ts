@@ -10,7 +10,7 @@ template.innerHTML = `
       z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
-    :host v-draw-toolbox {
+    :host v-canvas-toolbox {
       position: fixed;
       left: 20px;
       bottom: 40px;
@@ -29,7 +29,7 @@ template.innerHTML = `
     <main slot="main">
       <v-canvas-container></v-canvas-container>
       <v-input-container></v-input-container>
-      <v-draw-toolbox></v-draw-toolbox>
+      <v-canvas-toolbox></v-canvas-toolbox>
       <v-history-toolbox></v-history-toolbox>
     </main>
   </v-mobile-layout>

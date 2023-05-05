@@ -8,4 +8,11 @@ export default {
   title: 'Molecules / Color Menu',
 }
 
-export const Basic = () => html`<v-color-menu></v-color-menu>`
+interface Props {
+  open: boolean
+}
+
+export const Basic = ({ open }: Props) => html`<v-color-menu open="${open}"></v-color-menu>`
+Basic.args = {
+  open: true,
+}

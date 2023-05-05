@@ -54,6 +54,7 @@ const template = document.createElement('template')
 template.innerHTML = `
   <style>
     :host > div {
+      display: block;
       background: transparent;
       background-repeat: no-repeat;
       background-position: center;

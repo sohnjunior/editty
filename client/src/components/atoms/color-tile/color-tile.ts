@@ -4,8 +4,9 @@ import { PALETTE_COLORS } from '@/utils/constant'
 
 const template = document.createElement('template')
 template.innerHTML = `
-  <style>
+  <style>   
     :host > div {
+      display: block;
       border-radius: 50%;
     }
 
