@@ -70,16 +70,16 @@ export default class VCanvasToolbox extends VComponent {
 
   afterCreated(): void {
     const initInnerElement = () => {
-      const $colorMenu = this.$shadow.querySelector('v-color-menu')
-      const $colorTile = this.$shadow.querySelector('v-color-tile')
-      const $strokeMenu = this.$shadow.querySelector('v-stroke-menu')
+      const $colorMenu = this.$shadow.querySelector<HTMLElement>('v-color-menu')
+      const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
+      const $strokeMenu = this.$shadow.querySelector<HTMLElement>('v-stroke-menu')
       if (!$colorMenu || !$colorTile || !$strokeMenu) {
         throw new Error('initialize fail')
       }
 
-      this.$colorMenu = $colorMenu as HTMLElement
-      this.$colorPreview = $colorTile as HTMLElement
-      this.$strokeMenu = $strokeMenu as HTMLElement
+      this.$colorMenu = $colorMenu
+      this.$colorPreview = $colorTile
+      this.$strokeMenu = $strokeMenu
     }
 
     initInnerElement()
@@ -202,7 +202,11 @@ export default class VCanvasToolbox extends VComponent {
       color: 'color',
     }
 
-    const $selected = this.$shadow.querySelector(`[data-phase="${optionMap[type]}"]`) as HTMLElement
+    const $selected = this.$shadow.querySelector<HTMLElement>(`[data-phase="${optionMap[type]}"]`)
+    if (!$selected) {
+      return
+    }
+
     $selected.dataset.selected = 'true'
     this.$selectRef = $selected
 
