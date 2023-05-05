@@ -7,6 +7,7 @@ type State = {
   snapshots: ImageData[]
   stash: ImageData[]
   pencilColor: string
+  strokeSize: number
 }
 
 type Action =
@@ -16,12 +17,14 @@ type Action =
   | { action: 'HISTORY_FORWARD' }
   | { action: 'CLEAR_ALL' }
   | { action: 'SET_PENCIL_COLOR'; data: State['pencilColor'] }
+  | { action: 'SET_STROKE_SIZE'; data: State['strokeSize'] }
 
 const initState: State = {
   phase: 'draw',
   snapshots: [],
   stash: [],
   pencilColor: 'teal-blue',
+  strokeSize: 10,
 }
 
 const reducer: Reducer<State, Action> = ({ state, payload }) => {
@@ -60,6 +63,9 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
     }
     case 'SET_PENCIL_COLOR': {
       return { ...state, pencilColor: payload.data }
+    }
+    case 'SET_STROKE_SIZE': {
+      return { ...state, strokeSize: payload.data }
     }
     default:
       return { ...state }
