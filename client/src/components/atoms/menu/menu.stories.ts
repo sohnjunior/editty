@@ -8,7 +8,7 @@ export default {
 }
 
 interface Props {
-  open: 'true' | 'false'
+  open: boolean
   width: string
 }
 
@@ -22,6 +22,6 @@ export const Basic = ({ open, width }: Props) =>
     </v-menu>
   `
 Basic.args = {
-  open: 'true',
+  open: true,
   width: '200px',
 }
