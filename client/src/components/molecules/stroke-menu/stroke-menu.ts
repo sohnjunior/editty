@@ -74,7 +74,6 @@ template.innerHTML = `
 
 export default class VStrokeMenu extends VComponent {
   static tag = 'v-stroke-menu'
-  private _stroke: Stroke = 'draw'
 
   static get observedAttributes() {
     return ['open', 'stroke']
@@ -85,7 +84,7 @@ export default class VStrokeMenu extends VComponent {
   }
 
   get stroke() {
-    return this._stroke
+    return this.getAttribute('stroke') || 'draw'
   }
 
   constructor() {
@@ -153,13 +152,15 @@ export default class VStrokeMenu extends VComponent {
   }
 
   private selectStroke(newPhase: Stroke) {
-    const oldPhase = this.stroke
-    const $oldSelected = this.$root.querySelector(`[data-phase="${oldPhase}"]`) as HTMLElement
-    $oldSelected.dataset.selected = 'false'
+    const $oldSelected = this.$root.querySelector<HTMLElement>(`[data-selected="true"]`)
+    if ($oldSelected) {
+      $oldSelected.dataset.selected = 'false'
+    }
 
-    const $selected = this.$root.querySelector(`[data-phase="${newPhase}"]`) as HTMLElement
-    $selected.dataset.selected = 'true'
-
-    this._stroke = newPhase
+    const $selected = this.$root.querySelector<HTMLElement>(`[data-phase="${newPhase}"]`)
+    if ($selected) {
+      $selected.dataset.selected = 'true'
+      this.setAttribute('stroke', newPhase)
+    }
   }
 }
