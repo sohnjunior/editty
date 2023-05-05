@@ -1,7 +1,6 @@
 import RangeSlider from './range-slider'
 import { screen, fireEvent } from '@testing-library/dom'
-import userEvent from '@testing-library/user-event'
-import { getTemplateRootElement, waitWCStyleInit, getInitialStyle } from '@/modules/wc-dom'
+import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-dom'
 
 describe('range-slider', () => {
   beforeAll(() => {
