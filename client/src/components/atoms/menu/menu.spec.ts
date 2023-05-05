@@ -52,7 +52,7 @@ describe('menu', () => {
     const rootElement = getTemplateRootElement<Container>(menuElement)
     const style = await getInitialStyle(rootElement)
 
-    expect(style.maxWidth).toBe('300px')
+    expect(style.minWidth).toBe('300px')
   })
 
   it.todo('should fire close:menu event on click outside the menu')

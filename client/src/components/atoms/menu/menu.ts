@@ -53,7 +53,7 @@ export default class VMenu extends VComponent {
   updateStyle({ attribute, value }: UpdateStyleParam) {
     switch (attribute) {
       case 'width':
-        this.$root.style.maxWidth = value
+        this.$root.style.minWidth = value
         break
     }
   }
