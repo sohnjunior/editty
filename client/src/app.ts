@@ -1,3 +1,4 @@
+import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
 
 const template = document.createElement('template')
@@ -35,18 +36,10 @@ template.innerHTML = `
   </v-mobile-layout>
 `
 
-export default class App extends HTMLElement {
-  private $root!: ShadowRoot
-
+export default class App extends VComponent {
   static tag = 'v-app'
 
   constructor() {
-    const initShadowRoot = () => {
-      this.$root = this.attachShadow({ mode: 'open' })
-      this.$root.appendChild(template.content.cloneNode(true))
-    }
-
-    super()
-    initShadowRoot()
+    super(template)
   }
 }
