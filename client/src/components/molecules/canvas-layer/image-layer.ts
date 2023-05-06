@@ -41,7 +41,7 @@ template.innerHTML = `
 export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
-  private dragged: { index: number; target: DragTarget } | null = null
+  private dragged: DragTarget | null = null
   private focused: { index: number; anchors: Anchor[] } | null = null
   private transformType: ImageTransform | null = null
   private isPressed = false
@@ -130,7 +130,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   setDraggedImage(index: number, { x, y }: Point) {
-    this.dragged = { index, target: { sx: x, sy: y, image: this.images[index] } }
+    this.dragged = { sx: x, sy: y, image: this.images[index] }
   }
 
   resetDraggedImage() {
@@ -258,15 +258,15 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     }
 
     const { x, y } = getSyntheticTouchPoint(this.$root, ev)
-    const dx = x - this.dragged.target.sx
-    const dy = y - this.dragged.target.sy
+    const dx = x - this.dragged.sx
+    const dy = y - this.dragged.sy
 
-    const draggedImageEntity = this.images[this.dragged.index]
+    const draggedImageEntity = this.dragged.image
     draggedImageEntity.sx += dx
     draggedImageEntity.sy += dy
 
-    this.dragged.target.sx = x
-    this.dragged.target.sy = y
+    this.dragged.sx = x
+    this.dragged.sy = y
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
