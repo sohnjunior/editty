@@ -54,6 +54,4 @@ describe('menu', () => {
 
     expect(style.minWidth).toBe('300px')
   })
-
-  it.todo('should fire close:menu event on click outside the menu')
 })
