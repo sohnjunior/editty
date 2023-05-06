@@ -26,6 +26,12 @@ function waitRAF() {
   return new Promise((resolve) => requestAnimationFrame(resolve))
 }
 
+/** render htmlString and wait for style initialize */
+export async function renderToHtml(renderHtml: string) {
+  document.body.innerHTML = renderHtml
+  await waitWCStyleInit()
+}
+
 /** cleanup document for isolation test */
 export function cleanup() {
   document.body.innerHTML = ''

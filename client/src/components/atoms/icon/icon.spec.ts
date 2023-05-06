@@ -1,13 +1,11 @@
 import { screen } from '@testing-library/dom'
-import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 
 describe('icon', () => {
   it('should render icon with medium size', async () => {
-    document.body.innerHTML = `
+    await renderToHtml(`
       <v-icon data-testid="icon" icon="emoji" size="medium"></v-icon>
-    `
-
-    await waitWCStyleInit()
+    `)
 
     const iconElement = screen.getByTestId('icon')
     const rootElement = getTemplateRootElement<HTMLDivElement>(iconElement)

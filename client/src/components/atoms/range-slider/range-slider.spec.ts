@@ -1,11 +1,11 @@
 import { screen, fireEvent } from '@testing-library/dom'
-import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 
 describe('range-slider', () => {
-  it('should accept min, max attribute', () => {
-    document.body.innerHTML = `
+  it('should accept min, max attribute', async () => {
+    await renderToHtml(`
       <v-range-slider data-testid="range-slider" min="10" max="50"></v-range-slider>
-    `
+    `)
 
     const rangeSliderElement = screen.getByTestId('range-slider')
     const rootElement = getTemplateRootElement<HTMLInputElement>(rangeSliderElement)
@@ -14,10 +14,10 @@ describe('range-slider', () => {
     expect(rootElement.getAttribute('max')).toBe('50')
   })
 
-  it('should set initial value with value attribute', () => {
-    document.body.innerHTML = `
-    <v-range-slider data-testid="range-slider" min="10" max="50" value="30"></v-range-slider>
-  `
+  it('should set initial value with value attribute', async () => {
+    await renderToHtml(`
+      <v-range-slider data-testid="range-slider" min="10" max="50" value="30"></v-range-slider>
+    `)
 
     const rangeSliderElement = screen.getByTestId('range-slider')
     const rootElement = getTemplateRootElement<HTMLInputElement>(rangeSliderElement)
@@ -26,10 +26,9 @@ describe('range-slider', () => {
   })
 
   it('should fire input event with current value', async () => {
-    document.body.innerHTML = `
+    await renderToHtml(`
       <v-range-slider data-testid="range-slider" min="10" max="50"></v-range-slider>
-    `
-    await waitWCStyleInit()
+    `)
 
     const rangeSliderElement = screen.getByTestId('range-slider')
     const rootElement = getTemplateRootElement<HTMLInputElement>(rangeSliderElement)

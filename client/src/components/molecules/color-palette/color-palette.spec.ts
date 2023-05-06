@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
-import { getTemplateRootElement } from '@/modules/wc-test-utils'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 
 describe('color-palette', () => {
   it('should propagate selected color', async () => {
-    document.body.innerHTML = `
+    await renderToHtml(`
       <v-color-palette data-testid="color-palette"></v-color-palette>
-    `
+    `)
 
     const colorPaletteElement = screen.getByTestId('color-palette')
     const rootElement = getTemplateRootElement<HTMLDivElement>(colorPaletteElement)
