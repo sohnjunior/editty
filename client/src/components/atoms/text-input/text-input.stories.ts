@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import TextInput from './text-input'
-
-customElements.define(TextInput.tag, TextInput)
-
 export default {
   title: 'Elements / Text Input',
 }

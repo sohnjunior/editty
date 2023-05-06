@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import VColorMenu from './color-menu'
-
-customElements.define(VColorMenu.tag, VColorMenu)
-
 export default {
   title: 'Molecules / Color Menu',
 }

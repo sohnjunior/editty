@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import Container from './container'
-
-customElements.define(Container.tag, Container)
-
 export default {
   title: 'Elements / Container',
 }

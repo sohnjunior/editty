@@ -1,10 +1,6 @@
 import TextInput from './text-input'
 
 describe('text-input', () => {
-  beforeAll(() => {
-    customElements.define(TextInput.tag, TextInput)
-  })
-
   it('should accept placeholder attribute', async () => {
     const example = document.createElement('div')
     example.innerHTML = `

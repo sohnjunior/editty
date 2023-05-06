@@ -1,23 +1,12 @@
 import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
-import { getTemplateRootElement } from '@/modules/wc-dom'
-
-import ColorTile from '@/components/atoms/color-tile/color-tile'
-import ColorPalette from './color-palette'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 
 describe('color-palette', () => {
-  beforeAll(() => {
-    customElements.define(ColorTile.tag, ColorTile)
-    customElements.define(ColorPalette.tag, ColorPalette)
-  })
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should propagate selected color', async () => {
-    document.body.innerHTML = `
+    await renderToHtml(`
       <v-color-palette data-testid="color-palette"></v-color-palette>
-    `
+    `)
 
     const colorPaletteElement = screen.getByTestId('color-palette')
     const rootElement = getTemplateRootElement<HTMLDivElement>(colorPaletteElement)

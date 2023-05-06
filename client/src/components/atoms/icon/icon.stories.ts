@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
-
-import VIcon from './icon'
 import type { Icon, Size } from './icon'
-
-customElements.define(VIcon.tag, VIcon)
 
 export default {
   title: 'Elements / Icon',

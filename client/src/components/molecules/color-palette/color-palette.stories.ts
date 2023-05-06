@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import ColorSelect from './color-palette'
-
-customElements.define(ColorSelect.tag, ColorSelect)
-
 export default {
   title: 'Molecules / Color Palette',
 }

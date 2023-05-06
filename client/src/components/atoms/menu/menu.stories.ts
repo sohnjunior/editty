@@ -1,7 +1,4 @@
 import { html } from 'lit-html'
-import VMenu from './menu'
-
-customElements.define(VMenu.tag, VMenu)
 
 export default {
   title: 'Elements / Menu',

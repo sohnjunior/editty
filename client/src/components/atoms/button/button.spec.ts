@@ -1,11 +1,6 @@
-import Button from './button'
-import { getSlotNodes } from '@/modules/wc-dom'
+import { getSlotNodes } from '@/modules/wc-test-utils'
 
 describe('button', () => {
-  beforeAll(() => {
-    customElements.define(Button.tag, Button)
-  })
-
   it('should render slot', () => {
     const example = document.createElement('div')
     example.innerHTML = `

@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import VColorTile from './color-tile'
-
-customElements.define(VColorTile.tag, VColorTile)
-
 export default {
   title: 'Elements / Color Tile',
 }
