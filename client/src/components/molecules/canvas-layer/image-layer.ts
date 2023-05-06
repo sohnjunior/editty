@@ -123,7 +123,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   setFocusedImage(index: number) {
     this.focused = { index, anchors: [] }
-    this.paintImages()
   }
 
   resetFocusedImage() {
@@ -208,8 +207,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     const isImageArea = imageIndex > -1
     if (isImageArea) {
-      this.setDraggedImage(imageIndex, touchPoint)
       this.setFocusedImage(imageIndex)
+      this.setDraggedImage(imageIndex, touchPoint)
+      // TODO: 여기에 넣자
+      this.paintImages()
     } else if (anchor) {
       this.setTransformType(anchor.type)
     } else {
