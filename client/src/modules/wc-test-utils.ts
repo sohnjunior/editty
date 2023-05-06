@@ -24,7 +24,7 @@ export async function getInitialStyle(element: HTMLElement) {
 }
 
 /** web component initial style 이 적용되는 것을 기다립니다. */
-export async function waitWCStyleInit() {
+async function waitWCStyleInit() {
   await waitRAF()
 }
 
