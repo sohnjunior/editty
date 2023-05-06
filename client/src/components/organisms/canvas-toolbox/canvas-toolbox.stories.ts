@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import VDrawToolbox from './canvas-toolbox'
-
-customElements.define(VDrawToolbox.tag, VDrawToolbox)
-
 export default {
   title: 'Organisms / Canvas Toolbox',
 }

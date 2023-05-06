@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
-
-import IconButton from './icon-button'
 import type { Icon, Size } from './icon-button'
-
-customElements.define(IconButton.tag, IconButton)
 
 export default {
   title: 'Elements / Icon Button',

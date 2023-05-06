@@ -1,7 +1,4 @@
 import { html } from 'lit-html'
-import VDivider from './divider'
-
-customElements.define(VDivider.tag, VDivider)
 
 export default {
   title: 'Elements / Divider',

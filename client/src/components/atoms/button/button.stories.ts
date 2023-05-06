@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import Button from './button'
-
-customElements.define(Button.tag, Button)
-
 export default {
   title: 'Elements / Button',
 }

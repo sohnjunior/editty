@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import VRangeSlider from './range-slider'
-
-customElements.define(VRangeSlider.tag, VRangeSlider)
-
 export default {
   title: 'Elements / Range Slider',
 }

@@ -1,8 +1,5 @@
 import { html } from 'lit-html'
-import VStrokeMenu from './stroke-menu'
 import type { Stroke } from './stroke-menu'
-
-customElements.define(VStrokeMenu.tag, VStrokeMenu)
 
 export default {
   title: 'Molecules / Stroke Menu',

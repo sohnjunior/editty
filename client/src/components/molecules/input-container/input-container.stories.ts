@@ -1,9 +1,5 @@
 import { html } from 'lit-html'
 
-import InputContainer from './input-container'
-
-customElements.define(InputContainer.tag, InputContainer)
-
 export default {
   title: 'Molecules / Input Container',
 }
