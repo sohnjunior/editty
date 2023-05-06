@@ -3,10 +3,6 @@ import userEvent from '@testing-library/user-event'
 import { getTemplateRootElement } from '@/modules/wc-test-utils'
 
 describe('color-palette', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should propagate selected color', async () => {
     document.body.innerHTML = `
       <v-color-palette data-testid="color-palette"></v-color-palette>

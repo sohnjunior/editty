@@ -2,10 +2,6 @@ import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('divider', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should accept size attribute', async () => {
     document.body.innerHTML = `
       <v-divider data-testid="divider" size="20px"></v-divider>

@@ -3,10 +3,6 @@ import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit, getInitialStyle } from '@/modules/wc-test-utils'
 
 describe('menu', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should show menu with open="true"', async () => {
     document.body.innerHTML = `
       <v-menu data-testid="menu" open="true">

@@ -2,10 +2,6 @@ import { screen, fireEvent } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('range-slider', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should accept min, max attribute', () => {
     document.body.innerHTML = `
       <v-range-slider data-testid="range-slider" min="10" max="50"></v-range-slider>

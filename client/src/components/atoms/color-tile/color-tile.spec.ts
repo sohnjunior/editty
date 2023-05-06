@@ -3,10 +3,6 @@ import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, getInitialStyle } from '@/modules/wc-test-utils'
 
 describe('color-tile', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should has default size', async () => {
     document.body.innerHTML = `
       <v-color-tile data-testid="color-tile" color="anakiwa"></v-color-tile>

@@ -2,10 +2,6 @@ import { screen } from '@testing-library/dom'
 import { waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('stroke-menu', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should show menu with open="true"', async () => {
     document.body.innerHTML = `
       <v-stroke-menu data-testid="stroke-menu" open="true"></v-stroke-menu>

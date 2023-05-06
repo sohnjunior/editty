@@ -2,10 +2,6 @@ import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('icon', () => {
-  afterEach(() => {
-    document.body.innerHTML = ''
-  })
-
   it('should render icon with medium size', async () => {
     document.body.innerHTML = `
       <v-icon data-testid="icon" icon="emoji" size="medium"></v-icon>
