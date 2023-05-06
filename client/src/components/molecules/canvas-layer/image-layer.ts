@@ -149,67 +149,76 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     switch (ev.type) {
       case 'mousedown':
       case 'touchstart':
-        this.isPressed = true
-        this.touch(ev as MouseEvent)
+        this.handleTouchStart(ev)
         break
       case 'mousemove':
       case 'touchmove':
-        this.isPressed && this.moveWithPressed(ev as MouseEvent | TouchEvent)
-        this.hover(ev as MouseEvent | TouchEvent) // TODO: cursor 가 있는 디바이스에서만 적용되도록 하기
+        this.handleTouchMove(ev)
         break
       case 'mouseup':
       case 'touchend':
-        this.isPressed = false
-        this.resetDraggedImage()
+        this.handleTouchEnd()
         break
       default:
         break
     }
   }
 
+  handleTouchStart(ev: Event) {
+    this.isPressed = true
+    this.touch(ev as MouseEvent)
+  }
+
+  handleTouchMove(ev: Event) {
+    this.isPressed && this.moveWithPressed(ev as MouseEvent | TouchEvent)
+    this.hover(ev as MouseEvent | TouchEvent) // TODO: cursor 가 있는 디바이스에서만 적용되도록 하기
+  }
+
+  handleTouchEnd() {
+    this.isPressed = false
+    this.resetDraggedImage()
+  }
+
   touch(ev: MouseEvent | TouchEvent) {
-    const findTouchedImage = (point: Point) => {
-      const index = findLastIndexOf(this.images, (image) =>
-        isPointInsideRect({
-          pivot: {
-            sx: image.sx,
-            sy: image.sy,
-            width: image.width,
-            height: image.height,
-          },
-          pos: point,
-        })
-      )
-
-      return index
-    }
-
-    const findTouchedAnchor = (point: Point) => {
-      if (!this.focused) {
-        return
-      }
-
-      return findAnchorInPath({
-        context: this.context,
-        anchors: this.focused.anchors,
-        point,
-      })
-    }
-
     const touchPoint = getSyntheticTouchPoint(this.$root, ev)
+    const image = this.findTouchedImage(touchPoint)
+    const anchor = this.findTouchedAnchor(touchPoint)
 
-    const imageIndex = findTouchedImage(touchPoint)
-    const anchor = findTouchedAnchor(touchPoint)
-
-    const isImageArea = imageIndex > -1
-    if (isImageArea) {
-      const image = this.images[imageIndex]
+    if (image) {
       this.onTouchImageArea(image, touchPoint)
     } else if (anchor) {
       this.onTouchAnchorArea(anchor)
     } else {
       this.onTouchBlurArea()
     }
+  }
+
+  findTouchedImage(point: Point) {
+    const index = findLastIndexOf(this.images, (image) =>
+      isPointInsideRect({
+        pivot: {
+          sx: image.sx,
+          sy: image.sy,
+          width: image.width,
+          height: image.height,
+        },
+        pos: point,
+      })
+    )
+
+    return this.images[index]
+  }
+
+  findTouchedAnchor(point: Point) {
+    if (!this.focused) {
+      return
+    }
+
+    return findAnchorInPath({
+      context: this.context,
+      anchors: this.focused.anchors,
+      point,
+    })
   }
 
   onTouchImageArea(image: ImageObject, touchPoint: Point) {
@@ -223,7 +232,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   onTouchBlurArea() {
-    this.resetDraggedImage()
     this.resetFocusedImage()
     this.resetTransformType()
     this.paintImages()
