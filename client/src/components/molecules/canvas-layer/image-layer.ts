@@ -13,7 +13,7 @@ import {
   drawCircle,
   drawLine,
 } from '@/modules/canvas.utils'
-import type { DragTarget, Point, Resize, Anchor, ImageTransform } from './types'
+import type { DragTarget, Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 
@@ -42,7 +42,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
   private dragged: DragTarget | null = null
-  private focused: { index: number; anchors: Anchor[] } | null = null
+  private focused: { image: ImageObject; anchors: Anchor[] } | null = null
   private transformType: ImageTransform | null = null
   private isPressed = false
 
@@ -121,16 +121,16 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
   }
 
-  setFocusedImage(index: number) {
-    this.focused = { index, anchors: [] }
+  setFocusedImage(image: ImageObject) {
+    this.focused = { image, anchors: [] }
   }
 
   resetFocusedImage() {
     this.focused = null
   }
 
-  setDraggedImage(index: number, { x, y }: Point) {
-    this.dragged = { sx: x, sy: y, image: this.images[index] }
+  setDraggedImage(image: ImageObject, { x, y }: Point) {
+    this.dragged = { sx: x, sy: y, image }
   }
 
   resetDraggedImage() {
@@ -207,18 +207,31 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     const isImageArea = imageIndex > -1
     if (isImageArea) {
-      this.setFocusedImage(imageIndex)
-      this.setDraggedImage(imageIndex, touchPoint)
-      // TODO: 여기에 넣자
-      this.paintImages()
+      const image = this.images[imageIndex]
+      this.onTouchImageArea(image, touchPoint)
     } else if (anchor) {
-      this.setTransformType(anchor.type)
+      this.onTouchAnchorArea(anchor)
     } else {
-      this.resetDraggedImage()
-      this.resetFocusedImage()
-      this.resetTransformType()
-      this.paintImages()
+      this.onTouchBlurArea()
     }
+  }
+
+  onTouchImageArea(image: ImageObject, touchPoint: Point) {
+    this.setFocusedImage(image)
+    this.setDraggedImage(image, touchPoint)
+    // TODO: 여기에 넣자
+    this.paintImages()
+  }
+
+  onTouchAnchorArea(anchor: Anchor) {
+    this.setTransformType(anchor.type)
+  }
+
+  onTouchBlurArea() {
+    this.resetDraggedImage()
+    this.resetFocusedImage()
+    this.resetTransformType()
+    this.paintImages()
   }
 
   hover(ev: MouseEvent | TouchEvent) {
@@ -275,7 +288,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     }
 
     const touchPoint = getSyntheticTouchPoint(this.$root, ev)
-    const image = this.images[this.focused.index]
+    const image = this.focused.image
 
     const resizedBoundingRect = resizeRect({
       type: this.transformType,
@@ -313,7 +326,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       return
     }
 
-    const { width, height, sx, sy } = this.images[this.focused.index]
+    const { width, height, sx, sy } = this.focused.image
     const anchors = drawAnchorBorder({
       context: this.context,
       size: { width, height },
