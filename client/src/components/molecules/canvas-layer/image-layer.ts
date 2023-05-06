@@ -13,7 +13,7 @@ import {
   drawCircle,
   drawLine,
 } from '@/modules/canvas.utils'
-import type { DragTarget, Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
+import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor } from '@/utils/dom'
 
@@ -41,8 +41,7 @@ template.innerHTML = `
 export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
-  private dragged: DragTarget | null = null
-  private focused: { image: ImageObject; anchors: Anchor[] } | null = null
+  private focused: { image: ImageObject; anchors: Anchor[]; point: Point | null } | null = null
   private transformType: ImageTransform | null = null
   private isPressed = false
 
@@ -113,7 +112,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     }
     const onClearAll = () => {
       this.focused = null
-      this.dragged = null
       CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' })
     }
 
@@ -121,20 +119,18 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
   }
 
-  setFocusedImage(image: ImageObject) {
-    this.focused = { image, anchors: [] }
+  setFocusedImage(image: ImageObject, point: Point) {
+    this.focused = { image, anchors: [], point }
   }
 
   resetFocusedImage() {
     this.focused = null
   }
 
-  setDraggedImage(image: ImageObject, { x, y }: Point) {
-    this.dragged = { sx: x, sy: y, image }
-  }
-
   resetDraggedImage() {
-    this.dragged = null
+    if (this.focused) {
+      this.focused.point = null
+    }
   }
 
   setTransformType(type: ImageTransform) {
@@ -217,8 +213,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   onTouchImageArea(image: ImageObject, touchPoint: Point) {
-    this.setFocusedImage(image)
-    this.setDraggedImage(image, touchPoint)
+    this.setFocusedImage(image, touchPoint)
     // TODO: 여기에 넣자
     this.paintImages()
   }
@@ -256,7 +251,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   moveWithPressed(ev: MouseEvent | TouchEvent) {
     ev.preventDefault()
 
-    if (this.dragged) {
+    if (this.focused?.point) {
       this.dragImage(ev)
       this.paintImages()
     } else if (this.focused) {
@@ -266,20 +261,22 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   private dragImage(ev: MouseEvent | TouchEvent) {
-    if (!this.dragged) {
+    if (!this.focused?.point) {
       return
     }
 
     const { x, y } = getSyntheticTouchPoint(this.$root, ev)
-    const dx = x - this.dragged.sx
-    const dy = y - this.dragged.sy
+    const dragImage = this.focused.image
+    const dragstart = this.focused.point
 
-    const draggedImageEntity = this.dragged.image
-    draggedImageEntity.sx += dx
-    draggedImageEntity.sy += dy
+    const dx = x - dragstart.x
+    const dy = y - dragstart.y
 
-    this.dragged.sx = x
-    this.dragged.sy = y
+    dragImage.sx += dx
+    dragImage.sy += dy
+
+    dragstart.x = x
+    dragstart.y = y
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
