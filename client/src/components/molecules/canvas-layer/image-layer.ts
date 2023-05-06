@@ -374,7 +374,7 @@ function drawAnchorBorder({
 }
 
 function drawAnchor({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
-  return corners.map((point) => drawCircle({ context, point, radius: 10 }))
+  return corners.map((point) => drawCircle({ context, point, radius: 12 }))
 }
 
 function findAnchorInPath({
