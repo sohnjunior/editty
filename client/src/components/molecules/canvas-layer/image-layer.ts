@@ -15,7 +15,7 @@ import {
 } from '@/modules/canvas.utils'
 import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
-import { setMouseCursor } from '@/utils/dom'
+import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
@@ -173,7 +173,9 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     if (this.isPressed) {
       this.moveWithPressed(ev as MouseEvent | TouchEvent)
     }
-    this.hover(ev as MouseEvent | TouchEvent) // TODO: cursor 가 있는 디바이스에서만 적용되도록 하기
+    if (!isTouchEvent(ev)) {
+      this.hover(ev as MouseEvent)
+    }
   }
 
   handleTouchEnd() {
@@ -241,7 +243,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     this.paintImages()
   }
 
-  hover(ev: MouseEvent | TouchEvent) {
+  hover(ev: MouseEvent) {
     if (this.focused) {
       const touchPoint = getSyntheticTouchPoint(this.$root, ev)
 
