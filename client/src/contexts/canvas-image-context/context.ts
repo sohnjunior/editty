@@ -6,7 +6,10 @@ type State = {
   images: ImageObject[]
 }
 
-type Action = { action: 'PUSH_IMAGE'; data: ImageObject } | { action: 'CLEAR_IMAGE' }
+type Action =
+  | { action: 'PUSH_IMAGE'; data: State['images'][number] }
+  | { action: 'CLEAR_IMAGE' }
+  | { action: 'SELECT_IMAGE'; data: number }
 
 const initState: State = {
   images: [],
@@ -17,10 +20,19 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
     case 'PUSH_IMAGE': {
       const images = [...state.images]
       images.push(payload.data)
+
       return { ...state, images }
     }
     case 'CLEAR_IMAGE':
       return { ...state, images: [] }
+    case 'SELECT_IMAGE': {
+      const images = [...state.images]
+      const selectedImage = images[payload.data]
+      images.splice(payload.data, 1)
+      images.push(selectedImage)
+
+      return { ...state, images }
+    }
   }
 }
 

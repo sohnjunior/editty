@@ -291,3 +291,32 @@ export function drawLine({
 
   return path
 }
+
+export function drawRect({
+  context,
+  corners,
+}: {
+  context: CanvasRenderingContext2D
+  corners: Point[]
+}) {
+  drawLine({
+    context,
+    from: { x: corners[0].x, y: corners[0].y },
+    to: { x: corners[1].x, y: corners[1].y },
+  })
+  drawLine({
+    context,
+    from: { x: corners[1].x, y: corners[1].y },
+    to: { x: corners[2].x, y: corners[2].y },
+  })
+  drawLine({
+    context,
+    from: { x: corners[2].x, y: corners[2].y },
+    to: { x: corners[3].x, y: corners[3].y },
+  })
+  drawLine({
+    context,
+    from: { x: corners[3].x, y: corners[3].y },
+    to: { x: corners[0].x, y: corners[0].y },
+  })
+}

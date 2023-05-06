@@ -11,11 +11,11 @@ import {
   createImageObject,
   resizeRect,
   drawCircle,
-  drawLine,
+  drawRect,
 } from '@/modules/canvas.utils'
-import type { DragTarget, Point, Resize, Anchor, ImageTransform } from './types'
+import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
-import { setMouseCursor } from '@/utils/dom'
+import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
@@ -41,8 +41,7 @@ template.innerHTML = `
 export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-image-layer'
   private context!: CanvasRenderingContext2D
-  private dragged: { index: number; target: DragTarget } | null = null
-  private focused: { index: number; anchors: Anchor[] } | null = null
+  private focused: { image: ImageObject; anchors: Anchor[]; point: Point | null } | null = null
   private transformType: ImageTransform | null = null
   private isPressed = false
 
@@ -88,6 +87,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         this.paintImages()
       },
     })
+    CanvasImageContext.subscribe({
+      action: 'SELECT_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
   }
 
   subscribeEventBus() {
@@ -113,7 +118,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     }
     const onClearAll = () => {
       this.focused = null
-      this.dragged = null
       CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' })
     }
 
@@ -121,21 +125,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
   }
 
-  setFocusedImage(index: number) {
-    this.focused = { index, anchors: [] }
-    this.paintImages()
+  setFocusedImage(image: ImageObject, point: Point) {
+    this.focused = { image, anchors: [], point }
   }
 
   resetFocusedImage() {
     this.focused = null
-  }
-
-  setDraggedImage(index: number, { x, y }: Point) {
-    this.dragged = { index, target: { sx: x, sy: y, image: this.images[index] } }
-  }
-
-  resetDraggedImage() {
-    this.dragged = null
   }
 
   setTransformType(type: ImageTransform) {
@@ -154,73 +149,101 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     switch (ev.type) {
       case 'mousedown':
       case 'touchstart':
-        this.isPressed = true
-        this.touch(ev as MouseEvent)
+        this.handleTouchStart(ev)
         break
       case 'mousemove':
       case 'touchmove':
-        this.isPressed && this.moveWithPressed(ev as MouseEvent | TouchEvent)
-        this.hover(ev as MouseEvent | TouchEvent) // TODO: cursor 가 있는 디바이스에서만 적용되도록 하기
+        this.handleTouchMove(ev)
         break
       case 'mouseup':
       case 'touchend':
-        this.isPressed = false
-        this.resetDraggedImage()
+        this.handleTouchEnd()
         break
       default:
         break
     }
   }
 
-  touch(ev: MouseEvent | TouchEvent) {
-    const findTouchedImage = (point: Point) => {
-      const index = findLastIndexOf(this.images, (image) =>
-        isPointInsideRect({
-          pivot: {
-            sx: image.sx,
-            sy: image.sy,
-            width: image.width,
-            height: image.height,
-          },
-          pos: point,
-        })
-      )
+  handleTouchStart(ev: Event) {
+    this.isPressed = true
+    this.touch(ev as MouseEvent)
+  }
 
-      return index
+  handleTouchMove(ev: Event) {
+    if (this.isPressed) {
+      this.moveWithPressed(ev as MouseEvent | TouchEvent)
     }
-
-    const findTouchedAnchor = (point: Point) => {
-      if (!this.focused) {
-        return
-      }
-
-      return findAnchorInPath({
-        context: this.context,
-        anchors: this.focused.anchors,
-        point,
-      })
-    }
-
-    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
-
-    const imageIndex = findTouchedImage(touchPoint)
-    const anchor = findTouchedAnchor(touchPoint)
-
-    const isImageArea = imageIndex > -1
-    if (isImageArea) {
-      this.setDraggedImage(imageIndex, touchPoint)
-      this.setFocusedImage(imageIndex)
-    } else if (anchor) {
-      this.setTransformType(anchor.type)
-    } else {
-      this.resetDraggedImage()
-      this.resetFocusedImage()
-      this.resetTransformType()
-      this.paintImages()
+    if (!isTouchEvent(ev)) {
+      this.hover(ev as MouseEvent)
     }
   }
 
-  hover(ev: MouseEvent | TouchEvent) {
+  handleTouchEnd() {
+    this.isPressed = false
+    if (this.focused) {
+      this.focused.point = null
+    }
+  }
+
+  touch(ev: MouseEvent | TouchEvent) {
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
+    const imageIndex = this.findTouchedImage(touchPoint)
+    const anchor = this.findTouchedAnchor(touchPoint)
+
+    if (imageIndex > -1) {
+      this.onTouchImageArea(imageIndex, touchPoint)
+    } else if (anchor) {
+      this.onTouchAnchorArea(anchor)
+    } else {
+      this.onTouchBlurArea()
+    }
+  }
+
+  findTouchedImage(point: Point) {
+    const index = findLastIndexOf(this.images, (image) =>
+      isPointInsideRect({
+        pivot: {
+          sx: image.sx,
+          sy: image.sy,
+          width: image.width,
+          height: image.height,
+        },
+        pos: point,
+      })
+    )
+
+    return index
+  }
+
+  findTouchedAnchor(point: Point) {
+    if (!this.focused) {
+      return
+    }
+
+    return findAnchorInPath({
+      context: this.context,
+      anchors: this.focused.anchors,
+      point,
+    })
+  }
+
+  onTouchImageArea(imageIndex: number, touchPoint: Point) {
+    const image = this.images[imageIndex]
+    this.setFocusedImage(image, touchPoint)
+    CanvasImageContext.dispatch({ action: 'SELECT_IMAGE', data: imageIndex })
+  }
+
+  onTouchAnchorArea(anchor: Anchor) {
+    this.setTransformType(anchor.type)
+  }
+
+  onTouchBlurArea() {
+    this.resetFocusedImage()
+    this.resetTransformType()
+    this.paintImages()
+  }
+
+  hover(ev: MouseEvent) {
     if (this.focused) {
       const touchPoint = getSyntheticTouchPoint(this.$root, ev)
 
@@ -242,7 +265,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   moveWithPressed(ev: MouseEvent | TouchEvent) {
     ev.preventDefault()
 
-    if (this.dragged) {
+    if (this.focused?.point) {
       this.dragImage(ev)
       this.paintImages()
     } else if (this.focused) {
@@ -252,20 +275,22 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   private dragImage(ev: MouseEvent | TouchEvent) {
-    if (!this.dragged) {
+    if (!this.focused?.point) {
       return
     }
 
     const { x, y } = getSyntheticTouchPoint(this.$root, ev)
-    const dx = x - this.dragged.target.sx
-    const dy = y - this.dragged.target.sy
+    const dragImage = this.focused.image
+    const dragstart = this.focused.point
 
-    const draggedImageEntity = this.images[this.dragged.index]
-    draggedImageEntity.sx += dx
-    draggedImageEntity.sy += dy
+    const dx = x - dragstart.x
+    const dy = y - dragstart.y
 
-    this.dragged.target.sx = x
-    this.dragged.target.sy = y
+    dragImage.sx += dx
+    dragImage.sy += dy
+
+    dragstart.x = x
+    dragstart.y = y
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
@@ -274,7 +299,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     }
 
     const touchPoint = getSyntheticTouchPoint(this.$root, ev)
-    const image = this.images[this.focused.index]
+    const image = this.focused.image
 
     const resizedBoundingRect = resizeRect({
       type: this.transformType,
@@ -312,7 +337,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       return
     }
 
-    const { width, height, sx, sy } = this.images[this.focused.index]
+    const { width, height, sx, sy } = this.focused.image
     const anchors = drawAnchorBorder({
       context: this.context,
       size: { width, height },
@@ -338,7 +363,7 @@ function drawAnchorBorder({
     BOTTOM_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y + size.height },
   }
 
-  drawBorder({
+  drawRect({
     context,
     corners: Object.values(corners),
   })
@@ -350,31 +375,8 @@ function drawAnchorBorder({
   return anchors
 }
 
-function drawBorder({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
-  drawLine({
-    context,
-    from: { x: corners[0].x, y: corners[0].y },
-    to: { x: corners[1].x, y: corners[1].y },
-  })
-  drawLine({
-    context,
-    from: { x: corners[1].x, y: corners[1].y },
-    to: { x: corners[2].x, y: corners[2].y },
-  })
-  drawLine({
-    context,
-    from: { x: corners[2].x, y: corners[2].y },
-    to: { x: corners[3].x, y: corners[3].y },
-  })
-  drawLine({
-    context,
-    from: { x: corners[3].x, y: corners[3].y },
-    to: { x: corners[0].x, y: corners[0].y },
-  })
-}
-
 function drawAnchor({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
-  return corners.map((point) => drawCircle({ context, point, radius: 10 }))
+  return corners.map((point) => drawCircle({ context, point, radius: 12 }))
 }
 
 function findAnchorInPath({
