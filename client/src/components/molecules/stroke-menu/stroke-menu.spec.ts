@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/dom'
-import { waitWCStyleInit } from '@/modules/wc-dom'
+import { waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('stroke-menu', () => {
   afterEach(() => {

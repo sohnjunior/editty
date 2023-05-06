@@ -1,6 +1,6 @@
 import Container from '../container/container'
 import { screen } from '@testing-library/dom'
-import { getTemplateRootElement, waitWCStyleInit, getInitialStyle } from '@/modules/wc-dom'
+import { getTemplateRootElement, waitWCStyleInit, getInitialStyle } from '@/modules/wc-test-utils'
 
 describe('menu', () => {
   afterEach(() => {

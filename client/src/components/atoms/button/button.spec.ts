@@ -1,4 +1,4 @@
-import { getSlotNodes } from '@/modules/wc-dom'
+import { getSlotNodes } from '@/modules/wc-test-utils'
 
 describe('button', () => {
   it('should render slot', () => {

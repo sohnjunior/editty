@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
-import { getTemplateRootElement } from '@/modules/wc-dom'
+import { getTemplateRootElement } from '@/modules/wc-test-utils'
 
 describe('color-palette', () => {
   afterEach(() => {

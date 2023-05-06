@@ -1,4 +1,4 @@
-import { getSlotElements } from '@/modules/wc-dom'
+import { getSlotElements } from '@/modules/wc-test-utils'
 
 describe('container', () => {
   it('should render slot', async () => {

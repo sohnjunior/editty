@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/dom'
-import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-dom'
+import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('divider', () => {
   afterEach(() => {

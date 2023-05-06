@@ -1,6 +1,6 @@
 import ColorTile from './color-tile'
 import { screen } from '@testing-library/dom'
-import { getTemplateRootElement, getInitialStyle } from '@/modules/wc-dom'
+import { getTemplateRootElement, getInitialStyle } from '@/modules/wc-test-utils'
 
 describe('color-tile', () => {
   afterEach(() => {

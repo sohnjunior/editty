@@ -1,5 +1,5 @@
 import { screen, fireEvent } from '@testing-library/dom'
-import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-dom'
+import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-test-utils'
 
 describe('range-slider', () => {
   afterEach(() => {
