@@ -11,7 +11,7 @@ import {
   createImageObject,
   resizeRect,
   drawCircle,
-  drawLine,
+  drawRect,
 } from '@/modules/canvas.utils'
 import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
@@ -127,12 +127,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     this.focused = null
   }
 
-  resetDraggedImage() {
-    if (this.focused) {
-      this.focused.point = null
-    }
-  }
-
   setTransformType(type: ImageTransform) {
     this.transformType = type
   }
@@ -170,13 +164,17 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   handleTouchMove(ev: Event) {
-    this.isPressed && this.moveWithPressed(ev as MouseEvent | TouchEvent)
+    if (this.isPressed) {
+      this.moveWithPressed(ev as MouseEvent | TouchEvent)
+    }
     this.hover(ev as MouseEvent | TouchEvent) // TODO: cursor 가 있는 디바이스에서만 적용되도록 하기
   }
 
   handleTouchEnd() {
     this.isPressed = false
-    this.resetDraggedImage()
+    if (this.focused) {
+      this.focused.point = null
+    }
   }
 
   touch(ev: MouseEvent | TouchEvent) {
@@ -357,7 +355,7 @@ function drawAnchorBorder({
     BOTTOM_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y + size.height },
   }
 
-  drawBorder({
+  drawRect({
     context,
     corners: Object.values(corners),
   })
@@ -367,29 +365,6 @@ function drawAnchorBorder({
   const anchors = anchorPath2ds.map((path2d, index) => ({ type: anchorTypes[index], path2d }))
 
   return anchors
-}
-
-function drawBorder({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
-  drawLine({
-    context,
-    from: { x: corners[0].x, y: corners[0].y },
-    to: { x: corners[1].x, y: corners[1].y },
-  })
-  drawLine({
-    context,
-    from: { x: corners[1].x, y: corners[1].y },
-    to: { x: corners[2].x, y: corners[2].y },
-  })
-  drawLine({
-    context,
-    from: { x: corners[2].x, y: corners[2].y },
-    to: { x: corners[3].x, y: corners[3].y },
-  })
-  drawLine({
-    context,
-    from: { x: corners[3].x, y: corners[3].y },
-    to: { x: corners[0].x, y: corners[0].y },
-  })
 }
 
 function drawAnchor({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
