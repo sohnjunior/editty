@@ -1,11 +1,6 @@
-import Container from './container'
 import { getSlotElements } from '@/modules/wc-dom'
 
 describe('container', () => {
-  beforeAll(() => {
-    customElements.define(Container.tag, Container)
-  })
-
   it('should render slot', async () => {
     const example = document.createElement('div')
     example.innerHTML = `

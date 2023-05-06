@@ -1,12 +1,8 @@
-import Menu from './menu'
 import Container from '../container/container'
 import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit, getInitialStyle } from '@/modules/wc-dom'
 
 describe('menu', () => {
-  beforeAll(() => {
-    customElements.define(Menu.tag, Menu)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

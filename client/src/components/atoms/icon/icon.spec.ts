@@ -1,11 +1,7 @@
-import Icon from './icon'
 import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-dom'
 
 describe('icon', () => {
-  beforeAll(() => {
-    customElements.define(Icon.tag, Icon)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

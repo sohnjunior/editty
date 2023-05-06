@@ -1,11 +1,7 @@
-import RangeSlider from './range-slider'
 import { screen, fireEvent } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-dom'
 
 describe('range-slider', () => {
-  beforeAll(() => {
-    customElements.define(RangeSlider.tag, RangeSlider)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

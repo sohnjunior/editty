@@ -1,11 +1,7 @@
 import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, waitWCStyleInit } from '@/modules/wc-dom'
-import Divider from './divider'
 
 describe('divider', () => {
-  beforeAll(() => {
-    customElements.define(Divider.tag, Divider)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

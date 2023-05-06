@@ -2,14 +2,7 @@ import { screen } from '@testing-library/dom'
 import userEvent from '@testing-library/user-event'
 import { getTemplateRootElement } from '@/modules/wc-dom'
 
-import ColorTile from '@/components/atoms/color-tile/color-tile'
-import ColorPalette from './color-palette'
-
 describe('color-palette', () => {
-  beforeAll(() => {
-    customElements.define(ColorTile.tag, ColorTile)
-    customElements.define(ColorPalette.tag, ColorPalette)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

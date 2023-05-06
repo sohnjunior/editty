@@ -1,11 +1,7 @@
-import ColorMenu from './color-menu'
 import { screen } from '@testing-library/dom'
 import { waitWCStyleInit } from '@/modules/wc-dom'
 
 describe('color-menu', () => {
-  beforeAll(() => {
-    customElements.define(ColorMenu.tag, ColorMenu)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

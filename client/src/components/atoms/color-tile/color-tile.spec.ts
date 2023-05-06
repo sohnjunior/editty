@@ -3,9 +3,6 @@ import { screen } from '@testing-library/dom'
 import { getTemplateRootElement, getInitialStyle } from '@/modules/wc-dom'
 
 describe('color-tile', () => {
-  beforeAll(() => {
-    customElements.define(ColorTile.tag, ColorTile)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })

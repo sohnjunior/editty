@@ -1,11 +1,7 @@
-import StrokeMenu from './stroke-menu'
 import { screen } from '@testing-library/dom'
 import { waitWCStyleInit } from '@/modules/wc-dom'
 
 describe('stroke-menu', () => {
-  beforeAll(() => {
-    customElements.define(StrokeMenu.tag, StrokeMenu)
-  })
   afterEach(() => {
     document.body.innerHTML = ''
   })
