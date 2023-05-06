@@ -87,6 +87,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         this.paintImages()
       },
     })
+    CanvasImageContext.subscribe({
+      action: 'SELECT_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
   }
 
   subscribeEventBus() {
@@ -179,11 +185,11 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   touch(ev: MouseEvent | TouchEvent) {
     const touchPoint = getSyntheticTouchPoint(this.$root, ev)
-    const image = this.findTouchedImage(touchPoint)
+    const imageIndex = this.findTouchedImage(touchPoint)
     const anchor = this.findTouchedAnchor(touchPoint)
 
-    if (image) {
-      this.onTouchImageArea(image, touchPoint)
+    if (imageIndex > -1) {
+      this.onTouchImageArea(imageIndex, touchPoint)
     } else if (anchor) {
       this.onTouchAnchorArea(anchor)
     } else {
@@ -204,7 +210,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       })
     )
 
-    return this.images[index]
+    return index
   }
 
   findTouchedAnchor(point: Point) {
@@ -219,10 +225,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     })
   }
 
-  onTouchImageArea(image: ImageObject, touchPoint: Point) {
+  onTouchImageArea(imageIndex: number, touchPoint: Point) {
+    const image = this.images[imageIndex]
     this.setFocusedImage(image, touchPoint)
-    // TODO: 여기에 넣자
-    this.paintImages()
+    CanvasImageContext.dispatch({ action: 'SELECT_IMAGE', data: imageIndex })
   }
 
   onTouchAnchorArea(anchor: Anchor) {
