@@ -67,18 +67,20 @@ export default class VMenu extends VComponent {
   }
 
   setOverlayEvent(open: string) {
-    const onTriggerHandler = this.onOpen
+    const onOpenHandler = this.onOpen
     const onCloseHandler = this.onClose.bind(this)
 
     if (open === 'true') {
-      this.$root.addEventListener('click', onTriggerHandler)
+      this.$root.addEventListener('mousedown', onOpenHandler)
+      this.$root.addEventListener('touchstart', onOpenHandler)
       /** HACK: document event listener 가 attribute update 이후에 추가되도록 rAF 활용 */
-      requestAnimationFrame(() =>
-        document.addEventListener('click', onCloseHandler, { once: true })
-      )
+      requestAnimationFrame(() => {
+        document.addEventListener('mousedown', onCloseHandler, { once: true })
+        document.addEventListener('touchstart', onCloseHandler, { once: true })
+      })
     } else {
-      this.$root.removeEventListener('click', onTriggerHandler)
-      document.removeEventListener('click', onCloseHandler)
+      this.$root.removeEventListener('mousedown', onOpenHandler)
+      this.$root.removeEventListener('touchstart', onOpenHandler)
     }
   }
 
