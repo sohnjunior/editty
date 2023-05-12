@@ -12,15 +12,13 @@ const icon = [
   'emoji',
   'trash',
   'gallery',
+  'folder',
+  'disk',
 ] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
 export type Icon = typeof icon[number]
 export type Size = typeof size[number]
-
-function contains<T extends string>(list: ReadonlyArray<T>, value: string): value is T {
-  return list.some((item) => item === value)
-}
 
 export const isIconType = (maybe: unknown): maybe is Icon => {
   return typeof maybe === 'string' && contains(icon, maybe)
@@ -30,17 +28,12 @@ export const isSizeType = (maybe: unknown): maybe is Size => {
   return typeof maybe === 'string' && contains(size, maybe)
 }
 
-const ASSET_URL: Record<Icon, string> = {
-  cursor: `url('assets/images/cursor.svg')`,
-  draw: `url('assets/images/pen.svg')`,
-  text: `url('assets/images/text.svg')`,
-  'back-arrow': `url('assets/images/back-arrow.svg')`,
-  'forward-arrow': `url('assets/images/forward-arrow.svg')`,
-  search: `url('assets/images/search.svg')`,
-  erase: `url('assets/images/eraser.svg')`,
-  emoji: `url('assets/images/emoji.svg')`,
-  trash: `url('assets/images/trash.svg')`,
-  gallery: `url('assets/images/gallery.svg')`,
+function contains<T extends string>(list: ReadonlyArray<T>, value: string): value is T {
+  return list.some((item) => item === value)
+}
+
+function generateIconUrl(type: Icon) {
+  return `url('assets/images/${type}.svg')`
 }
 
 const SIZE: Record<Size, string> = {
@@ -96,7 +89,7 @@ export default class VIcon extends VComponent {
     switch (attribute) {
       case 'icon': {
         if (isIconType(value)) {
-          this.$root.style.backgroundImage = ASSET_URL[value]
+          this.$root.style.backgroundImage = generateIconUrl(value)
         }
         break
       }
