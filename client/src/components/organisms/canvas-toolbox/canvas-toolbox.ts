@@ -26,10 +26,6 @@ template.innerHTML = `
       box-sizing: border-box;
     }
 
-    :host v-color-tile[data-selected="true"] {
-      border: 1px solid var(--color-primary40);
-    }
-
     :host v-color-menu, v-stroke-menu {
       position: absolute;
       left: 80px;
