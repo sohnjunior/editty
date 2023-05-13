@@ -13,8 +13,7 @@ type State = {
 type Action =
   | { action: 'SET_PHASE'; data: State['phase'] }
   | { action: 'PUSH_SNAPSHOT'; data: State['snapshots'] }
-  | { action: 'HISTORY_BACK' }
-  | { action: 'HISTORY_FORWARD' }
+  | { action: 'HISTORY_CHANGE' }
   | { action: 'CLEAR_ALL' }
   | { action: 'SET_PENCIL_COLOR'; data: State['pencilColor'] }
   | { action: 'SET_STROKE_SIZE'; data: State['strokeSize'] }
@@ -36,18 +35,7 @@ const reducer: Reducer<State, Action> = ({ state, payload }) => {
       snapshots.push(...payload.data)
       return { ...state, snapshots }
     }
-    case 'HISTORY_BACK': {
-      const snapshots = [...state.snapshots]
-      const stash = [...state.stash]
-
-      const snapshot = snapshots.pop()
-      if (snapshot) {
-        stash.push(snapshot)
-      }
-
-      return { ...state, snapshots, stash }
-    }
-    case 'HISTORY_FORWARD': {
+    case 'HISTORY_CHANGE': {
       const snapshots = [...state.snapshots]
       const stash = [...state.stash]
 
