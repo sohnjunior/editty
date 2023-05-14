@@ -1,5 +1,5 @@
-import { Context } from '@/contexts/common/context'
-import type { Reducer } from '@/contexts/common/context'
+import { Context } from '@/contexts/shared/context'
+import type { Reducer } from '@/contexts/shared/context'
 import { Phase } from './types'
 
 type State = {
