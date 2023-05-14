@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -53,7 +53,7 @@ export default class VCanvasToolbox extends VComponent {
   private $strokeMenu!: HTMLElement
 
   get phase() {
-    return CanvasDrawingContext.state.phase
+    return CanvasMetaContext.state.phase
   }
 
   get pencilColor() {
@@ -96,7 +96,7 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   subscribeContext() {
-    CanvasDrawingContext.subscribe({
+    CanvasMetaContext.subscribe({
       action: 'SET_PHASE',
       effect: (context) => {
         this.toggleCanvasPhase(context.state.phase)
@@ -131,7 +131,7 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   enterCursorPhase() {
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
   }
 
   enterStrokePhase() {
@@ -154,12 +154,12 @@ export default class VCanvasToolbox extends VComponent {
 
   handleOpenColorMenu() {
     this.$colorMenu.setAttribute('open', 'true')
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'color' })
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
   handleCloseColorMenu() {
     this.$colorMenu.setAttribute('open', 'false')
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
   handleOpenStrokeMenu() {
@@ -172,7 +172,7 @@ export default class VCanvasToolbox extends VComponent {
 
   handleSelectStroke(ev: Event) {
     const stroke = (ev as CustomEvent).detail.value
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: stroke })
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: stroke })
   }
 
   handleResizeStroke(ev: Event) {

@@ -42,7 +42,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   get phase() {
-    return CanvasDrawingContext.state.phase
+    return CanvasMetaContext.state.phase
   }
 
   get snapshots() {

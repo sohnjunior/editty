@@ -1,9 +1,7 @@
 import { Context } from '@/contexts/shared/context'
 import type { Reducer } from '@/contexts/shared/context'
-import { Phase } from './types'
 
 type State = {
-  phase: Phase
   snapshots: ImageData[]
   stash: ImageData[]
   pencilColor: string
@@ -11,7 +9,6 @@ type State = {
 }
 
 type Action =
-  | { action: 'SET_PHASE'; data: State['phase'] }
   | { action: 'PUSH_SNAPSHOT'; data: State['snapshots'] }
   | { action: 'HISTORY_INIT'; data: State['snapshots'] }
   | { action: 'HISTORY_BACK' }
@@ -21,7 +18,6 @@ type Action =
   | { action: 'SET_STROKE_SIZE'; data: State['strokeSize'] }
 
 const initState: State = {
-  phase: 'draw',
   snapshots: [],
   stash: [],
   pencilColor: 'teal-blue',
@@ -30,8 +26,6 @@ const initState: State = {
 
 const reducer: Reducer<State, Action> = ({ state, payload }) => {
   switch (payload.action) {
-    case 'SET_PHASE':
-      return { ...state, phase: payload.data }
     case 'PUSH_SNAPSHOT': {
       const snapshots = [...state.snapshots]
       snapshots.push(...payload.data)
