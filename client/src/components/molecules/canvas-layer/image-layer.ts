@@ -1,6 +1,11 @@
 import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { CanvasDrawingContext, CanvasImageContext } from '@/contexts'
+import {
+  CanvasDrawingContext,
+  CanvasImageContext,
+  CanvasMetaContext,
+  SessionContext,
+} from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -14,6 +19,7 @@ import {
   drawRect,
 } from '@/modules/canvas.utils'
 import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
+import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 
@@ -45,6 +51,14 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private transformType: ImageTransform | null = null
   private isPressed = false
 
+  get sid() {
+    return SessionContext.state.sid!
+  }
+
+  get title() {
+    return CanvasMetaContext.state.title
+  }
+
   get phase() {
     return CanvasDrawingContext.state.phase
   }
@@ -72,6 +86,32 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   afterCreated() {
     refineCanvasRatioForRetinaDisplay(this.$root)
+  }
+
+  afterMount() {
+    this.fetchArchive()
+  }
+
+  private async fetchArchive() {
+    const data = await getArchive(this.sid)
+    if (data) {
+      const jobs = data.images.map(async (image) => {
+        const imageObject = await createImageObject({
+          dataUrl: image.dataUrl,
+          topLeftPoint: { x: image.sx, y: image.sy },
+        })
+        imageObject.width = image.width
+        imageObject.height = image.height
+
+        CanvasImageContext.dispatch({ action: 'PUSH_IMAGE', data: imageObject })
+      })
+
+      try {
+        await Promise.all(jobs)
+      } catch {
+        console.error('🚨 fail to upload image from archive DB')
+      }
+    }
   }
 
   subscribeContext() {

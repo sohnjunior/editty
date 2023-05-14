@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { Z_INDEX, PALETTE_COLORS } from '@/utils/constant'
-import { CanvasDrawingContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext, SessionContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
@@ -11,6 +11,7 @@ import {
   clearCanvas,
   refineCanvasRatioForRetinaDisplay,
 } from '@/modules/canvas.utils'
+import { getArchive } from '@/services/archive'
 import type { Point } from './types'
 
 const template = document.createElement('template')
@@ -31,6 +32,14 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   private context!: CanvasRenderingContext2D
   private points: Point[] = []
   private isDrawing = false
+
+  get sid() {
+    return SessionContext.state.sid!
+  }
+
+  get title() {
+    return CanvasMetaContext.state.title
+  }
 
   get phase() {
     return CanvasDrawingContext.state.phase
@@ -69,6 +78,18 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
+  afterMount() {
+    this.fetchArchive()
+  }
+
+  private async fetchArchive() {
+    const data = await getArchive(this.sid)
+    if (data) {
+      const snapshots = data.snapshot ? [data.snapshot] : []
+      CanvasDrawingContext.dispatch({ action: 'HISTORY_INIT', data: snapshots })
+    }
+  }
+
   bindEventListener() {
     this.addEventListener('mousedown', this.setup)
     this.addEventListener('mouseup', this.cleanup)
@@ -83,9 +104,15 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
 
   subscribeContext() {
     CanvasDrawingContext.subscribe({
-      action: 'PUSH_SNAPSHOT',
+      action: 'HISTORY_INIT',
       effect: (context) => {
-        console.log(context.state.snapshots)
+        const snapshot = lastOf(context.state.snapshots)
+
+        if (snapshot) {
+          reflectSnapshot(this.$root, snapshot)
+        } else {
+          clearCanvas(this.$root)
+        }
       },
     })
     CanvasDrawingContext.subscribe({

@@ -1,6 +1,14 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext } from '@/contexts'
+import {
+  CanvasDrawingContext,
+  CanvasImageContext,
+  CanvasMetaContext,
+  SessionContext,
+} from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
+import { addOrUpdateArchive } from '@/services/archive'
+import type { Archive } from '@/services/archive'
+import { lastOf } from '@/utils/ramda'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -21,6 +29,22 @@ template.innerHTML = `
 export default class VHistoryToolbox extends VComponent {
   static tag = 'v-history-toolbox'
 
+  get sid() {
+    return SessionContext.state.sid!
+  }
+
+  get title() {
+    return CanvasMetaContext.state.title
+  }
+
+  get snapshots() {
+    return CanvasDrawingContext.state.snapshots
+  }
+
+  get images() {
+    return CanvasImageContext.state.images
+  }
+
   constructor() {
     super(template)
   }
@@ -31,19 +55,51 @@ export default class VHistoryToolbox extends VComponent {
 
       switch ($target.dataset.icon) {
         case 'back':
-          CanvasDrawingContext.dispatch({ action: 'HISTORY_BACK' })
+          this.handleHistoryBack()
           break
         case 'forward':
-          CanvasDrawingContext.dispatch({ action: 'HISTORY_FORWARD' })
+          this.handleHistoryForward()
           break
-        case 'trash': {
-          const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
-          isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
+        case 'trash':
+          this.handleClearCanvas()
           break
-        }
+        case 'disk':
+          this.handleSaveCanvas()
+          break
         default:
           return
       }
+    })
+  }
+
+  handleHistoryBack() {
+    CanvasDrawingContext.dispatch({ action: 'HISTORY_BACK' })
+  }
+
+  handleHistoryForward() {
+    CanvasDrawingContext.dispatch({ action: 'HISTORY_FORWARD' })
+  }
+
+  handleClearCanvas() {
+    const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
+    if (isConfirmed) {
+      EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
+    }
+  }
+
+  handleSaveCanvas() {
+    const images: Archive['images'] = this.images.map((image) => ({
+      dataUrl: image.dataUrl,
+      sx: image.sx,
+      sy: image.sy,
+      width: image.width,
+      height: image.height,
+    }))
+    addOrUpdateArchive({
+      id: this.sid,
+      title: this.title,
+      snapshot: lastOf(this.snapshots),
+      images,
     })
   }
 }
