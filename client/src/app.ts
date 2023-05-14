@@ -4,13 +4,6 @@ import { Z_INDEX } from '@/utils/constant'
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host v-input-container {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: ${Z_INDEX.ACTION_LAYER};
-    }
-
     :host v-canvas-toolbox {
       position: fixed;
       left: 20px;
@@ -29,7 +22,6 @@ template.innerHTML = `
   <v-mobile-layout>
     <main slot="main">
       <v-canvas-container></v-canvas-container>
-      <v-input-container></v-input-container>
       <v-canvas-toolbox></v-canvas-toolbox>
       <v-history-toolbox></v-history-toolbox>
     </main>
