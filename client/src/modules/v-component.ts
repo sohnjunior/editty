@@ -38,6 +38,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
       return
     }
 
+    // TODO: 하나의 함수로 합치고, 관심사의 분리는 개별 컴포넌트에서 수행하도록 변경하기
     this.updateStyle({ attribute: name, value: newValue })
     this.updateProperty({ attribute: name, value: newValue })
   }
