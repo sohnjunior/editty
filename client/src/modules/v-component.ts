@@ -135,6 +135,8 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
   protected updateProperty(param: { attribute: string; value: string }) {
     return
   }
+
+  // TODO: reflectAttribute 로 변경하기
 }
 
 export type UpdateStyleParam = Parameters<VComponent['updateStyle']>[0]
