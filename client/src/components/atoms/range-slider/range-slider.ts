@@ -30,7 +30,7 @@ template.innerHTML = `
       transition: background .3s ease-in-out;
     }
   </style>
-  <input type="range" min="0" max="50">
+  <input type="range">
 `
 
 export default class VRangeSlider extends VComponent<HTMLInputElement> {
@@ -52,7 +52,7 @@ export default class VRangeSlider extends VComponent<HTMLInputElement> {
   }
 
   get max() {
-    return this.getAttribute('max') || '100'
+    return this.getAttribute('max') || '0'
   }
   set max(newValue: string) {
     this.setAttribute('max', newValue)
