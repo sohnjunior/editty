@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -15,24 +15,31 @@ template.innerHTML = `
 
 export default class VButton extends VComponent {
   static tag = 'v-button'
-  static get observedAttributes() {
-    return ['color']
-  }
-
-  get color() {
-    /** TODO: getter - setter @Prop 으로 변경 */
-    return this.getAttribute('color')
-  }
 
   constructor() {
     super(template)
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
+  static get observedAttributes() {
+    return ['color']
+  }
+
+  get color() {
+    return this.getAttribute('color') || ''
+  }
+  set color(newValue: string) {
+    this.setAttribute('color', newValue)
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'color':
-        this.$root.style.color = value
+        this.updateColorStyle(value)
         break
     }
+  }
+
+  private updateColorStyle(value: string) {
+    this.$root.style.color = value
   }
 }
