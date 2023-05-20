@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { ReflectAttributeParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `

@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { ReflectAttributeParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 import VCanvasPreview from '@atoms/canvas-preview/canvas-preview'
 import type { Archive } from '@/services/archive'
 

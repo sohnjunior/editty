@@ -1,3 +1,5 @@
+import type { ReflectAttributeParam } from './types'
+
 export abstract class VComponent<R = HTMLElement> extends HTMLElement {
   static tag: string
   protected $shadow!: ShadowRoot
@@ -150,9 +152,5 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
   }
 }
 
-export interface ReflectAttributeParam {
-  attribute: string
-  value: string
-}
 export type UpdateStyleParam = Parameters<VComponent['updateStyle']>[0]
 export type UpdatePropertyParam = Parameters<VComponent['updateProperty']>[0]
