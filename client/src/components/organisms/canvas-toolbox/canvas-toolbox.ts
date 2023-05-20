@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext, CanvasMetaContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext, SessionContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -58,6 +58,10 @@ export default class VCanvasToolbox extends VComponent {
   private $strokeMenu!: VStrokeMenu
   private $archiveMenu!: VArchiveMenu
 
+  get sid() {
+    return SessionContext.state.sid
+  }
+
   get phase() {
     return CanvasMetaContext.state.phase
   }
@@ -91,6 +95,7 @@ export default class VCanvasToolbox extends VComponent {
       const archivePreviews =
         archives?.map((archive) => ({ id: archive.id, title: archive.title })) ?? []
       this.$archiveMenu.archives = archivePreviews
+      this.$archiveMenu.value = this.sid ?? ''
     }
 
     initInnerElement()
