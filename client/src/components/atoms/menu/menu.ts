@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -11,51 +11,47 @@ template.innerHTML = `
 export default class VMenu extends VComponent {
   static tag = 'v-menu'
 
-  static get observedAttributes() {
-    return ['open', 'width']
-  }
-
-  get openAttribute() {
-    return this.getAttribute('open') || 'false'
-  }
-
-  get widthAttribute() {
-    return this.getAttribute('width') || '150px'
-  }
-
   constructor() {
     super(template)
   }
 
-  bindInitialStyle() {
-    if (this.widthAttribute) {
-      this.updateStyle({ attribute: 'width', value: this.widthAttribute })
-    }
+  static get observedAttributes() {
+    return ['open', 'width']
   }
 
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (oldValue === newValue) {
-      // ignore open -> open, close -> close state change request
-      return
-    }
-
-    switch (name) {
-      case 'open':
-        this.setVisibility(newValue)
-        this.setOverlayEvent(newValue)
-        break
-      case 'width':
-        this.updateStyle({ attribute: name, value: newValue })
-        break
-    }
+  get open() {
+    const flag = this.getAttribute('open')
+    return flag === 'true' ? 'true' : 'false'
+  }
+  set open(newValue: 'true' | 'false') {
+    this.setAttribute('open', newValue)
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
+  get width() {
+    return this.getAttribute('width') || '0px'
+  }
+  set width(newValue: string) {
+    this.setAttribute('width', newValue)
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
     switch (attribute) {
+      case 'open':
+        this.updateOpenProp(value)
+        break
       case 'width':
-        this.$root.style.minWidth = value
+        this.updateWidthStyle(value)
         break
     }
+  }
+
+  private updateOpenProp(value: string) {
+    this.setVisibility(value)
+    this.setOverlayEvent(value)
+  }
+
+  private updateWidthStyle(value: string) {
+    this.$root.style.minWidth = value
   }
 
   setVisibility(open: string) {
