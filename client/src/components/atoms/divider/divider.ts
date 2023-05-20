@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -19,6 +19,10 @@ template.innerHTML = `
 export default class VDivider extends VComponent {
   static tag = 'v-divider'
 
+  constructor() {
+    super(template)
+  }
+
   static get observedAttributes() {
     return ['size', 'spacing']
   }
@@ -26,28 +30,33 @@ export default class VDivider extends VComponent {
   get size() {
     return this.getAttribute('size') || '5px'
   }
+  set size(newValue: string) {
+    this.setAttribute('size', newValue)
+  }
 
   get spacing() {
     return this.getAttribute('spacing') || '0px'
   }
-
-  constructor() {
-    super(template)
+  set spacing(newValue: string) {
+    this.setAttribute('spacing', newValue)
   }
 
-  bindInitialStyle() {
-    this.updateStyle({ attribute: 'size', value: this.size })
-    this.updateStyle({ attribute: 'spacing', value: this.spacing })
-  }
-
-  updateStyle({ attribute, value }: UpdateStyleParam) {
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'size':
-        this.$root.style.height = value
+        this.updateSizeStyle(value)
         break
       case 'spacing':
-        this.$root.style.margin = `${value} 0px`
+        this.updateSpacingStyle(value)
         break
     }
+  }
+
+  private updateSizeStyle(value: string) {
+    this.$root.style.height = value
+  }
+
+  private updateSpacingStyle(value: string) {
+    this.$root.style.margin = `${value} 0px`
   }
 }
