@@ -4,6 +4,7 @@ import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { PALETTE_COLORS } from '@/utils/constant'
+import VColorMenu from '@molecules/color-menu/color-menu'
 import VArchiveMenu from '@molecules/archive-menu/archive-menu'
 import { getAllArchive } from '@/services/archive'
 
@@ -51,7 +52,7 @@ template.innerHTML = `
 export default class VCanvasToolbox extends VComponent {
   static tag = 'v-canvas-toolbox'
   private $selectRef?: HTMLElement
-  private $colorMenu!: HTMLElement
+  private $colorMenu!: VColorMenu
   private $colorPreview!: HTMLElement
   private $strokeMenu!: HTMLElement
   private $archiveMenu!: VArchiveMenu
@@ -70,7 +71,7 @@ export default class VCanvasToolbox extends VComponent {
 
   afterCreated(): void {
     const initInnerElement = () => {
-      const $colorMenu = this.$shadow.querySelector<HTMLElement>('v-color-menu')
+      const $colorMenu = this.$shadow.querySelector<VColorMenu>('v-color-menu')
       const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
       const $strokeMenu = this.$shadow.querySelector<HTMLElement>('v-stroke-menu')
       const $archiveMenu = this.$shadow.querySelector<VArchiveMenu>('v-archive-menu')
@@ -174,12 +175,12 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   handleOpenColorMenu() {
-    this.$colorMenu.setAttribute('open', 'true')
+    this.$colorMenu.open = true
     CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
   handleCloseColorMenu() {
-    this.$colorMenu.setAttribute('open', 'false')
+    this.$colorMenu.open = false
     CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
