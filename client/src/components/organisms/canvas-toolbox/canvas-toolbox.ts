@@ -144,6 +144,7 @@ export default class VCanvasToolbox extends VComponent {
         break
       case 'folder':
         this.enterFolderPhase()
+        break
       default:
         break
     }
