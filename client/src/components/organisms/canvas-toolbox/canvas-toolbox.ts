@@ -4,6 +4,8 @@ import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { PALETTE_COLORS } from '@/utils/constant'
+import VArchiveMenu from '@molecules/archive-menu/archive-menu'
+import { getAllArchive } from '@/services/archive'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -26,7 +28,7 @@ template.innerHTML = `
       box-sizing: border-box;
     }
 
-    :host v-color-menu, v-stroke-menu {
+    :host v-color-menu, v-stroke-menu, v-archive-menu {
       position: absolute;
       left: 80px;
       bottom: 0;
@@ -42,6 +44,7 @@ template.innerHTML = `
 
     <v-stroke-menu open="false"></v-stroke-menu>
     <v-color-menu open="false"></v-color-menu>
+    <v-archive-menu open="false"></v-archive-menu>
   </v-container>
 `
 
@@ -51,6 +54,7 @@ export default class VCanvasToolbox extends VComponent {
   private $colorMenu!: HTMLElement
   private $colorPreview!: HTMLElement
   private $strokeMenu!: HTMLElement
+  private $archiveMenu!: VArchiveMenu
 
   get phase() {
     return CanvasMetaContext.state.phase
@@ -69,16 +73,26 @@ export default class VCanvasToolbox extends VComponent {
       const $colorMenu = this.$shadow.querySelector<HTMLElement>('v-color-menu')
       const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
       const $strokeMenu = this.$shadow.querySelector<HTMLElement>('v-stroke-menu')
-      if (!$colorMenu || !$colorTile || !$strokeMenu) {
+      const $archiveMenu = this.$shadow.querySelector<VArchiveMenu>('v-archive-menu')
+      if (!$colorMenu || !$colorTile || !$strokeMenu || !$archiveMenu) {
         throw new Error('initialize fail')
       }
 
       this.$colorMenu = $colorMenu
       this.$colorPreview = $colorTile
       this.$strokeMenu = $strokeMenu
+      this.$archiveMenu = $archiveMenu
+    }
+
+    const initArchives = async () => {
+      const archives = await getAllArchive()
+      const archivePreviews =
+        archives?.map((archive) => ({ id: archive.id, title: archive.title })) ?? []
+      this.$archiveMenu.archives = archivePreviews
     }
 
     initInnerElement()
+    initArchives()
     this.toggleCanvasPhase('draw')
   }
 
@@ -93,6 +107,7 @@ export default class VCanvasToolbox extends VComponent {
     this.$strokeMenu.addEventListener('stroke:select', this.handleSelectStroke.bind(this))
     this.$strokeMenu.addEventListener('stroke:resize', this.handleResizeStroke.bind(this))
     this.$strokeMenu.addEventListener('close:menu', this.handleCloseStrokeMenu.bind(this))
+    this.$archiveMenu.addEventListener('close:menu', this.handleCloseArchiveMenu.bind(this))
   }
 
   subscribeContext() {
@@ -125,6 +140,8 @@ export default class VCanvasToolbox extends VComponent {
       case 'color':
         this.enterColorPhase()
         break
+      case 'folder':
+        this.enterFolderPhase()
       default:
         break
     }
@@ -145,6 +162,10 @@ export default class VCanvasToolbox extends VComponent {
 
   enterColorPhase() {
     this.handleOpenColorMenu()
+  }
+
+  enterFolderPhase() {
+    this.handleOpenArchiveMenu()
   }
 
   handleChangePencilColor(ev: Event) {
@@ -168,6 +189,14 @@ export default class VCanvasToolbox extends VComponent {
 
   handleCloseStrokeMenu() {
     this.$strokeMenu.setAttribute('open', 'false')
+  }
+
+  handleOpenArchiveMenu() {
+    this.$archiveMenu.open = true
+  }
+
+  handleCloseArchiveMenu() {
+    this.$archiveMenu.open = false
   }
 
   handleSelectStroke(ev: Event) {
