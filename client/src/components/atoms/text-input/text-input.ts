@@ -32,6 +32,9 @@ export default class VTextInput extends VComponent<HTMLInputElement> {
   get value() {
     return this.$root.value
   }
+  set value(newValue: string) {
+    this.$root.value = newValue
+  }
 
   get placeholder() {
     return this.getAttribute('placeholder') || ''
@@ -45,9 +48,10 @@ export default class VTextInput extends VComponent<HTMLInputElement> {
   }
 
   private handleInputChange(ev: Event) {
+    const inputValue = (ev.target as HTMLInputElement).value
     this.dispatchEvent(
       new CustomEvent('change', {
-        detail: { value: (ev.target as HTMLInputElement).value },
+        detail: { value: inputValue },
       })
     )
   }
