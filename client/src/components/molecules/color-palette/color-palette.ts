@@ -9,7 +9,7 @@ template.innerHTML = `
       max-height: 200px;
       min-height: 120px;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       grid-gap: 25px;
       overflow: scroll;
     }
