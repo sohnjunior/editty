@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const icon = [
   'cursor',
@@ -60,46 +60,65 @@ template.innerHTML = `
 export default class VIcon extends VComponent {
   static tag = 'v-icon'
 
-  static get observedAttributes() {
-    return ['icon', 'size']
-  }
-
-  get iconAttribute() {
-    return this.getAttribute('icon') || console.error('🚨 icon element need icon attributes')
-  }
-
-  get sizeAttribute() {
-    return this.getAttribute('size') || console.error('🚨 icon element need size attributes')
-  }
-
   constructor() {
     super(template)
   }
 
-  bindInitialStyle() {
-    const { iconAttribute, sizeAttribute } = this
+  static get observedAttributes() {
+    return ['icon', 'size']
+  }
 
-    if (iconAttribute && sizeAttribute) {
-      this.updateStyle({ attribute: 'icon', value: iconAttribute })
-      this.updateStyle({ attribute: 'size', value: sizeAttribute })
+  get icon() {
+    const iconAttribute = this.getAttribute('icon')
+    if (!iconAttribute) {
+      console.error('🚨 icon element need icon attributes')
+    }
+
+    return iconAttribute || ''
+  }
+  set icon(newValue: string) {
+    this.setAttribute('icon', newValue)
+  }
+
+  get size() {
+    const sizeAttribute = this.getAttribute('size')
+    if (!sizeAttribute) {
+      console.error('🚨 icon element need size attributes')
+    }
+
+    return sizeAttribute || 'small'
+  }
+  set size(newValue: string) {
+    this.setAttribute('size', newValue)
+  }
+
+  bindInitialStyle() {
+    this.reflectAttribute({ attribute: 'icon', value: this.icon })
+    this.reflectAttribute({ attribute: 'size', value: this.size })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
+    switch (attribute) {
+      case 'icon':
+        this.updateIconProp(value)
+        break
+
+      case 'size':
+        this.updateSizeProp(value)
+        break
     }
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
-    switch (attribute) {
-      case 'icon': {
-        if (isIconType(value)) {
-          this.$root.style.backgroundImage = generateIconUrl(value)
-        }
-        break
-      }
-      case 'size': {
-        if (isSizeType(value)) {
-          this.$root.style.width = SIZE[value]
-          this.$root.style.height = SIZE[value]
-        }
-        break
-      }
+  private updateIconProp(value: string) {
+    if (isIconType(value)) {
+      this.$root.style.backgroundImage = generateIconUrl(value)
+    }
+  }
+
+  private updateSizeProp(value: string) {
+    if (isSizeType(value)) {
+      this.$root.style.width = SIZE[value]
+      this.$root.style.height = SIZE[value]
     }
   }
 }
