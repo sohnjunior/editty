@@ -1,4 +1,4 @@
-import { createObjectStore, retrieveData } from './idb-promisify'
+import { createObjectStore, retrieveData, retrieveAllData } from './idb-promisify'
 import type { DatabaseConfig, StoreConfig } from './idb-promisify'
 
 const DATABASE_CONFIG: DatabaseConfig = {
@@ -46,6 +46,14 @@ export default class IndexedDB {
   async getItem<T>(key: string) {
     try {
       return await retrieveData<T>({ db: this.idb, storeName: STORE_NAME, key })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async getAllItems<T>() {
+    try {
+      return await retrieveAllData<T>({ db: this.idb, storeName: STORE_NAME })
     } catch (err) {
       console.error(err)
     }
