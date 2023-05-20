@@ -21,7 +21,7 @@ describe('archive-menu', () => {
     const $menu = screen.getByTestId<VArchiveMenu>('archive-menu')
     const $root = getTemplateRootElement<HTMLElement>($menu)
 
-    $menu.archives = [{ id: '1', title: '스냅샷1' }]
+    $menu.archives = [{ id: '1-1-1-1-1', title: '스냅샷1' }]
 
     const $canvasPreview = $root.querySelector<HTMLDivElement>(
       '.preview-container > v-canvas-preview'

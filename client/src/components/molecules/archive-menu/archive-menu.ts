@@ -1,6 +1,9 @@
 import { VComponent } from '@/modules/v-component'
 import type { ReflectAttributeParam } from '@/modules/v-component'
 import VCanvasPreview from '@atoms/canvas-preview/canvas-preview'
+import type { Archive } from '@/services/archive'
+
+type ArchivePreview = Omit<Archive, 'snapshot' | 'images'>
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -20,12 +23,6 @@ template.innerHTML = `
     </div>
   </v-menu>
 `
-
-interface Archive {
-  id: string
-  title: string
-}
-
 export default class VArchiveMenu extends VComponent {
   static tag = 'v-archive-menu'
 
@@ -51,11 +48,11 @@ export default class VArchiveMenu extends VComponent {
     this.setAttribute('value', newValue)
   }
 
-  private _archives: Archive[] = []
+  private _archives: ArchivePreview[] = []
   get archives() {
     return this._archives
   }
-  set archives(newValue: Archive[]) {
+  set archives(newValue: ArchivePreview[]) {
     this._archives = newValue
     this.updateArchives()
     this.updateValueProp(this.value)
