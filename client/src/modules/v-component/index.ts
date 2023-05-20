@@ -59,10 +59,10 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
   }
 
   /**
-   *
+   * Define reflecting style rule derived from initial attribute
    * @example
    * bindInitialStyle() {
-   *  this.fillColor(this.colorAttribute)
+   *  this.reflectAttribute({...})
    * }
    */
   bindInitialStyle() {
