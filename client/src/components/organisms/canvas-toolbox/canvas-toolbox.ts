@@ -5,6 +5,7 @@ import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { PALETTE_COLORS } from '@/utils/constant'
 import VColorMenu from '@molecules/color-menu/color-menu'
+import VStrokeMenu from '@molecules/stroke-menu/stroke-menu'
 import VArchiveMenu from '@molecules/archive-menu/archive-menu'
 import { getAllArchive } from '@/services/archive'
 
@@ -54,7 +55,7 @@ export default class VCanvasToolbox extends VComponent {
   private $selectRef?: HTMLElement
   private $colorMenu!: VColorMenu
   private $colorPreview!: HTMLElement
-  private $strokeMenu!: HTMLElement
+  private $strokeMenu!: VStrokeMenu
   private $archiveMenu!: VArchiveMenu
 
   get phase() {
@@ -73,7 +74,7 @@ export default class VCanvasToolbox extends VComponent {
     const initInnerElement = () => {
       const $colorMenu = this.$shadow.querySelector<VColorMenu>('v-color-menu')
       const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
-      const $strokeMenu = this.$shadow.querySelector<HTMLElement>('v-stroke-menu')
+      const $strokeMenu = this.$shadow.querySelector<VStrokeMenu>('v-stroke-menu')
       const $archiveMenu = this.$shadow.querySelector<VArchiveMenu>('v-archive-menu')
       if (!$colorMenu || !$colorTile || !$strokeMenu || !$archiveMenu) {
         throw new Error('initialize fail')
@@ -185,11 +186,11 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   handleOpenStrokeMenu() {
-    this.$strokeMenu.setAttribute('open', 'true')
+    this.$strokeMenu.open = true
   }
 
   handleCloseStrokeMenu() {
-    this.$strokeMenu.setAttribute('open', 'false')
+    this.$strokeMenu.open = false
   }
 
   handleOpenArchiveMenu() {
@@ -237,7 +238,7 @@ export default class VCanvasToolbox extends VComponent {
     this.$selectRef = $selected
 
     if (type === 'draw' || type === 'erase') {
-      this.$strokeMenu.setAttribute('stroke', type)
+      this.$strokeMenu.stroke = type
       $selected.setAttribute('icon', type)
     }
   }
