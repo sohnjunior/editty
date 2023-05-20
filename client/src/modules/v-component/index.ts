@@ -29,6 +29,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
 
   /**
    * Define functions to be called after object creation
+   * You cannot access DOM instance yet!
    */
   protected afterCreated() {
     return
@@ -107,6 +108,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
 
   /**
    * Define functions to be called after component DOM mounted
+   * You can access DOM instance now 😄
    */
   protected afterMount() {
     return
