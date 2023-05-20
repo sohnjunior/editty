@@ -35,6 +35,10 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
     return
   }
 
+  /**
+   * Called when _observedAttributes_ changed.
+   * It also called after web component is added to DOM on init render
+   */
   protected attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (oldValue === newValue) {
       // skip update if no difference
