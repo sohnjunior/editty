@@ -39,7 +39,7 @@ export default class VColorPalette extends VComponent {
       return
     }
 
-    const color = (ev.target as VColorTile).colorAttribute
+    const color = (ev.target as VColorTile).color
     this.dispatchEvent(
       new CustomEvent('select:color', {
         detail: { value: color },
