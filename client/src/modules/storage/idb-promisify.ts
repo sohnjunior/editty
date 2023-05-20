@@ -38,10 +38,13 @@ export async function createObjectStore({
 interface DBTransactionParam {
   db: IDBDatabase
   storeName: string
+}
+
+interface DBGetTransactionParam extends DBTransactionParam {
   key: string
 }
 
-export async function retrieveData<T>({ db, storeName, key }: DBTransactionParam): Promise<T> {
+export async function retrieveData<T>({ db, storeName, key }: DBGetTransactionParam): Promise<T> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], 'readonly')
     const objectStore = transaction.objectStore(storeName)
@@ -49,6 +52,23 @@ export async function retrieveData<T>({ db, storeName, key }: DBTransactionParam
 
     request.onsuccess = (ev: Event) => {
       const data = (ev.target as IDBRequest).result
+      resolve(data)
+    }
+
+    request.onerror = () => {
+      reject()
+    }
+  })
+}
+
+export async function retrieveAllData<T>({ db, storeName }: DBTransactionParam): Promise<T[]> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readonly')
+    const objectStore = transaction.objectStore(storeName)
+    const request = objectStore.getAll()
+
+    request.onsuccess = (ev: Event) => {
+      const data = (ev.target as IDBRequest).result as T[]
       resolve(data)
     }
 
