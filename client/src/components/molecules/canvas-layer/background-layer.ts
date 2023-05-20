@@ -3,6 +3,7 @@ import type { UpdateStyleParam } from '@/modules/v-component'
 
 import { Z_INDEX } from '@/utils/constant'
 import { fillBackgroundColor, refineCanvasRatioForRetinaDisplay } from '@/modules/canvas.utils'
+import { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -20,16 +21,19 @@ template.innerHTML = `
 export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement> {
   static tag = 'v-canvas-background-layer'
 
+  constructor() {
+    super(template)
+  }
+
   static get observedAttributes() {
     return ['color']
   }
 
-  get colorAttribute() {
+  get color() {
     return this.getAttribute('color') || '#f8f8f8'
   }
-
-  constructor() {
-    super(template)
+  set color(newValue: string) {
+    this.setAttribute('color', newValue)
   }
 
   afterCreated() {
@@ -37,14 +41,10 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
   }
 
   bindInitialStyle() {
-    const { colorAttribute } = this
-
-    if (colorAttribute) {
-      this.updateStyle({ attribute: 'color', value: colorAttribute })
-    }
+    this.reflectAttribute({ attribute: 'color', value: this.color })
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'color': {
         fillBackgroundColor(this.$root, value)
