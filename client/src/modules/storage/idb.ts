@@ -1,5 +1,12 @@
-import { createObjectStore, retrieveData, retrieveAllData } from './idb-promisify'
+import {
+  createObjectStore,
+  retrieveData,
+  retrieveAllData,
+  putData,
+  deleteData,
+} from './idb-promisify'
 import type { DatabaseConfig, StoreConfig } from './idb-promisify'
+import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const DATABASE_CONFIG: DatabaseConfig = {
   name: 'editty',
@@ -59,17 +66,20 @@ export default class IndexedDB {
     }
   }
 
-  addOrUpdateItem(value: any) {
-    const transaction = this.idb.transaction([STORE_NAME], 'readwrite')
-    const objectStore = transaction.objectStore(STORE_NAME)
-
-    objectStore.put(value)
+  async addOrUpdateItem(value: any) {
+    try {
+      await putData({ db: this.idb, storeName: STORE_NAME, value })
+      EventBus.getInstance().emit(EVENT_KEY.SAVE_SUCCESS)
+    } catch (err) {
+      EventBus.getInstance().emit(EVENT_KEY.SAVE_FAIL)
+    }
   }
 
-  deleteItem(key: string) {
-    const transaction = this.idb.transaction([STORE_NAME], 'readwrite')
-    const objectStore = transaction.objectStore(STORE_NAME)
-
-    objectStore.delete(key)
+  async deleteItem(key: string) {
+    try {
+      deleteData({ db: this.idb, storeName: STORE_NAME, key })
+    } catch (err) {
+      console.error(err)
+    }
   }
 }
