@@ -6,25 +6,26 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
   protected $root!: R
 
   constructor(template: HTMLTemplateElement) {
-    const initShadowRoot = () => {
-      this.$shadow = this.attachShadow({ mode: 'open' })
-      this.$shadow.appendChild(template.content.cloneNode(true))
-    }
-    const initRootElement = () => {
-      const children = this.$shadow.children
-      const elements = [...children].filter((element) => !(element instanceof HTMLStyleElement))
-
-      if (elements.length !== 1) {
-        throw new Error('🚨 v-component must contain one root element')
-      }
-
-      this.$root = elements[0] as R
-    }
-
     super()
-    initShadowRoot()
-    initRootElement()
+    this.initShadowRoot(template)
+    this.initRootElement()
     this.afterCreated()
+  }
+
+  private initShadowRoot(template: HTMLTemplateElement) {
+    this.$shadow = this.attachShadow({ mode: 'open' })
+    this.$shadow.appendChild(template.content.cloneNode(true))
+  }
+
+  private initRootElement() {
+    const children = this.$shadow.children
+    const elements = [...children].filter((element) => !(element instanceof HTMLStyleElement))
+
+    if (elements.length !== 1) {
+      throw new Error('🚨 v-component must contain one root element')
+    }
+
+    this.$root = elements[0] as R
   }
 
   /**
@@ -45,28 +46,26 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
       return
     }
 
-    // 첫 렌더링에 자식 DOM 인스턴스 참조가 안되는 이슈 우회
+    // HACK: 첫 렌더링에 자식 DOM 인스턴스 참조가 안되는 이슈 우회
     requestAnimationFrame(() => this.reflectAttribute({ attribute: name, value: newValue }))
   }
 
   protected connectedCallback() {
-    // HACK: dom mount 이후에 속성 가져와서 스타일적용하기 위해 이벤트루프 사용
-    requestAnimationFrame(this.bindInitialStyle.bind(this))
+    this.bindInitialProp()
     this.bindEventListener()
     this.subscribeEventBus()
     this.subscribeContext()
-
     this.afterMount()
   }
 
   /**
-   * Define reflecting style rule derived from initial attribute
+   * Apply default attribute derived from initial property value
    * @example
-   * bindInitialStyle() {
+   * bindInitialProp() {
    *  this.reflectAttribute({...})
    * }
    */
-  bindInitialStyle() {
+  protected bindInitialProp() {
     return
   }
 
@@ -77,7 +76,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
    *  this.$root.addEventListener('mousedown', this.handler)
    * }
    */
-  bindEventListener() {
+  protected bindEventListener() {
     return
   }
 
@@ -88,7 +87,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
    *   EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, () => {...})
    * }
    */
-  subscribeEventBus() {
+  protected subscribeEventBus() {
     return
   }
 
@@ -102,7 +101,7 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
    *  })
    * }
    */
-  subscribeContext() {
+  protected subscribeContext() {
     return
   }
 
@@ -116,6 +115,9 @@ export abstract class VComponent<R = HTMLElement> extends HTMLElement {
 
   /**
    * Defines handlers to invoke when the _observedAttributes_ changed
+   *
+   * ⚠️ Be aware changing component's attributes inside this method.
+   * It will potentially trigger infinity loop.
    */
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     return
