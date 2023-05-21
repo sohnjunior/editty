@@ -77,3 +77,33 @@ export async function retrieveAllData<T>({ db, storeName }: DBTransactionParam):
     }
   })
 }
+
+interface DBPutTransactionParam extends DBTransactionParam {
+  value: any
+}
+
+export async function putData({ db, storeName, value }: DBPutTransactionParam) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readwrite')
+    const objectStore = transaction.objectStore(storeName)
+    const request = objectStore.put(value)
+
+    request.onsuccess = () => resolve(true)
+    request.onerror = () => reject()
+  })
+}
+
+interface DBDeleteTransactionParam extends DBTransactionParam {
+  key: string
+}
+
+export async function deleteData({ db, storeName, key }: DBDeleteTransactionParam) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readwrite')
+    const objectStore = transaction.objectStore(storeName)
+    const request = objectStore.delete(key)
+
+    request.onsuccess = () => resolve(true)
+    request.onerror = () => reject()
+  })
+}
