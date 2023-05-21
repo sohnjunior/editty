@@ -6,6 +6,7 @@ export const Z_INDEX = {
   },
   ACTION_LAYER: 5,
   MENU_LAYER: 6,
+  TOAST_LAYER: 7,
 }
 
 export const PALETTE_COLORS: Record<string, string> = {
