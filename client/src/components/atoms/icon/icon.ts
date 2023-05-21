@@ -14,6 +14,8 @@ const icon = [
   'gallery',
   'folder',
   'disk',
+  'success',
+  'fail',
 ] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
