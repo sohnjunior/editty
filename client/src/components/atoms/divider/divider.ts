@@ -45,7 +45,6 @@ export default class VDivider extends VComponent {
   }
 
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
-    console.log('aa')
     switch (attribute) {
       case 'size':
         this.updateSizeStyle(value)
