@@ -39,7 +39,6 @@ template.innerHTML = `
   <v-container>
     <v-icon-button data-selected="false" data-phase="cursor" icon="cursor" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="stroke" icon="draw" size="medium"></v-icon-button>
-
     <v-color-tile data-selected="false" data-phase="color" color="none" size="15px"></v-color-tile>
     <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="folder" icon="folder" size="medium"></v-icon-button>
