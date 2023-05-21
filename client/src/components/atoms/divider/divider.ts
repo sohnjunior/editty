@@ -6,10 +6,8 @@ template.innerHTML = `
   <style>
     :host hr {
       display: block;
-      margin: 0;
       background-color: var(--color-platinum);
       border: none;
-      height: 5px;
       width: 100%;
     }
   </style>
@@ -41,7 +39,13 @@ export default class VDivider extends VComponent {
     this.setAttribute('spacing', newValue)
   }
 
+  protected bindInitialProp() {
+    this.reflectAttribute({ attribute: 'size', value: this.size })
+    this.reflectAttribute({ attribute: 'spacing', value: this.spacing })
+  }
+
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
+    console.log('aa')
     switch (attribute) {
       case 'size':
         this.updateSizeStyle(value)
