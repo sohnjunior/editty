@@ -8,6 +8,7 @@ import TextInput from '@atoms/text-input/text-input'
 import RangeSlider from '@atoms/range-slider/range-slider'
 import Divider from '@atoms/divider/divider'
 import CanvasPreview from '@atoms/canvas-preview/canvas-preview'
+import Toast from '@atoms/toast/toast'
 import IconButton from '@molecules/icon-button/icon-button'
 import CanvasBackgroundLayer from '@molecules/canvas-layer/background-layer'
 import CanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
@@ -30,6 +31,7 @@ export function defineCustomElements() {
   customElements.define(Icon.tag, Icon)
   customElements.define(ColorTile.tag, ColorTile)
   customElements.define(IconButton.tag, IconButton)
+  customElements.define(Toast.tag, Toast)
   customElements.define(CanvasPreview.tag, CanvasPreview)
   customElements.define(CanvasContainer.tag, CanvasContainer)
   customElements.define(CanvasBackgroundLayer.tag, CanvasBackgroundLayer)
