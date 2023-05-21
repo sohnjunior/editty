@@ -49,7 +49,7 @@ export default class VIconButton extends VComponent {
   }
 
   get icon() {
-    return this.getAttribute('icon') || 'trash'
+    return this.getAttribute('icon') || 'cursor'
   }
   set icon(newValue: string) {
     this.setAttribute('icon', newValue)
@@ -62,14 +62,14 @@ export default class VIconButton extends VComponent {
     this.setAttribute('size', newValue)
   }
 
-  protected afterMount() {
+  afterMount() {
     this.initInnerIconElement()
     this.reflectAttribute({ attribute: 'icon', value: this.icon })
     this.reflectAttribute({ attribute: 'size', value: this.size })
   }
 
   private initInnerIconElement() {
-    const $icon = this.$shadow.querySelector<VIcon>('v-icon')
+    const $icon = this.$root.querySelector<VIcon>('v-icon')
     if (!$icon) {
       throw new Error('initialize fail')
     }
@@ -77,7 +77,7 @@ export default class VIconButton extends VComponent {
     this.$icon = $icon
   }
 
-  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'icon': {
         this.updateIcon(value)

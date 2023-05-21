@@ -34,7 +34,12 @@ export default class VMenu extends VComponent {
     this.setAttribute('width', newValue)
   }
 
-  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'open', value: this.open })
+    this.reflectAttribute({ attribute: 'width', value: this.width })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'open':
         this.updateOpenProp(value)

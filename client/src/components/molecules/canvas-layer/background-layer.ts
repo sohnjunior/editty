@@ -39,7 +39,7 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
-  bindInitialStyle() {
+  bindInitialProp() {
     this.reflectAttribute({ attribute: 'color', value: this.color })
   }
 

@@ -75,36 +75,33 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   afterCreated(): void {
-    const initInnerElement = () => {
-      const $colorMenu = this.$shadow.querySelector<VColorMenu>('v-color-menu')
-      const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
-      const $strokeMenu = this.$shadow.querySelector<VStrokeMenu>('v-stroke-menu')
-      const $archiveMenu = this.$shadow.querySelector<VArchiveMenu>('v-archive-menu')
-      if (!$colorMenu || !$colorTile || !$strokeMenu || !$archiveMenu) {
-        throw new Error('initialize fail')
-      }
-
-      this.$colorMenu = $colorMenu
-      this.$colorPreview = $colorTile
-      this.$strokeMenu = $strokeMenu
-      this.$archiveMenu = $archiveMenu
-    }
-
-    const initArchives = async () => {
-      const archives = await getAllArchive()
-      const archivePreviews =
-        archives?.map((archive) => ({ id: archive.id, title: archive.title })) ?? []
-      this.$archiveMenu.archives = archivePreviews
-      this.$archiveMenu.value = this.sid ?? ''
-    }
-
-    initInnerElement()
-    initArchives()
+    this.initInnerElement()
+    this.initArchives()
     this.toggleCanvasPhase('draw')
+    this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
   }
 
-  bindInitialStyle() {
-    this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
+  private initInnerElement() {
+    const $colorMenu = this.$shadow.querySelector<VColorMenu>('v-color-menu')
+    const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
+    const $strokeMenu = this.$shadow.querySelector<VStrokeMenu>('v-stroke-menu')
+    const $archiveMenu = this.$shadow.querySelector<VArchiveMenu>('v-archive-menu')
+    if (!$colorMenu || !$colorTile || !$strokeMenu || !$archiveMenu) {
+      throw new Error('initialize fail')
+    }
+
+    this.$colorMenu = $colorMenu
+    this.$colorPreview = $colorTile
+    this.$strokeMenu = $strokeMenu
+    this.$archiveMenu = $archiveMenu
+  }
+
+  private async initArchives() {
+    const archives = await getAllArchive()
+    const archivePreviews =
+      archives?.map((archive) => ({ id: archive.id, title: archive.title })) ?? []
+    this.$archiveMenu.archives = archivePreviews
+    this.$archiveMenu.value = this.sid ?? ''
   }
 
   bindEventListener() {

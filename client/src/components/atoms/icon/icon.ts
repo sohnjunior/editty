@@ -69,40 +69,29 @@ export default class VIcon extends VComponent {
   }
 
   get icon() {
-    const iconAttribute = this.getAttribute('icon')
-    if (!iconAttribute) {
-      console.error('🚨 icon element need icon attributes')
-    }
-
-    return iconAttribute || ''
+    return this.getAttribute('icon') || ''
   }
   set icon(newValue: string) {
     this.setAttribute('icon', newValue)
   }
 
   get size() {
-    const sizeAttribute = this.getAttribute('size')
-    if (!sizeAttribute) {
-      console.error('🚨 icon element need size attributes')
-    }
-
-    return sizeAttribute || 'small'
+    return this.getAttribute('size') || 'small'
   }
   set size(newValue: string) {
     this.setAttribute('size', newValue)
   }
 
-  bindInitialStyle() {
+  bindInitialProp() {
     this.reflectAttribute({ attribute: 'icon', value: this.icon })
     this.reflectAttribute({ attribute: 'size', value: this.size })
   }
 
-  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'icon':
         this.updateIconProp(value)
         break
-
       case 'size':
         this.updateSizeProp(value)
         break
@@ -110,15 +99,19 @@ export default class VIcon extends VComponent {
   }
 
   private updateIconProp(value: string) {
-    if (isIconType(value)) {
-      this.$root.style.backgroundImage = generateIconUrl(value)
+    if (!isIconType(value)) {
+      return
     }
+
+    this.$root.style.backgroundImage = generateIconUrl(value)
   }
 
   private updateSizeProp(value: string) {
-    if (isSizeType(value)) {
-      this.$root.style.width = SIZE[value]
-      this.$root.style.height = SIZE[value]
+    if (!isSizeType(value)) {
+      return
     }
+
+    this.$root.style.width = SIZE[value]
+    this.$root.style.height = SIZE[value]
   }
 }

@@ -65,7 +65,12 @@ export default class VRangeSlider extends VComponent<HTMLInputElement> {
     this.$root.value = value
   }
 
-  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'min', value: this.min })
+    this.reflectAttribute({ attribute: 'max', value: this.max })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'min':
       case 'max':

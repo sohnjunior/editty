@@ -43,6 +43,10 @@ export default class VTextInput extends VComponent<HTMLInputElement> {
     this.setAttribute('placeholder', newValue)
   }
 
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'placeholder', value: this.placeholder })
+  }
+
   bindEventListener() {
     this.$root.addEventListener('input', this.handleInputChange.bind(this))
   }

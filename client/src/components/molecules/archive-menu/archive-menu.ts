@@ -70,6 +70,11 @@ export default class VArchiveMenu extends VComponent {
     }
   }
 
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'open', value: `${this.open}` })
+    this.reflectAttribute({ attribute: 'value', value: this.value })
+  }
+
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
     switch (attribute) {
       case 'open':

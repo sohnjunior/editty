@@ -137,7 +137,12 @@ export default class VStrokeMenu extends VComponent {
     )
   }
 
-  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'open', value: `${this.open}` })
+    this.reflectAttribute({ attribute: 'stroke', value: this.stroke })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'open':
         this.updateOpenProp(value)
@@ -167,7 +172,7 @@ export default class VStrokeMenu extends VComponent {
     const $selected = this.$root.querySelector<HTMLElement>(`[data-phase="${newPhase}"]`)
     if ($selected) {
       $selected.dataset.selected = 'true'
-      this.setAttribute('stroke', newPhase)
+      this.stroke = newPhase
     }
   }
 }

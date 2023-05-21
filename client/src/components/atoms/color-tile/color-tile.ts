@@ -41,14 +41,14 @@ export default class VColorTile extends VComponent {
   }
 
   get size() {
-    const value = this.getAttribute('size')
-    if (!value) {
-      console.error('🚨 color-tile element require size attributes')
-    }
-    return this.getAttribute('size') || ''
+    return this.getAttribute('size') || '10px'
   }
   set size(newValue: string) {
     this.setAttribute('size', newValue)
+  }
+
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'size', value: this.size })
   }
 
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
