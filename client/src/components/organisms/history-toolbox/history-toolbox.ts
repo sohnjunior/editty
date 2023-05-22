@@ -3,7 +3,7 @@ import {
   CanvasDrawingContext,
   CanvasImageContext,
   CanvasMetaContext,
-  SessionContext,
+  ArchiveContext,
 } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { addOrUpdateArchive } from '@/services/archive'
@@ -30,7 +30,7 @@ export default class VHistoryToolbox extends VComponent {
   static tag = 'v-history-toolbox'
 
   get sid() {
-    return SessionContext.state.sid!
+    return ArchiveContext.state.sid!
   }
 
   get title() {

@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { CanvasImageContext, CanvasMetaContext, SessionContext } from '@/contexts'
+import { CanvasImageContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -48,7 +48,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private isPressed = false
 
   get sid() {
-    return SessionContext.state.sid!
+    return ArchiveContext.state.sid!
   }
 
   get title() {
@@ -111,7 +111,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   subscribeContext() {
-    SessionContext.subscribe({
+    ArchiveContext.subscribe({
       action: 'SET_SESSION_ID',
       effect: (context) => {
         const sid = context.state.sid

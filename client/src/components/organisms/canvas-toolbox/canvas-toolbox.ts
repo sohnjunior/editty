@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext, CanvasMetaContext, SessionContext, ArchiveContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -57,7 +57,7 @@ export default class VCanvasToolbox extends VComponent {
   private $archiveMenu!: VArchiveMenu
 
   get sid() {
-    return SessionContext.state.sid
+    return ArchiveContext.state.sid
   }
 
   get phase() {
@@ -214,7 +214,7 @@ export default class VCanvasToolbox extends VComponent {
   handleSelectArchive(ev: Event) {
     const sid = (ev as CustomEvent).detail.value
     this.$archiveMenu.value = sid
-    SessionContext.dispatch({ action: 'SET_SESSION_ID', data: sid })
+    ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: sid })
   }
 
   handleSelectStroke(ev: Event) {

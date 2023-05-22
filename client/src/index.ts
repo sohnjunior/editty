@@ -2,7 +2,7 @@ import { defineCustomElements } from './registry'
 import IndexedDB from '@/modules/storage/idb'
 import SessionStorage from '@/modules/storage/session'
 import { setSessionId, getSessionId } from '@/services/session'
-import { SessionContext } from '@/contexts'
+import { ArchiveContext } from '@/contexts'
 
 import './reset.css'
 import './global.css'
@@ -22,7 +22,7 @@ function mountSessionStorage() {
 
 function initializeSessionId() {
   setSessionId()
-  SessionContext.dispatch({ action: 'SET_SESSION_ID', data: getSessionId() })
+  ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: getSessionId() })
 }
 
 async function mountDatabase() {

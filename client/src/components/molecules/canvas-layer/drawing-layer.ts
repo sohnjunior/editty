@@ -1,7 +1,7 @@
 import { VComponent } from '@/modules/v-component'
 import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
 import { Z_INDEX } from '@/utils/constant'
-import { CanvasDrawingContext, CanvasMetaContext, SessionContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
@@ -36,7 +36,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   private isDrawing = false
 
   get sid() {
-    return SessionContext.state.sid!
+    return ArchiveContext.state.sid!
   }
 
   get title() {
@@ -105,7 +105,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   subscribeContext() {
-    SessionContext.subscribe({
+    ArchiveContext.subscribe({
       action: 'SET_SESSION_ID',
       effect: (context) => {
         const sid = context.state.sid
