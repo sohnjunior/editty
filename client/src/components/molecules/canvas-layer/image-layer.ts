@@ -91,7 +91,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private async fetchArchive(sid: UUID) {
     const data = await getArchive(sid)
     if (data) {
-      const jobs = data.images.map(async (image) => {
+      const createImageObjects = data.images.map(async (image) => {
         const imageObject = await createImageObject({
           dataUrl: image.dataUrl,
           topLeftPoint: { x: image.sx, y: image.sy },
@@ -99,11 +99,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         imageObject.width = image.width
         imageObject.height = image.height
 
-        CanvasImageContext.dispatch({ action: 'PUSH_IMAGE', data: imageObject })
+        return imageObject
       })
 
       try {
-        await Promise.all(jobs)
+        const imageObjects = await Promise.all(createImageObjects)
+        CanvasImageContext.dispatch({ action: 'INIT_IMAGE', data: imageObjects })
       } catch {
         console.error('🚨 fail to upload image from archive DB')
       }
@@ -120,6 +121,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         }
 
         this.fetchArchive(sid)
+      },
+    })
+    CanvasImageContext.subscribe({
+      action: 'INIT_IMAGE',
+      effect: () => {
+        this.paintImages()
       },
     })
     CanvasImageContext.subscribe({

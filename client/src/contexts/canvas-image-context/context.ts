@@ -7,6 +7,7 @@ type State = {
 }
 
 type Action =
+  | { action: 'INIT_IMAGE'; data: State['images'] }
   | { action: 'PUSH_IMAGE'; data: State['images'][number] }
   | { action: 'CLEAR_IMAGE' }
   | { action: 'SELECT_IMAGE'; data: number }
@@ -17,6 +18,10 @@ const initState: State = {
 
 const reducer: Reducer<State, Action> = async ({ state, payload }) => {
   switch (payload.action) {
+    case 'INIT_IMAGE': {
+      const images = payload.data
+      return { ...state, images }
+    }
     case 'PUSH_IMAGE': {
       const images = [...state.images]
       images.push(payload.data)
