@@ -1,5 +1,6 @@
 import { VComponent } from '@/modules/v-component'
-import { Z_INDEX, PALETTE_COLORS } from '@/utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
+import { Z_INDEX } from '@/utils/constant'
 import { CanvasDrawingContext, CanvasMetaContext, SessionContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'

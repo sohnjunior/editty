@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import VColorTile from '@atoms/color-tile/color-tile'
-import { PALETTE_COLORS } from '@/utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
 
 const template = document.createElement('template')
 template.innerHTML = `
