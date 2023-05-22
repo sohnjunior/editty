@@ -17,7 +17,7 @@ import {
   resizeRect,
   drawCircle,
   drawRect,
-} from '@/modules/canvas.utils'
+} from '@/modules/canvas-utils/engine'
 import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
