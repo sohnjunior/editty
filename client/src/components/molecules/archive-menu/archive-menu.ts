@@ -64,13 +64,32 @@ export default class VArchiveMenu extends VComponent {
       $archiveContainer.innerHTML = this.archives
         .map(
           (archive) =>
-            `<v-canvas-preview selected="false" value="${archive.id}" caption="${archive.title}"></v-canvas-preview>`
+            `<v-canvas-preview selected="false" data-value="${archive.id}" caption="${archive.title}"></v-canvas-preview>`
         )
         .join('')
     }
   }
 
-  bindInitialProp() {
+  protected bindEventListener() {
+    this.$root.addEventListener('click', this.handleClickArchive)
+  }
+
+  private handleClickArchive(ev: Event) {
+    const sid = (ev.target as HTMLElement).dataset.value
+    if (!sid) {
+      return
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('select:archive', {
+        detail: { value: sid },
+        bubbles: true,
+        composed: true,
+      })
+    )
+  }
+
+  protected bindInitialProp() {
     this.reflectAttribute({ attribute: 'open', value: `${this.open}` })
     this.reflectAttribute({ attribute: 'value', value: this.value })
   }
@@ -92,7 +111,7 @@ export default class VArchiveMenu extends VComponent {
 
   private updateValueProp(newValue: string) {
     const $newSelect = this.$root.querySelector<VCanvasPreview>(
-      `v-canvas-preview[value="${newValue}"]`
+      `v-canvas-preview[data-value="${newValue}"]`
     )
     if ($newSelect) {
       const $oldSelect = this.$root.querySelector<VCanvasPreview>(

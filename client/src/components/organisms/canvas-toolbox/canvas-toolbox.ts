@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext, CanvasMetaContext, SessionContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext, SessionContext, ArchiveContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -7,7 +7,6 @@ import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
 import VColorMenu from '@molecules/color-menu/color-menu'
 import VStrokeMenu from '@molecules/stroke-menu/stroke-menu'
 import VArchiveMenu from '@molecules/archive-menu/archive-menu'
-import { getAllArchive } from '@/services/archive'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -96,10 +95,7 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   private async initArchives() {
-    const archives = await getAllArchive()
-    const archivePreviews =
-      archives?.map((archive) => ({ id: archive.id, title: archive.title })) ?? []
-    this.$archiveMenu.archives = archivePreviews
+    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
     this.$archiveMenu.value = this.sid ?? ''
   }
 
@@ -110,10 +106,22 @@ export default class VCanvasToolbox extends VComponent {
     this.$strokeMenu.addEventListener('stroke:select', this.handleSelectStroke.bind(this))
     this.$strokeMenu.addEventListener('stroke:resize', this.handleResizeStroke.bind(this))
     this.$strokeMenu.addEventListener('close:menu', this.handleCloseStrokeMenu.bind(this))
+    this.$archiveMenu.addEventListener('select:archive', this.handleSelectArchive.bind(this))
     this.$archiveMenu.addEventListener('close:menu', this.handleCloseArchiveMenu.bind(this))
   }
 
   subscribeContext() {
+    ArchiveContext.subscribe({
+      action: 'FETCH_ARCHIVES_FROM_IDB',
+      effect: (context) => {
+        const archives = context.state.archives
+        const archivePreviews = archives.map((archive) => ({
+          id: archive.id,
+          title: archive.title,
+        }))
+        this.$archiveMenu.archives = archivePreviews
+      },
+    })
     CanvasMetaContext.subscribe({
       action: 'SET_PHASE',
       effect: (context) => {
@@ -201,6 +209,12 @@ export default class VCanvasToolbox extends VComponent {
 
   handleCloseArchiveMenu() {
     this.$archiveMenu.open = false
+  }
+
+  handleSelectArchive(ev: Event) {
+    const sid = (ev as CustomEvent).detail.value
+    this.$archiveMenu.value = sid
+    SessionContext.dispatch({ action: 'SET_SESSION_ID', data: sid })
   }
 
   handleSelectStroke(ev: Event) {

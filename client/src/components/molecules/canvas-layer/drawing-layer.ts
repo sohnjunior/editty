@@ -14,6 +14,7 @@ import {
 } from '@/modules/canvas-utils/engine'
 import { getArchive } from '@/services/archive'
 import type { Point } from './types'
+import type { UUID } from '@/utils/crypto'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -80,11 +81,11 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   afterMount() {
-    this.fetchArchive()
+    this.fetchArchive(this.sid)
   }
 
-  private async fetchArchive() {
-    const data = await getArchive(this.sid)
+  private async fetchArchive(sid: UUID) {
+    const data = await getArchive(sid)
     if (data) {
       const snapshots = data.snapshot ? [data.snapshot] : []
       CanvasDrawingContext.dispatch({ action: 'HISTORY_INIT', data: snapshots })
@@ -104,6 +105,17 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   subscribeContext() {
+    SessionContext.subscribe({
+      action: 'SET_SESSION_ID',
+      effect: (context) => {
+        const sid = context.state.sid
+        if (!sid) {
+          return
+        }
+
+        this.fetchArchive(sid)
+      },
+    })
     CanvasDrawingContext.subscribe({
       action: 'HISTORY_INIT',
       effect: (context) => {

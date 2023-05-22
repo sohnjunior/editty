@@ -1,11 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import {
-  CanvasDrawingContext,
-  CanvasImageContext,
-  CanvasMetaContext,
-  SessionContext,
-} from '@/contexts'
+import { CanvasImageContext, CanvasMetaContext, SessionContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -22,6 +17,7 @@ import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'
+import type { UUID } from '@/utils/crypto'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
@@ -89,11 +85,11 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   afterMount() {
-    this.fetchArchive()
+    this.fetchArchive(this.sid)
   }
 
-  private async fetchArchive() {
-    const data = await getArchive(this.sid)
+  private async fetchArchive(sid: UUID) {
+    const data = await getArchive(sid)
     if (data) {
       const jobs = data.images.map(async (image) => {
         const imageObject = await createImageObject({
@@ -115,6 +111,17 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   subscribeContext() {
+    SessionContext.subscribe({
+      action: 'SET_SESSION_ID',
+      effect: (context) => {
+        const sid = context.state.sid
+        if (!sid) {
+          return
+        }
+
+        this.fetchArchive(sid)
+      },
+    })
     CanvasImageContext.subscribe({
       action: 'PUSH_IMAGE',
       effect: () => {
