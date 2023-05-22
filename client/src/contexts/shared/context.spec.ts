@@ -10,7 +10,7 @@ type Action = { action: 'SET_NAME'; data: State['name'] }
 describe('base context', () => {
   it('should subscribe and dispatch event', async () => {
     const initState = { name: '' }
-    const reducer: Reducer<State, Action> = ({ state, payload }) => {
+    const reducer: Reducer<State, Action> = async ({ state, payload }) => {
       switch (payload.action) {
         case 'SET_NAME':
           return { ...state, name: payload.data }

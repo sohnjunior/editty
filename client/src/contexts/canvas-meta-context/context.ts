@@ -17,7 +17,7 @@ const initState: State = {
   phase: 'draw',
 }
 
-const reducer: Reducer<State, Action> = ({ state, payload }) => {
+const reducer: Reducer<State, Action> = async ({ state, payload }) => {
   switch (payload.action) {
     case 'SET_TITLE': {
       const title = payload.data

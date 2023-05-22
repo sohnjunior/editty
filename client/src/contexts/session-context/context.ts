@@ -12,7 +12,7 @@ const initState: State = {
   sid: undefined,
 }
 
-const reducer: Reducer<State, Action> = ({ state, payload }) => {
+const reducer: Reducer<State, Action> = async ({ state, payload }) => {
   switch (payload.action) {
     case 'SET_SESSION_ID': {
       const sid = payload.data

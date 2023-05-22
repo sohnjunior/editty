@@ -24,7 +24,7 @@ const initState: State = {
   strokeSize: 10,
 }
 
-const reducer: Reducer<State, Action> = ({ state, payload }) => {
+const reducer: Reducer<State, Action> = async ({ state, payload }) => {
   switch (payload.action) {
     case 'PUSH_SNAPSHOT': {
       const snapshots = [...state.snapshots]

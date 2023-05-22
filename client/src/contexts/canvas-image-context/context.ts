@@ -15,7 +15,7 @@ const initState: State = {
   images: [],
 }
 
-const reducer: Reducer<State, Action> = ({ state, payload }) => {
+const reducer: Reducer<State, Action> = async ({ state, payload }) => {
   switch (payload.action) {
     case 'PUSH_IMAGE': {
       const images = [...state.images]
