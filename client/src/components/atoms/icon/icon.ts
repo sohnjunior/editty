@@ -16,6 +16,7 @@ const icon = [
   'disk',
   'success',
   'fail',
+  'add-circle',
 ] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
