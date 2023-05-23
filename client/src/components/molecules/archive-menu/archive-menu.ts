@@ -16,9 +16,32 @@ template.innerHTML = `
       width: 330px;
       height: 350px;
     }
+
+    :host div.add-new-canvas-button {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      border: 2px solid var(--color-gray);
+      border-radius: 13px;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    :host div.add-new-canvas-button > v-icon {
+      margin-bottom: 8px;
+    }
   </style>
   <v-menu>
     <div class="preview-container" slot="content">
+      <div data-value="add" class="add-new-canvas-button">
+        <v-icon icon="add-circle" size="large"></v-icon>
+        new canvas
+      </div>
       <!-- lazy load archives -->
     </div>
   </v-menu>
@@ -61,12 +84,13 @@ export default class VArchiveMenu extends VComponent {
   private updateArchives() {
     const $archiveContainer = this.$root.querySelector('.preview-container')
     if ($archiveContainer) {
-      $archiveContainer.innerHTML = this.archives
+      const html = this.archives
         .map(
           (archive) =>
             `<v-canvas-preview selected="false" data-value="${archive.id}" caption="${archive.title}"></v-canvas-preview>`
         )
         .join('')
+      $archiveContainer.insertAdjacentHTML('beforeend', html)
     }
   }
 
@@ -75,18 +99,27 @@ export default class VArchiveMenu extends VComponent {
   }
 
   private handleClickArchive(ev: Event) {
-    const sid = (ev.target as HTMLElement).dataset.value
-    if (!sid) {
+    const value = (ev.target as HTMLElement).dataset.value
+    if (!value) {
       return
     }
 
-    this.dispatchEvent(
-      new CustomEvent('select:archive', {
-        detail: { value: sid },
-        bubbles: true,
-        composed: true,
-      })
-    )
+    if (value === 'add') {
+      this.dispatchEvent(
+        new CustomEvent('add:archive', {
+          bubbles: true,
+          composed: true,
+        })
+      )
+    } else {
+      this.dispatchEvent(
+        new CustomEvent('select:archive', {
+          detail: { value },
+          bubbles: true,
+          composed: true,
+        })
+      )
+    }
   }
 
   protected bindInitialProp() {
