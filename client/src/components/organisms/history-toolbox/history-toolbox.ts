@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext, CanvasMetaContext } from '@/contexts'
+import { CanvasDrawingContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
@@ -20,10 +20,6 @@ template.innerHTML = `
 
 export default class VHistoryToolbox extends VComponent {
   static tag = 'v-history-toolbox'
-
-  get title() {
-    return CanvasMetaContext.state.title
-  }
 
   constructor() {
     super(template)
