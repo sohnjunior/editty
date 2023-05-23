@@ -1,6 +1,11 @@
 import { VComponent } from '@/modules/v-component'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
+import { addOrUpdateArchive } from '@/services/archive'
+import type { Archive } from '@/services/archive'
+import { lastOf } from '@/utils/ramda'
+import { CanvasDrawingContext, CanvasImageContext, ArchiveContext } from '@/contexts'
+import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -28,6 +33,18 @@ export default class VCanvasContainer extends VComponent {
 
   constructor() {
     super(template)
+  }
+
+  get sid() {
+    return ArchiveContext.state.sid!
+  }
+
+  get snapshots() {
+    return CanvasDrawingContext.state.snapshots
+  }
+
+  get images() {
+    return CanvasImageContext.state.images
   }
 
   afterCreated() {
@@ -58,5 +75,25 @@ export default class VCanvasContainer extends VComponent {
 
   propagateEventToImageLayer(ev: Event) {
     this.imageLayer.listenSiblingLayerEvent(ev)
+  }
+
+  protected subscribeEventBus() {
+    EventBus.getInstance().on(EVENT_KEY.SAVE_ARCHIVE, this.onSaveArchive.bind(this))
+  }
+
+  private onSaveArchive() {
+    const images: Archive['images'] = this.images.map((image) => ({
+      dataUrl: image.dataUrl,
+      sx: image.sx,
+      sy: image.sy,
+      width: image.width,
+      height: image.height,
+    }))
+    addOrUpdateArchive({
+      id: this.sid,
+      title: this.title,
+      snapshot: lastOf(this.snapshots),
+      images,
+    })
   }
 }

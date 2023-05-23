@@ -1,14 +1,6 @@
 import { VComponent } from '@/modules/v-component'
-import {
-  CanvasDrawingContext,
-  CanvasImageContext,
-  CanvasMetaContext,
-  ArchiveContext,
-} from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { addOrUpdateArchive } from '@/services/archive'
-import type { Archive } from '@/services/archive'
-import { lastOf } from '@/utils/ramda'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -29,20 +21,8 @@ template.innerHTML = `
 export default class VHistoryToolbox extends VComponent {
   static tag = 'v-history-toolbox'
 
-  get sid() {
-    return ArchiveContext.state.sid!
-  }
-
   get title() {
     return CanvasMetaContext.state.title
-  }
-
-  get snapshots() {
-    return CanvasDrawingContext.state.snapshots
-  }
-
-  get images() {
-    return CanvasImageContext.state.images
   }
 
   constructor() {
@@ -88,18 +68,6 @@ export default class VHistoryToolbox extends VComponent {
   }
 
   handleSaveCanvas() {
-    const images: Archive['images'] = this.images.map((image) => ({
-      dataUrl: image.dataUrl,
-      sx: image.sx,
-      sy: image.sy,
-      width: image.width,
-      height: image.height,
-    }))
-    addOrUpdateArchive({
-      id: this.sid,
-      title: this.title,
-      snapshot: lastOf(this.snapshots),
-      images,
-    })
+    EventBus.getInstance().emit(EVENT_KEY.SAVE_ARCHIVE)
   }
 }
