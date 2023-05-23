@@ -17,10 +17,14 @@ export async function getAllArchive() {
   return await IndexedDB.getInstance().getAllItems<Archive>()
 }
 
-export function addOrUpdateArchive(data: Archive) {
+export async function addArchive(data: Archive) {
+  IndexedDB.getInstance().addItem(data)
+}
+
+export async function addOrUpdateArchive(data: Archive) {
   IndexedDB.getInstance().addOrUpdateItem(data)
 }
 
-export function deleteArchive(id: string) {
+export async function deleteArchive(id: string) {
   IndexedDB.getInstance().deleteItem(id)
 }

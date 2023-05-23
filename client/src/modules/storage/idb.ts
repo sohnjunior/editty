@@ -66,6 +66,15 @@ export default class IndexedDB {
     }
   }
 
+  async addItem(value: any) {
+    try {
+      await putData({ db: this.idb, storeName: STORE_NAME, value })
+      EventBus.getInstance().emit(EVENT_KEY.ADD_SUCCESS)
+    } catch (err) {
+      EventBus.getInstance().emit(EVENT_KEY.ADD_FAIL)
+    }
+  }
+
   async addOrUpdateItem(value: any) {
     try {
       await putData({ db: this.idb, storeName: STORE_NAME, value })
