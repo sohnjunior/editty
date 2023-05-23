@@ -106,6 +106,7 @@ export default class VCanvasToolbox extends VComponent {
     this.$strokeMenu.addEventListener('stroke:select', this.handleSelectStroke.bind(this))
     this.$strokeMenu.addEventListener('stroke:resize', this.handleResizeStroke.bind(this))
     this.$strokeMenu.addEventListener('close:menu', this.handleCloseStrokeMenu.bind(this))
+    this.$archiveMenu.addEventListener('add:archive', this.handleAddArchive.bind(this))
     this.$archiveMenu.addEventListener('select:archive', this.handleSelectArchive.bind(this))
     this.$archiveMenu.addEventListener('close:menu', this.handleCloseArchiveMenu.bind(this))
   }
@@ -209,6 +210,11 @@ export default class VCanvasToolbox extends VComponent {
 
   handleCloseArchiveMenu() {
     this.$archiveMenu.open = false
+  }
+
+  handleAddArchive() {
+    EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE)
+    console.log('TODO: 새로운 캔버스 id 를 할당하고 캔버스를 초기화한 뒤 idb에 저장합니다.')
   }
 
   handleSelectArchive(ev: Event) {
