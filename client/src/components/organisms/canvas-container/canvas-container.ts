@@ -1,10 +1,16 @@
 import { VComponent } from '@/modules/v-component'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
-import { addOrUpdateArchive } from '@/services/archive'
+import { setSessionId, getOneTimeSessionId } from '@/services/session'
+import { addArchive, addOrUpdateArchive } from '@/services/archive'
 import type { Archive } from '@/services/archive'
 import { lastOf } from '@/utils/ramda'
-import { CanvasDrawingContext, CanvasImageContext, ArchiveContext } from '@/contexts'
+import {
+  CanvasMetaContext,
+  CanvasDrawingContext,
+  CanvasImageContext,
+  ArchiveContext,
+} from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
@@ -37,6 +43,10 @@ export default class VCanvasContainer extends VComponent {
 
   get sid() {
     return ArchiveContext.state.sid!
+  }
+
+  get title() {
+    return CanvasMetaContext.state.title
   }
 
   get snapshots() {
@@ -79,6 +89,7 @@ export default class VCanvasContainer extends VComponent {
 
   protected subscribeEventBus() {
     EventBus.getInstance().on(EVENT_KEY.SAVE_ARCHIVE, this.onSaveArchive.bind(this))
+    EventBus.getInstance().on(EVENT_KEY.CREATE_NEW_ARCHIVE, this.onCreateNewArchive.bind(this))
   }
 
   private onSaveArchive() {
@@ -95,5 +106,19 @@ export default class VCanvasContainer extends VComponent {
       snapshot: lastOf(this.snapshots),
       images,
     })
+  }
+
+  private async onCreateNewArchive() {
+    const id = getOneTimeSessionId()
+    setSessionId(id)
+
+    await addArchive({
+      id,
+      title: this.title,
+      snapshot: undefined,
+      images: [],
+    })
+
+    ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id })
   }
 }
