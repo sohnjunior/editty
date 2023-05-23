@@ -214,7 +214,6 @@ export default class VCanvasToolbox extends VComponent {
 
   handleAddArchive() {
     EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE)
-    console.log('TODO: 새로운 캔버스 id 를 할당하고 캔버스를 초기화한 뒤 idb에 저장합니다.')
   }
 
   handleSelectArchive(ev: Event) {
