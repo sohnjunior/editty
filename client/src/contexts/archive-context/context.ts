@@ -3,6 +3,7 @@ import type { Reducer } from '@/contexts/shared/context'
 import type { Archive } from '@/services/archive'
 import type { UUID } from '@/utils/crypto'
 import { getAllArchive } from '@/services/archive'
+import { setSessionId } from '@/services/session'
 
 type State = {
   sid?: UUID
@@ -26,6 +27,7 @@ const reducer: Reducer<State, Action> = async ({ state, payload }) => {
     }
     case 'SET_SESSION_ID': {
       const sid = payload.data
+      setSessionId(sid)
       return { ...state, sid }
     }
   }
