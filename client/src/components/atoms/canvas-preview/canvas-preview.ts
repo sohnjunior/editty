@@ -18,11 +18,18 @@ template.innerHTML = `
     }
 
     :host figure > .figure-content {
+      position: relative;
       box-sizing: border-box;
       border: 2px solid var(--color-gray);
       border-radius: 13px;
       width: 100px;
       height: 100px;
+    }
+
+    :host figure > .figure-content > v-icon {
+      position: absolute;
+      top: 0px;
+      right: 0px;
     }
 
     :host figcaption {
