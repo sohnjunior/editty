@@ -20,11 +20,21 @@ export async function getAllArchive() {
 }
 
 export async function addArchive(data: Archive) {
-  IndexedDB.getInstance().addItem(data)
+  try {
+    await IndexedDB.getInstance().addItem(data)
+    showToast('ADD_ARCHIVE', 'SUCCESS')
+  } catch (err) {
+    showToast('ADD_ARCHIVE', 'FAIL')
+  }
 }
 
 export async function addOrUpdateArchive(data: Archive) {
-  IndexedDB.getInstance().addOrUpdateItem(data)
+  try {
+    await IndexedDB.getInstance().addOrUpdateItem(data)
+    showToast('SAVE_ARCHIVE', 'SUCCESS')
+  } catch (err) {
+    showToast('SAVE_ARCHIVE', 'FAIL')
+  }
 }
 
 export async function deleteArchive(id: string) {

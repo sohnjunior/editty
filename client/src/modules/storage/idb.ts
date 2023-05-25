@@ -6,7 +6,6 @@ import {
   deleteData,
 } from './idb-promisify'
 import type { DatabaseConfig, StoreConfig } from './idb-promisify'
-import { showToast } from '@/services/toast'
 
 const DATABASE_CONFIG: DatabaseConfig = {
   name: 'editty',
@@ -69,18 +68,16 @@ export default class IndexedDB {
   async addItem(value: any) {
     try {
       await putData({ db: this.idb, storeName: STORE_NAME, value })
-      showToast('ADD_ARCHIVE', 'SUCCESS')
     } catch (err) {
-      showToast('ADD_ARCHIVE', 'FAIL')
+      throw err
     }
   }
 
   async addOrUpdateItem(value: any) {
     try {
       await putData({ db: this.idb, storeName: STORE_NAME, value })
-      showToast('SAVE_ARCHIVE', 'SUCCESS')
     } catch (err) {
-      showToast('SAVE_ARCHIVE', 'FAIL')
+      throw err
     }
   }
 
