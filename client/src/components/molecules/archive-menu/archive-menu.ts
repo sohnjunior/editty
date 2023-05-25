@@ -11,6 +11,7 @@ template.innerHTML = `
     :host div.preview-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr); 
+      grid-auto-rows: min-content;
       gap: 10px 15px;
       overflow: scroll;
       width: 330px;
