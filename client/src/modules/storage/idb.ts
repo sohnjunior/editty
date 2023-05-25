@@ -86,9 +86,9 @@ export default class IndexedDB {
 
   async deleteItem(key: string) {
     try {
-      deleteData({ db: this.idb, storeName: STORE_NAME, key })
+      await deleteData({ db: this.idb, storeName: STORE_NAME, key })
     } catch (err) {
-      console.error(err)
+      throw err
     }
   }
 }
