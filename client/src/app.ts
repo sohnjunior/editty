@@ -50,6 +50,14 @@ template.innerHTML = `
         <span slot="title">실패</span>
         <span slot="description">캔버스 생성에 실패했습니다.</span>
       </v-toast>
+      <v-toast data-type="delete-success" variant="success" open="false" autoclose="true">
+        <span slot="title">성공</span>
+        <span slot="description">삭제되었습니다.</span>
+      </v-toast>
+      <v-toast data-type="delete-fail" variant="fail" open="false" autoclose="true">
+        <span slot="title">실패</span>
+        <span slot="description">삭제에 실패했습니다.</span>
+      </v-toast>
     </main>
   </v-mobile-layout>
 `
@@ -61,6 +69,8 @@ export default class App extends VComponent {
   private $saveFailToast!: VToast
   private $addSuccessToast!: VToast
   private $addFailToast!: VToast
+  private $deleteSuccessToast!: VToast
+  private $deleteFailToast!: VToast
 
   constructor() {
     super(template)
@@ -75,7 +85,19 @@ export default class App extends VComponent {
     const $saveFailToast = this.$root.querySelector<VToast>('v-toast[data-type="save-fail"]')
     const $addSuccessToast = this.$root.querySelector<VToast>('v-toast[data-type="add-success"]')
     const $addFailToast = this.$root.querySelector<VToast>('v-toast[data-type="add-fail"]')
-    if (!$saveSuccessToast || !$saveFailToast || !$addSuccessToast || !$addFailToast) {
+    const $deleteSuccessToast = this.$root.querySelector<VToast>(
+      'v-toast[data-type="delete-success"]'
+    )
+    const $deleteFailToast = this.$root.querySelector<VToast>('v-toast[data-type="delete-fail"]')
+
+    if (
+      !$saveSuccessToast ||
+      !$saveFailToast ||
+      !$addSuccessToast ||
+      !$addFailToast ||
+      !$deleteSuccessToast ||
+      !$deleteFailToast
+    ) {
       throw new Error('initialize fail')
     }
 
@@ -83,6 +105,8 @@ export default class App extends VComponent {
     this.$saveFailToast = $saveFailToast
     this.$addSuccessToast = $addSuccessToast
     this.$addFailToast = $addFailToast
+    this.$deleteSuccessToast = $deleteSuccessToast
+    this.$deleteFailToast = $deleteFailToast
   }
 
   subscribeEventBus() {
@@ -90,6 +114,8 @@ export default class App extends VComponent {
     EventBus.getInstance().on(EVENT_KEY.SAVE_FAIL, this.onSaveFail.bind(this))
     EventBus.getInstance().on(EVENT_KEY.ADD_SUCCESS, this.onAddSuccess.bind(this))
     EventBus.getInstance().on(EVENT_KEY.ADD_FAIL, this.onAddFail.bind(this))
+    EventBus.getInstance().on(EVENT_KEY.DELETE_SUCCESS, this.onDeleteSuccess.bind(this))
+    EventBus.getInstance().on(EVENT_KEY.DELETE_FAIL, this.onDeleteFail.bind(this))
   }
 
   private onSaveSuccess() {
@@ -106,5 +132,13 @@ export default class App extends VComponent {
 
   private onAddFail() {
     this.$addFailToast.open = true
+  }
+
+  private onDeleteSuccess() {
+    this.$deleteSuccessToast.open = true
+  }
+
+  private onDeleteFail() {
+    this.$deleteFailToast.open = true
   }
 }
