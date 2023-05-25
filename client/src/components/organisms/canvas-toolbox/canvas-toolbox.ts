@@ -128,8 +128,13 @@ export default class VCanvasToolbox extends VComponent {
 
         // 💡 if all archives were deleted, generate new session id
         const nextId = context.state.archives[0]?.id ?? getOneTimeSessionId()
-        this.$archiveMenu.value = nextId
         ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: nextId })
+      },
+    })
+    ArchiveContext.subscribe({
+      action: 'SET_SESSION_ID',
+      effect: (context) => {
+        this.$archiveMenu.value = context.state.sid
       },
     })
     CanvasMetaContext.subscribe({
@@ -240,7 +245,6 @@ export default class VCanvasToolbox extends VComponent {
 
   handleSelectArchive(ev: Event) {
     const sid = (ev as CustomEvent).detail.value
-    this.$archiveMenu.value = sid
     ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: sid })
   }
 

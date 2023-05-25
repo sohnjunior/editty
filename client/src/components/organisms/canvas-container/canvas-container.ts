@@ -92,7 +92,7 @@ export default class VCanvasContainer extends VComponent {
     EventBus.getInstance().on(EVENT_KEY.CREATE_NEW_ARCHIVE, this.onCreateNewArchive.bind(this))
   }
 
-  private onSaveArchive() {
+  private async onSaveArchive() {
     const images: Archive['images'] = this.images.map((image) => ({
       dataUrl: image.dataUrl,
       sx: image.sx,
@@ -100,12 +100,13 @@ export default class VCanvasContainer extends VComponent {
       width: image.width,
       height: image.height,
     }))
-    addOrUpdateArchive({
+    await addOrUpdateArchive({
       id: this.sid,
       title: this.title,
       snapshot: lastOf(this.snapshots),
       images,
     })
+    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
   }
 
   private async onCreateNewArchive() {
@@ -119,5 +120,6 @@ export default class VCanvasContainer extends VComponent {
     })
 
     ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id })
+    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
   }
 }
