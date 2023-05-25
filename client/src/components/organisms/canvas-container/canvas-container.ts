@@ -1,7 +1,7 @@
 import { VComponent } from '@/modules/v-component'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
-import { setSessionId, getOneTimeSessionId } from '@/services/session'
+import { getOneTimeSessionId } from '@/services/session'
 import { addArchive, addOrUpdateArchive } from '@/services/archive'
 import type { Archive } from '@/services/archive'
 import { lastOf } from '@/utils/ramda'
@@ -110,7 +110,6 @@ export default class VCanvasContainer extends VComponent {
 
   private async onCreateNewArchive() {
     const id = getOneTimeSessionId()
-    setSessionId(id)
 
     await addArchive({
       id,
