@@ -8,8 +8,7 @@ export function getSessionId() {
   return SessionStorage.getInstance().getItem<UUID>(KEY)
 }
 
-export function setSessionId(uuid?: UUID) {
-  const id = uuid ?? getSessionId() ?? getOneTimeSessionId()
+export function setSessionId(id: UUID) {
   SessionStorage.getInstance().setItem(KEY, id)
 }
 
