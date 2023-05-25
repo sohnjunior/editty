@@ -14,9 +14,13 @@ interface Props {
 
 export const Basic = ({ variant, open, autoclose, title, description }: Props) =>
   html`
-    <v-toast variant="${variant}" open="${open}" autoclose="${autoclose}">
-      <span slot="title">${title}</span>
-      <span slot="description">${description}</span>
+    <v-toast
+      variant="${variant}"
+      open="${open}"
+      autoclose="${autoclose}"
+      title="${title}"
+      description="${description}"
+    >
     </v-toast>
   `
 Basic.args = {

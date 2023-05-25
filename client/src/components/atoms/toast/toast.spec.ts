@@ -5,9 +5,14 @@ import VToast from './toast'
 describe('toast', () => {
   it('should autoclose after 2s', async () => {
     await renderToHtml(`
-      <v-toast data-testid="toast" variant="success" open="true" autoclose="true">
-        <span slot="title">title</span>
-        <span slot="description">description</span>
+      <v-toast 
+        data-testid="toast" 
+        variant="success" 
+        open="true" 
+        autoclose="true" 
+        title="title" 
+        description="description"
+      >
       </v-toast>
     `)
 

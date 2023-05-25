@@ -53,10 +53,10 @@ template.innerHTML = `
     <v-icon size="xlarge"></v-icon>
     <div class="toast-content">
       <h1>
-        <slot name="title"></slot>
+        <span id="title"></span>
       </h1>
       <p>
-        <slot name="description"></slot>
+        <span id="description"></span>
       </p>
     </div>
   </div>
@@ -72,7 +72,7 @@ export default class VToast extends VComponent {
   }
 
   static get observedAttributes() {
-    return ['variant', 'open', 'autoclose']
+    return ['variant', 'open', 'autoclose', 'title', 'description']
   }
 
   get variant() {
@@ -96,9 +96,25 @@ export default class VToast extends VComponent {
     this.setAttribute('autoclose', `${newValue}`)
   }
 
+  get title() {
+    return this.getAttribute('title') || ''
+  }
+  set title(newValue: string) {
+    this.setAttribute('title', newValue)
+  }
+
+  get description() {
+    return this.getAttribute('description') || ''
+  }
+  set description(newValue: string) {
+    this.setAttribute('description', newValue)
+  }
+
   protected bindInitialProp() {
     this.reflectAttribute({ attribute: 'variant', value: this.variant })
     this.reflectAttribute({ attribute: 'open', value: `${this.open}` })
+    this.reflectAttribute({ attribute: 'title', value: this.title })
+    this.reflectAttribute({ attribute: 'description', value: this.description })
   }
 
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
@@ -108,6 +124,12 @@ export default class VToast extends VComponent {
         break
       case 'open':
         this.updateOpenStyle(value)
+        break
+      case 'title':
+        this.updateTitleContent(value)
+        break
+      case 'description':
+        this.updateDescriptionContent(value)
         break
     }
   }
@@ -141,6 +163,20 @@ export default class VToast extends VComponent {
         this.open = false
         this.autocloseTimerId = undefined
       }, 2000)
+    }
+  }
+
+  private updateTitleContent(value: string) {
+    const $title = this.$root.querySelector('#title')
+    if ($title) {
+      $title.textContent = value
+    }
+  }
+
+  private updateDescriptionContent(value: string) {
+    const $description = this.$root.querySelector('#description')
+    if ($description) {
+      $description.textContent = value
     }
   }
 }
