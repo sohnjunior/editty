@@ -6,7 +6,7 @@ import {
   deleteData,
 } from './idb-promisify'
 import type { DatabaseConfig, StoreConfig } from './idb-promisify'
-import { EventBus, EVENT_KEY } from '@/event-bus'
+import { showToast } from '@/services/toast'
 
 const DATABASE_CONFIG: DatabaseConfig = {
   name: 'editty',
@@ -69,18 +69,18 @@ export default class IndexedDB {
   async addItem(value: any) {
     try {
       await putData({ db: this.idb, storeName: STORE_NAME, value })
-      EventBus.getInstance().emit(EVENT_KEY.ADD_SUCCESS)
+      showToast('ADD_ARCHIVE', 'SUCCESS')
     } catch (err) {
-      EventBus.getInstance().emit(EVENT_KEY.ADD_FAIL)
+      showToast('ADD_ARCHIVE', 'FAIL')
     }
   }
 
   async addOrUpdateItem(value: any) {
     try {
       await putData({ db: this.idb, storeName: STORE_NAME, value })
-      EventBus.getInstance().emit(EVENT_KEY.SAVE_SUCCESS)
+      showToast('SAVE_ARCHIVE', 'SUCCESS')
     } catch (err) {
-      EventBus.getInstance().emit(EVENT_KEY.SAVE_FAIL)
+      showToast('SAVE_ARCHIVE', 'FAIL')
     }
   }
 

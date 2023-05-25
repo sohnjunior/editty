@@ -1,5 +1,5 @@
 import IndexedDB from '@/modules/storage/idb'
-import { EventBus, EVENT_KEY } from '@/event-bus'
+import { showToast } from '@/services/toast'
 
 import type { ImageObject } from '@molecules/canvas-layer/types'
 import type { UUID } from '@/utils/crypto'
@@ -30,8 +30,8 @@ export async function addOrUpdateArchive(data: Archive) {
 export async function deleteArchive(id: string) {
   try {
     await IndexedDB.getInstance().deleteItem(id)
-    EventBus.getInstance().emit(EVENT_KEY.DELETE_SUCCESS)
+    showToast('DELETE_ARCHIVE', 'SUCCESS')
   } catch (err) {
-    EventBus.getInstance().emit(EVENT_KEY.DELETE_FAIL)
+    showToast('DELETE_ARCHIVE', 'FAIL')
   }
 }
