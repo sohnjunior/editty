@@ -82,6 +82,9 @@ export default class VArchiveMenu extends VComponent {
   }
 
   private updateArchives() {
+    const $previews = this.$root.querySelectorAll('v-canvas-preview')
+    $previews.forEach(($preview) => $preview.remove())
+
     const $archiveContainer = this.$root.querySelector('.preview-container')
     if ($archiveContainer) {
       const html = this.archives
@@ -96,6 +99,7 @@ export default class VArchiveMenu extends VComponent {
 
   protected bindEventListener() {
     this.$root.addEventListener('click', this.handleClickArchive)
+    this.$root.addEventListener('preview:delete', this.handleDeletePreview.bind(this))
   }
 
   private handleClickArchive(ev: Event) {
@@ -120,6 +124,18 @@ export default class VArchiveMenu extends VComponent {
         })
       )
     }
+  }
+
+  private handleDeletePreview(ev: Event) {
+    const sid = (ev.target as HTMLElement).dataset.value
+
+    this.dispatchEvent(
+      new CustomEvent('delete:archive', {
+        detail: { value: sid },
+        bubbles: true,
+        composed: true,
+      })
+    )
   }
 
   protected bindInitialProp() {

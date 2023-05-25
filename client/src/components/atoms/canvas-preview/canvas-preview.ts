@@ -33,6 +33,7 @@ template.innerHTML = `
   </style>
   <figure>
     <div class="figure-content">
+      <v-icon icon="close-circle" size="xlarge"></v-icon>
     </div>
     <figcaption></figcaption>
   </figure>
@@ -63,7 +64,18 @@ export default class VCanvasPreview extends VComponent {
     this.setAttribute('selected', `${newValue}`)
   }
 
-  reflectAttribute({ attribute, value }: ReflectAttributeParam) {
+  protected bindEventListener() {
+    this.$root
+      .querySelector('v-icon[icon="close-circle"]')
+      ?.addEventListener('click', this.handleClickCloseIcon.bind(this))
+  }
+
+  private handleClickCloseIcon(ev: Event) {
+    ev.stopPropagation()
+    this.dispatchEvent(new CustomEvent('preview:delete', { bubbles: true, composed: true }))
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'caption':
         this.updateFigureCaption(value)

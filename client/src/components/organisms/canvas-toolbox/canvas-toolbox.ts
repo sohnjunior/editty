@@ -7,6 +7,8 @@ import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
 import VColorMenu from '@molecules/color-menu/color-menu'
 import VStrokeMenu from '@molecules/stroke-menu/stroke-menu'
 import VArchiveMenu from '@molecules/archive-menu/archive-menu'
+import type { Archive } from '@/services/archive'
+import { getOneTimeSessionId } from '@/services/session'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -107,6 +109,7 @@ export default class VCanvasToolbox extends VComponent {
     this.$strokeMenu.addEventListener('stroke:resize', this.handleResizeStroke.bind(this))
     this.$strokeMenu.addEventListener('close:menu', this.handleCloseStrokeMenu.bind(this))
     this.$archiveMenu.addEventListener('add:archive', this.handleAddArchive.bind(this))
+    this.$archiveMenu.addEventListener('delete:archive', this.handleDeleteArchive.bind(this))
     this.$archiveMenu.addEventListener('select:archive', this.handleSelectArchive.bind(this))
     this.$archiveMenu.addEventListener('close:menu', this.handleCloseArchiveMenu.bind(this))
   }
@@ -115,12 +118,18 @@ export default class VCanvasToolbox extends VComponent {
     ArchiveContext.subscribe({
       action: 'FETCH_ARCHIVES_FROM_IDB',
       effect: (context) => {
-        const archives = context.state.archives
-        const archivePreviews = archives.map((archive) => ({
-          id: archive.id,
-          title: archive.title,
-        }))
-        this.$archiveMenu.archives = archivePreviews
+        this.updateArchivePreviews(context.state.archives)
+      },
+    })
+    ArchiveContext.subscribe({
+      action: 'DELETE_ARCHIVE',
+      effect: (context) => {
+        this.updateArchivePreviews(context.state.archives)
+
+        // 💡 if all archives were deleted, generate new session id
+        const nextId = context.state.archives[0]?.id ?? getOneTimeSessionId()
+        this.$archiveMenu.value = nextId
+        ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: nextId })
       },
     })
     CanvasMetaContext.subscribe({
@@ -135,6 +144,14 @@ export default class VCanvasToolbox extends VComponent {
         this.setPencilColorPreview(context.state.pencilColor)
       },
     })
+  }
+
+  private updateArchivePreviews(archives: Archive[]) {
+    const archivePreviews = archives.map((archive) => ({
+      id: archive.id,
+      title: archive.title,
+    }))
+    this.$archiveMenu.archives = archivePreviews
   }
 
   handleClickOption(ev: Event) {
@@ -214,6 +231,11 @@ export default class VCanvasToolbox extends VComponent {
 
   handleAddArchive() {
     EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE)
+  }
+
+  handleDeleteArchive(ev: Event) {
+    const sid = (ev as CustomEvent).detail.value
+    ArchiveContext.dispatch({ action: 'DELETE_ARCHIVE', data: sid })
   }
 
   handleSelectArchive(ev: Event) {
