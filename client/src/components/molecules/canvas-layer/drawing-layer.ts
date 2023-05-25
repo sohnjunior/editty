@@ -89,6 +89,8 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     if (data) {
       const snapshots = data.snapshot ? [data.snapshot] : []
       CanvasDrawingContext.dispatch({ action: 'HISTORY_INIT', data: snapshots })
+    } else {
+      CanvasDrawingContext.dispatch({ action: 'HISTORY_INIT', data: [] })
     }
   }
 
@@ -109,10 +111,6 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
       action: 'SET_SESSION_ID',
       effect: (context) => {
         const sid = context.state.sid
-        if (!sid) {
-          return
-        }
-
         this.fetchArchive(sid)
       },
     })

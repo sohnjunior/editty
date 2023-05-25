@@ -108,6 +108,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       } catch {
         console.error('🚨 fail to upload image from archive DB')
       }
+    } else {
+      CanvasImageContext.dispatch({ action: 'INIT_IMAGE', data: [] })
     }
   }
 
@@ -116,10 +118,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       action: 'SET_SESSION_ID',
       effect: (context) => {
         const sid = context.state.sid
-        if (!sid) {
-          return
-        }
-
         this.fetchArchive(sid)
       },
     })
