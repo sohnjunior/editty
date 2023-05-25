@@ -66,26 +66,14 @@ export default class IndexedDB {
   }
 
   async addItem(value: any) {
-    try {
-      await putData({ db: this.idb, storeName: STORE_NAME, value })
-    } catch (err) {
-      throw err
-    }
+    putData({ db: this.idb, storeName: STORE_NAME, value })
   }
 
   async addOrUpdateItem(value: any) {
-    try {
-      await putData({ db: this.idb, storeName: STORE_NAME, value })
-    } catch (err) {
-      throw err
-    }
+    putData({ db: this.idb, storeName: STORE_NAME, value })
   }
 
   async deleteItem(key: string) {
-    try {
-      await deleteData({ db: this.idb, storeName: STORE_NAME, key })
-    } catch (err) {
-      throw err
-    }
+    deleteData({ db: this.idb, storeName: STORE_NAME, key })
   }
 }
