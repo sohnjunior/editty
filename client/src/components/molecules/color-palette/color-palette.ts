@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import VColorTile from '@atoms/color-tile/color-tile'
-import { PALETTE_COLORS } from '@/utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -9,7 +9,7 @@ template.innerHTML = `
       max-height: 200px;
       min-height: 120px;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       grid-gap: 25px;
       overflow: scroll;
     }
@@ -30,19 +30,22 @@ export default class VColorPalette extends VComponent {
   }
 
   bindEventListener() {
-    this.$root.addEventListener('click', (ev) => {
-      const tagName = (ev.target as HTMLElement).tagName
-      if (tagName === 'V-COLOR-TILE') {
-        const color = (ev.target as VColorTile).colorAttribute
+    this.$root.addEventListener('click', this.handleClickPalette.bind(this))
+  }
 
-        this.dispatchEvent(
-          new CustomEvent('select:color', {
-            detail: { value: color },
-            bubbles: true,
-            composed: true,
-          })
-        )
-      }
-    })
+  handleClickPalette(ev: Event) {
+    const tagName = (ev.target as HTMLElement).tagName
+    if (tagName !== 'V-COLOR-TILE') {
+      return
+    }
+
+    const color = (ev.target as VColorTile).color
+    this.dispatchEvent(
+      new CustomEvent('select:color', {
+        detail: { value: color },
+        bubbles: true,
+        composed: true,
+      })
+    )
   }
 }

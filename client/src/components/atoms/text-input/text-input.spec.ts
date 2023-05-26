@@ -1,31 +1,29 @@
-import TextInput from './text-input'
+import { screen } from '@testing-library/dom'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
+import VTextInput from './text-input'
 
 describe('text-input', () => {
   it('should accept placeholder attribute', async () => {
-    const example = document.createElement('div')
-    example.innerHTML = `
-      <v-text-input placeholder="test" />
-    `
+    await renderToHtml(`
+      <v-text-input data-testid="text-input" placeholder="test" />
+    `)
 
-    const target = example.querySelector('v-text-input')
-    const input = target?.shadowRoot?.querySelector('input')
+    const textInputElement = screen.getByTestId('text-input')
+    const rootElement = getTemplateRootElement<HTMLInputElement>(textInputElement)
 
-    expect(input?.placeholder).toBe('test')
+    expect(rootElement.placeholder).toBe('test')
   })
 
-  it('should offer up-to-date value attribute with change event', async () => {
-    const example = document.createElement('div')
-    example.innerHTML = `
-      <v-text-input placeholder="test" />
-    `
+  it('should get up-to-date value with input event', async () => {
+    await renderToHtml(`
+      <v-text-input data-testid="text-input" placeholder="test" />
+    `)
 
-    const target = example.querySelector('v-text-input')
-    const input = target?.shadowRoot?.querySelector('input')
-    const host = target?.shadowRoot?.host as TextInput
+    const textInputElement = screen.getByTestId<VTextInput>('text-input')
+    const rootElement = getTemplateRootElement<HTMLInputElement>(textInputElement)
 
-    if (input) {
-      input.value = 'test'
-      expect(host.value).toBe('test')
-    }
+    textInputElement.value = 'test'
+
+    expect(rootElement.value).toBe('test')
   })
 })

@@ -1,4 +1,4 @@
-import { isPointInsideRect, get2dMiddlePoint, get2dDistance, resizeRect } from './canvas.utils'
+import { isPointInsideRect, get2dMiddlePoint, get2dDistance, resizeRect } from './engine'
 
 describe('geometry tool', () => {
   it('get2dMiddlePoint', () => {

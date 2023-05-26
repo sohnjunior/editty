@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdatePropertyParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -11,23 +11,30 @@ template.innerHTML = `
 export default class VDrawOptionMenu extends VComponent {
   static tag = 'v-color-menu'
 
-  static get observedAttributes() {
-    return ['open']
-  }
-
-  get openAttribute() {
-    return this.getAttribute('open') || 'false'
-  }
-
   constructor() {
     super(template)
   }
 
-  updateProperty({ attribute, value }: UpdatePropertyParam) {
+  static get observedAttributes() {
+    return ['open']
+  }
+
+  get open() {
+    return this.getAttribute('open') === 'true'
+  }
+  set open(newValue: boolean) {
+    this.setAttribute('open', `${newValue}`)
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
     switch (attribute) {
       case 'open':
-        this.$root.setAttribute('open', value)
+        this.updateOpenProp(value === 'true')
         break
     }
+  }
+
+  private updateOpenProp(newValue: boolean) {
+    this.$root.setAttribute('open', `${newValue}`)
   }
 }

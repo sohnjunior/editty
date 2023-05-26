@@ -8,7 +8,7 @@ type BaseAction = {
 export type Reducer<State extends IndexableObject, Action extends BaseAction> = (param: {
   state: State
   payload: Action
-}) => State
+}) => Promise<State>
 export type Effect<State extends IndexableObject, Action extends BaseAction> = (
   context: Context<State, Action>
 ) => void

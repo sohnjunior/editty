@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdatePropertyParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -29,49 +29,63 @@ template.innerHTML = `
       transition: background .3s ease-in-out;
     }
   </style>
-  <input type="range" min="0" max="50">
+  <input type="range">
 `
 
 export default class VRangeSlider extends VComponent<HTMLInputElement> {
   static tag = 'v-range-slider'
-  static get observedAttributes() {
-    return ['min', 'max', 'value']
-  }
-
-  get minAttribute() {
-    return this.getAttribute('min') || '0'
-  }
-
-  get maxAttribute() {
-    return this.getAttribute('max') || '100'
-  }
-
-  get value() {
-    return this.$root.value
-  }
-
-  set value(value: string) {
-    this.$root.value = value
-  }
 
   constructor() {
     super(template)
   }
 
-  afterMount() {
-    this.updateProperty({ attribute: 'max', value: this.maxAttribute })
-    this.updateProperty({ attribute: 'min', value: this.minAttribute })
+  static get observedAttributes() {
+    return ['min', 'max', 'value']
   }
 
-  updateProperty({ attribute, value }: UpdatePropertyParam) {
+  get min() {
+    return this.getAttribute('min') || '0'
+  }
+  set min(newValue: string) {
+    this.setAttribute('min', newValue)
+  }
+
+  get max() {
+    return this.getAttribute('max') || '0'
+  }
+  set max(newValue: string) {
+    this.setAttribute('max', newValue)
+  }
+
+  get value() {
+    return this.$root.value
+  }
+  set value(value: string) {
+    this.$root.value = value
+  }
+
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'min', value: this.min })
+    this.reflectAttribute({ attribute: 'max', value: this.max })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'min':
       case 'max':
-        this.$root.setAttribute(attribute, value)
+        this.updateMinMaxProp(attribute, value)
         break
       case 'value':
-        this.$root.setAttribute(attribute, value)
+        this.updateValueProp(value)
         break
     }
+  }
+
+  private updateMinMaxProp(attribute: 'min' | 'max', value: string) {
+    this.$root.setAttribute(attribute, value)
+  }
+
+  private updateValueProp(value: string) {
+    this.$root.setAttribute('value', value)
   }
 }

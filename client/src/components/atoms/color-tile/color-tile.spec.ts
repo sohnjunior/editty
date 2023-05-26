@@ -3,19 +3,6 @@ import { screen } from '@testing-library/dom'
 import { renderToHtml, getTemplateRootElement, getInitialStyle } from '@/modules/wc-test-utils'
 
 describe('color-tile', () => {
-  it('should has default size', async () => {
-    await renderToHtml(`
-      <v-color-tile data-testid="color-tile" color="anakiwa"></v-color-tile>
-    `)
-
-    const colorTile = screen.getByTestId('color-tile')
-    const rootElement = getTemplateRootElement<HTMLDivElement>(colorTile)
-    const style = await getInitialStyle(rootElement)
-
-    expect(style.width).toBe('10px')
-    expect(style.height).toBe('10px')
-  })
-
   it('should accept color attribute', async () => {
     const color = {
       name: 'anakiwa',

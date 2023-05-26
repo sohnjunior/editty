@@ -1,9 +1,7 @@
-import { Context } from '@/contexts/common/context'
-import type { Reducer } from '@/contexts/common/context'
-import { Phase } from './types'
+import { Context } from '@/contexts/shared/context'
+import type { Reducer } from '@/contexts/shared/context'
 
 type State = {
-  phase: Phase
   snapshots: ImageData[]
   stash: ImageData[]
   pencilColor: string
@@ -11,8 +9,8 @@ type State = {
 }
 
 type Action =
-  | { action: 'SET_PHASE'; data: State['phase'] }
   | { action: 'PUSH_SNAPSHOT'; data: State['snapshots'] }
+  | { action: 'HISTORY_INIT'; data: State['snapshots'] }
   | { action: 'HISTORY_BACK' }
   | { action: 'HISTORY_FORWARD' }
   | { action: 'CLEAR_ALL' }
@@ -20,20 +18,21 @@ type Action =
   | { action: 'SET_STROKE_SIZE'; data: State['strokeSize'] }
 
 const initState: State = {
-  phase: 'draw',
   snapshots: [],
   stash: [],
   pencilColor: 'teal-blue',
   strokeSize: 10,
 }
 
-const reducer: Reducer<State, Action> = ({ state, payload }) => {
+const reducer: Reducer<State, Action> = async ({ state, payload }) => {
   switch (payload.action) {
-    case 'SET_PHASE':
-      return { ...state, phase: payload.data }
     case 'PUSH_SNAPSHOT': {
       const snapshots = [...state.snapshots]
       snapshots.push(...payload.data)
+      return { ...state, snapshots }
+    }
+    case 'HISTORY_INIT': {
+      const snapshots = payload.data
       return { ...state, snapshots }
     }
     case 'HISTORY_BACK': {

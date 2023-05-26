@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const icon = [
   'cursor',
@@ -12,15 +12,17 @@ const icon = [
   'emoji',
   'trash',
   'gallery',
+  'folder',
+  'disk',
+  'success',
+  'fail',
+  'add-circle',
+  'close-circle',
 ] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
 export type Icon = typeof icon[number]
 export type Size = typeof size[number]
-
-function contains<T extends string>(list: ReadonlyArray<T>, value: string): value is T {
-  return list.some((item) => item === value)
-}
 
 export const isIconType = (maybe: unknown): maybe is Icon => {
   return typeof maybe === 'string' && contains(icon, maybe)
@@ -30,17 +32,12 @@ export const isSizeType = (maybe: unknown): maybe is Size => {
   return typeof maybe === 'string' && contains(size, maybe)
 }
 
-const ASSET_URL: Record<Icon, string> = {
-  cursor: `url('assets/images/cursor.svg')`,
-  draw: `url('assets/images/pen.svg')`,
-  text: `url('assets/images/text.svg')`,
-  'back-arrow': `url('assets/images/back-arrow.svg')`,
-  'forward-arrow': `url('assets/images/forward-arrow.svg')`,
-  search: `url('assets/images/search.svg')`,
-  erase: `url('assets/images/eraser.svg')`,
-  emoji: `url('assets/images/emoji.svg')`,
-  trash: `url('assets/images/trash.svg')`,
-  gallery: `url('assets/images/gallery.svg')`,
+function contains<T extends string>(list: ReadonlyArray<T>, value: string): value is T {
+  return list.some((item) => item === value)
+}
+
+function generateIconUrl(type: Icon) {
+  return `url('assets/images/${type}.svg')`
 }
 
 const SIZE: Record<Size, string> = {
@@ -67,46 +64,58 @@ template.innerHTML = `
 export default class VIcon extends VComponent {
   static tag = 'v-icon'
 
-  static get observedAttributes() {
-    return ['icon', 'size']
-  }
-
-  get iconAttribute() {
-    return this.getAttribute('icon') || console.error('🚨 icon element need icon attributes')
-  }
-
-  get sizeAttribute() {
-    return this.getAttribute('size') || console.error('🚨 icon element need size attributes')
-  }
-
   constructor() {
     super(template)
   }
 
-  bindInitialStyle() {
-    const { iconAttribute, sizeAttribute } = this
+  static get observedAttributes() {
+    return ['icon', 'size']
+  }
 
-    if (iconAttribute && sizeAttribute) {
-      this.updateStyle({ attribute: 'icon', value: iconAttribute })
-      this.updateStyle({ attribute: 'size', value: sizeAttribute })
+  get icon() {
+    return this.getAttribute('icon') || ''
+  }
+  set icon(newValue: string) {
+    this.setAttribute('icon', newValue)
+  }
+
+  get size() {
+    return this.getAttribute('size') || 'small'
+  }
+  set size(newValue: string) {
+    this.setAttribute('size', newValue)
+  }
+
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'icon', value: this.icon })
+    this.reflectAttribute({ attribute: 'size', value: this.size })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
+    switch (attribute) {
+      case 'icon':
+        this.updateIconProp(value)
+        break
+      case 'size':
+        this.updateSizeProp(value)
+        break
     }
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
-    switch (attribute) {
-      case 'icon': {
-        if (isIconType(value)) {
-          this.$root.style.backgroundImage = ASSET_URL[value]
-        }
-        break
-      }
-      case 'size': {
-        if (isSizeType(value)) {
-          this.$root.style.width = SIZE[value]
-          this.$root.style.height = SIZE[value]
-        }
-        break
-      }
+  private updateIconProp(value: string) {
+    if (!isIconType(value)) {
+      return
     }
+
+    this.$root.style.backgroundImage = generateIconUrl(value)
+  }
+
+  private updateSizeProp(value: string) {
+    if (!isSizeType(value)) {
+      return
+    }
+
+    this.$root.style.width = SIZE[value]
+    this.$root.style.height = SIZE[value]
   }
 }

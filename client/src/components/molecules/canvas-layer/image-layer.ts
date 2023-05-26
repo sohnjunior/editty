@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { CanvasDrawingContext, CanvasImageContext } from '@/contexts'
+import { CanvasImageContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import { Z_INDEX } from '@/utils/constant'
 import {
   getSyntheticTouchPoint,
@@ -12,10 +12,12 @@ import {
   resizeRect,
   drawCircle,
   drawRect,
-} from '@/modules/canvas.utils'
+} from '@/modules/canvas-utils/engine'
 import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
+import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'
+import type { UUID } from '@/utils/crypto'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
@@ -45,8 +47,16 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private transformType: ImageTransform | null = null
   private isPressed = false
 
+  get sid() {
+    return ArchiveContext.state.sid!
+  }
+
+  get title() {
+    return CanvasMetaContext.state.title
+  }
+
   get phase() {
-    return CanvasDrawingContext.state.phase
+    return CanvasMetaContext.state.phase
   }
 
   get images() {
@@ -74,7 +84,49 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
+  afterMount() {
+    this.fetchArchive(this.sid)
+  }
+
+  private async fetchArchive(sid: UUID) {
+    const data = await getArchive(sid)
+    if (data) {
+      const createImageObjects = data.images.map(async (image) => {
+        const imageObject = await createImageObject({
+          dataUrl: image.dataUrl,
+          topLeftPoint: { x: image.sx, y: image.sy },
+        })
+        imageObject.width = image.width
+        imageObject.height = image.height
+
+        return imageObject
+      })
+
+      try {
+        const imageObjects = await Promise.all(createImageObjects)
+        CanvasImageContext.dispatch({ action: 'INIT_IMAGE', data: imageObjects })
+      } catch {
+        console.error('🚨 fail to upload image from archive DB')
+      }
+    } else {
+      CanvasImageContext.dispatch({ action: 'INIT_IMAGE', data: [] })
+    }
+  }
+
   subscribeContext() {
+    ArchiveContext.subscribe({
+      action: 'SET_SESSION_ID',
+      effect: (context) => {
+        const sid = context.state.sid
+        this.fetchArchive(sid)
+      },
+    })
+    CanvasImageContext.subscribe({
+      action: 'INIT_IMAGE',
+      effect: () => {
+        this.paintImages()
+      },
+    })
     CanvasImageContext.subscribe({
       action: 'PUSH_IMAGE',
       effect: () => {

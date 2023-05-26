@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam, UpdatePropertyParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 export type Stroke = 'draw' | 'erase'
 function isValidStrokeType(type?: string): type is Stroke {
@@ -75,20 +75,26 @@ template.innerHTML = `
 export default class VStrokeMenu extends VComponent {
   static tag = 'v-stroke-menu'
 
+  constructor() {
+    super(template)
+  }
+
   static get observedAttributes() {
     return ['open', 'stroke']
   }
 
   get open() {
-    return this.$root.getAttribute('open') || 'false'
+    return this.getAttribute('open') === 'true'
+  }
+  set open(newValue: boolean) {
+    this.setAttribute('open', `${newValue}`)
   }
 
   get stroke() {
     return this.getAttribute('stroke') || 'draw'
   }
-
-  constructor() {
-    super(template)
+  set stroke(newValue: string) {
+    this.setAttribute('stroke', newValue)
   }
 
   bindEventListener() {
@@ -100,10 +106,18 @@ export default class VStrokeMenu extends VComponent {
 
   handleChangeStrokeSize(ev: Event) {
     const value = (ev.target as HTMLInputElement).value
-    this.updateStyle({ attribute: 'strokeSize', value })
+    this.updateStrokeSizePreview(value)
     this.dispatchEvent(
       new CustomEvent('stroke:resize', { detail: { value }, bubbles: true, composed: true })
     )
+  }
+
+  private updateStrokeSizePreview(value: string) {
+    const $preview = this.$root.querySelector('.preview > .circle') as HTMLElement
+    if ($preview) {
+      $preview.style.width = `${value}px`
+      $preview.style.height = `${value}px`
+    }
   }
 
   handleSelectStroke(ev: Event) {
@@ -123,31 +137,29 @@ export default class VStrokeMenu extends VComponent {
     )
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
-    switch (attribute) {
-      case 'strokeSize': {
-        this.updateStrokeSizePreview(value)
-        break
-      }
-    }
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'open', value: `${this.open}` })
+    this.reflectAttribute({ attribute: 'stroke', value: this.stroke })
   }
 
-  private updateStrokeSizePreview(value: string) {
-    const $preview = this.$root.querySelector('.preview > .circle') as HTMLElement
-    if ($preview) {
-      $preview.style.width = `${value}px`
-      $preview.style.height = `${value}px`
-    }
-  }
-
-  updateProperty({ attribute, value }: UpdatePropertyParam) {
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'open':
-        this.$root.setAttribute('open', value)
+        this.updateOpenProp(value)
         break
       case 'stroke':
-        isValidStrokeType(value) && this.selectStroke(value)
+        this.updateStrokeProp(value)
         break
+    }
+  }
+
+  private updateOpenProp(newValue: string) {
+    this.$root.setAttribute('open', newValue)
+  }
+
+  private updateStrokeProp(newValue: string) {
+    if (isValidStrokeType(newValue)) {
+      this.selectStroke(newValue)
     }
   }
 
@@ -160,7 +172,7 @@ export default class VStrokeMenu extends VComponent {
     const $selected = this.$root.querySelector<HTMLElement>(`[data-phase="${newPhase}"]`)
     if ($selected) {
       $selected.dataset.selected = 'true'
-      this.setAttribute('stroke', newPhase)
+      this.stroke = newPhase
     }
   }
 }

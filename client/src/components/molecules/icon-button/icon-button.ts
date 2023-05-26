@@ -1,5 +1,6 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
+import VIcon from '@atoms/icon/icon'
 import { isIconType, isSizeType } from '@atoms/icon/icon'
 import type { Icon as BaseIcon, Size as BaseSize } from '@atoms/icon/icon'
 
@@ -36,46 +37,72 @@ template.innerHTML = `
 
 export default class VIconButton extends VComponent {
   static tag = 'v-icon-button'
-  static get observedAttributes() {
-    return ['icon', 'size']
-  }
 
-  get iconAttribute() {
-    return this.getAttribute('icon') || 'trash'
-  }
-
-  get sizeAttribute() {
-    return this.getAttribute('size') || 'small'
-  }
+  private $icon!: VIcon
 
   constructor() {
     super(template)
   }
 
-  bindInitialStyle() {
-    this.updateStyle({ attribute: 'icon', value: this.iconAttribute })
-    this.updateStyle({ attribute: 'size', value: this.sizeAttribute })
+  static get observedAttributes() {
+    return ['icon', 'size']
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
-    const $icon = this.$shadow.querySelector('v-icon')
+  get icon() {
+    return this.getAttribute('icon') || 'cursor'
+  }
+  set icon(newValue: string) {
+    this.setAttribute('icon', newValue)
+  }
+
+  get size() {
+    return this.getAttribute('size') || 'small'
+  }
+  set size(newValue: string) {
+    this.setAttribute('size', newValue)
+  }
+
+  afterMount() {
+    this.initInnerIconElement()
+    this.reflectAttribute({ attribute: 'icon', value: this.icon })
+    this.reflectAttribute({ attribute: 'size', value: this.size })
+  }
+
+  private initInnerIconElement() {
+    const $icon = this.$root.querySelector<VIcon>('v-icon')
     if (!$icon) {
-      return
+      throw new Error('initialize fail')
     }
 
+    this.$icon = $icon
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'icon': {
-        if (isIconType(value)) {
-          $icon.setAttribute('icon', value)
-        }
+        this.updateIcon(value)
         break
       }
       case 'size': {
-        if (isSizeType(value)) {
-          $icon.setAttribute('size', value)
-        }
+        this.updateSize(value)
         break
       }
     }
+  }
+
+  private updateIcon(value: string) {
+    if (!this.$icon || !isIconType(value)) {
+      return
+    }
+
+    this.$icon.icon = value
+  }
+
+  private updateSize(value: string) {
+    if (!this.$icon || !isSizeType(value)) {
+      return
+    }
+
+    this.$icon.size = value
   }
 }

@@ -1,9 +1,14 @@
 import { VComponent } from '@/modules/v-component'
-import { CanvasDrawingContext } from '@/contexts'
+import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { PALETTE_COLORS } from '@/utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
+import VColorMenu from '@molecules/color-menu/color-menu'
+import VStrokeMenu from '@molecules/stroke-menu/stroke-menu'
+import VArchiveMenu from '@molecules/archive-menu/archive-menu'
+import type { Archive } from '@/services/archive'
+import { getOneTimeSessionId } from '@/services/session'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -26,11 +31,7 @@ template.innerHTML = `
       box-sizing: border-box;
     }
 
-    :host v-color-tile[data-selected="true"] {
-      border: 1px solid var(--color-primary40);
-    }
-
-    :host v-color-menu, v-stroke-menu {
+    :host v-color-menu, v-stroke-menu, v-archive-menu {
       position: absolute;
       left: 80px;
       bottom: 0;
@@ -39,25 +40,30 @@ template.innerHTML = `
   <v-container>
     <v-icon-button data-selected="false" data-phase="cursor" icon="cursor" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="stroke" icon="draw" size="medium"></v-icon-button>
-
-    <v-icon-button data-selected="false" data-phase="emoji" icon="emoji" size="medium"></v-icon-button>
-    <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
     <v-color-tile data-selected="false" data-phase="color" color="none" size="15px"></v-color-tile>
+    <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="folder" icon="folder" size="medium"></v-icon-button>
 
     <v-stroke-menu open="false"></v-stroke-menu>
     <v-color-menu open="false"></v-color-menu>
+    <v-archive-menu open="false"></v-archive-menu>
   </v-container>
 `
 
 export default class VCanvasToolbox extends VComponent {
   static tag = 'v-canvas-toolbox'
   private $selectRef?: HTMLElement
-  private $colorMenu!: HTMLElement
+  private $colorMenu!: VColorMenu
   private $colorPreview!: HTMLElement
-  private $strokeMenu!: HTMLElement
+  private $strokeMenu!: VStrokeMenu
+  private $archiveMenu!: VArchiveMenu
+
+  get sid() {
+    return ArchiveContext.state.sid
+  }
 
   get phase() {
-    return CanvasDrawingContext.state.phase
+    return CanvasMetaContext.state.phase
   }
 
   get pencilColor() {
@@ -69,25 +75,30 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   afterCreated(): void {
-    const initInnerElement = () => {
-      const $colorMenu = this.$shadow.querySelector<HTMLElement>('v-color-menu')
-      const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
-      const $strokeMenu = this.$shadow.querySelector<HTMLElement>('v-stroke-menu')
-      if (!$colorMenu || !$colorTile || !$strokeMenu) {
-        throw new Error('initialize fail')
-      }
-
-      this.$colorMenu = $colorMenu
-      this.$colorPreview = $colorTile
-      this.$strokeMenu = $strokeMenu
-    }
-
-    initInnerElement()
+    this.initInnerElement()
+    this.initArchives()
     this.toggleCanvasPhase('draw')
+    this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
   }
 
-  bindInitialStyle() {
-    this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
+  private initInnerElement() {
+    const $colorMenu = this.$shadow.querySelector<VColorMenu>('v-color-menu')
+    const $colorTile = this.$shadow.querySelector<HTMLElement>('v-color-tile')
+    const $strokeMenu = this.$shadow.querySelector<VStrokeMenu>('v-stroke-menu')
+    const $archiveMenu = this.$shadow.querySelector<VArchiveMenu>('v-archive-menu')
+    if (!$colorMenu || !$colorTile || !$strokeMenu || !$archiveMenu) {
+      throw new Error('initialize fail')
+    }
+
+    this.$colorMenu = $colorMenu
+    this.$colorPreview = $colorTile
+    this.$strokeMenu = $strokeMenu
+    this.$archiveMenu = $archiveMenu
+  }
+
+  private async initArchives() {
+    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    this.$archiveMenu.value = this.sid ?? ''
   }
 
   bindEventListener() {
@@ -97,10 +108,36 @@ export default class VCanvasToolbox extends VComponent {
     this.$strokeMenu.addEventListener('stroke:select', this.handleSelectStroke.bind(this))
     this.$strokeMenu.addEventListener('stroke:resize', this.handleResizeStroke.bind(this))
     this.$strokeMenu.addEventListener('close:menu', this.handleCloseStrokeMenu.bind(this))
+    this.$archiveMenu.addEventListener('add:archive', this.handleAddArchive.bind(this))
+    this.$archiveMenu.addEventListener('delete:archive', this.handleDeleteArchive.bind(this))
+    this.$archiveMenu.addEventListener('select:archive', this.handleSelectArchive.bind(this))
+    this.$archiveMenu.addEventListener('close:menu', this.handleCloseArchiveMenu.bind(this))
   }
 
   subscribeContext() {
-    CanvasDrawingContext.subscribe({
+    ArchiveContext.subscribe({
+      action: 'FETCH_ARCHIVES_FROM_IDB',
+      effect: (context) => {
+        this.updateArchivePreviews(context.state.archives)
+      },
+    })
+    ArchiveContext.subscribe({
+      action: 'DELETE_ARCHIVE',
+      effect: (context) => {
+        this.updateArchivePreviews(context.state.archives)
+
+        // 💡 if all archives were deleted, generate new session id
+        const nextId = context.state.archives[0]?.id ?? getOneTimeSessionId()
+        ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: nextId })
+      },
+    })
+    ArchiveContext.subscribe({
+      action: 'SET_SESSION_ID',
+      effect: (context) => {
+        this.$archiveMenu.value = context.state.sid
+      },
+    })
+    CanvasMetaContext.subscribe({
       action: 'SET_PHASE',
       effect: (context) => {
         this.toggleCanvasPhase(context.state.phase)
@@ -112,6 +149,14 @@ export default class VCanvasToolbox extends VComponent {
         this.setPencilColorPreview(context.state.pencilColor)
       },
     })
+  }
+
+  private updateArchivePreviews(archives: Archive[]) {
+    const archivePreviews = archives.map((archive) => ({
+      id: archive.id,
+      title: archive.title,
+    }))
+    this.$archiveMenu.archives = archivePreviews
   }
 
   handleClickOption(ev: Event) {
@@ -129,13 +174,16 @@ export default class VCanvasToolbox extends VComponent {
       case 'color':
         this.enterColorPhase()
         break
+      case 'folder':
+        this.enterFolderPhase()
+        break
       default:
         break
     }
   }
 
   enterCursorPhase() {
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'cursor' })
   }
 
   enterStrokePhase() {
@@ -151,32 +199,58 @@ export default class VCanvasToolbox extends VComponent {
     this.handleOpenColorMenu()
   }
 
+  enterFolderPhase() {
+    this.handleOpenArchiveMenu()
+  }
+
   handleChangePencilColor(ev: Event) {
     const color = (ev as CustomEvent).detail.value
     CanvasDrawingContext.dispatch({ action: 'SET_PENCIL_COLOR', data: color })
   }
 
   handleOpenColorMenu() {
-    this.$colorMenu.setAttribute('open', 'true')
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'color' })
+    this.$colorMenu.open = true
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
   handleCloseColorMenu() {
-    this.$colorMenu.setAttribute('open', 'false')
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
+    this.$colorMenu.open = false
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'draw' })
   }
 
   handleOpenStrokeMenu() {
-    this.$strokeMenu.setAttribute('open', 'true')
+    this.$strokeMenu.open = true
   }
 
   handleCloseStrokeMenu() {
-    this.$strokeMenu.setAttribute('open', 'false')
+    this.$strokeMenu.open = false
+  }
+
+  handleOpenArchiveMenu() {
+    this.$archiveMenu.open = true
+  }
+
+  handleCloseArchiveMenu() {
+    this.$archiveMenu.open = false
+  }
+
+  handleAddArchive() {
+    EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE)
+  }
+
+  handleDeleteArchive(ev: Event) {
+    const sid = (ev as CustomEvent).detail.value
+    ArchiveContext.dispatch({ action: 'DELETE_ARCHIVE', data: sid })
+  }
+
+  handleSelectArchive(ev: Event) {
+    const sid = (ev as CustomEvent).detail.value
+    ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: sid })
   }
 
   handleSelectStroke(ev: Event) {
     const stroke = (ev as CustomEvent).detail.value
-    CanvasDrawingContext.dispatch({ action: 'SET_PHASE', data: stroke })
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: stroke })
   }
 
   handleResizeStroke(ev: Event) {
@@ -211,7 +285,7 @@ export default class VCanvasToolbox extends VComponent {
     this.$selectRef = $selected
 
     if (type === 'draw' || type === 'erase') {
-      this.$strokeMenu.setAttribute('stroke', type)
+      this.$strokeMenu.stroke = type
       $selected.setAttribute('icon', type)
     }
   }

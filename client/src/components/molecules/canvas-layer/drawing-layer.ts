@@ -1,6 +1,7 @@
 import { VComponent } from '@/modules/v-component'
-import { Z_INDEX, PALETTE_COLORS } from '@/utils/constant'
-import { CanvasDrawingContext } from '@/contexts'
+import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
+import { Z_INDEX } from '@/utils/constant'
+import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
@@ -10,8 +11,10 @@ import {
   reflectSnapshot,
   clearCanvas,
   refineCanvasRatioForRetinaDisplay,
-} from '@/modules/canvas.utils'
+} from '@/modules/canvas-utils/engine'
+import { getArchive } from '@/services/archive'
 import type { Point } from './types'
+import type { UUID } from '@/utils/crypto'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -32,8 +35,16 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   private points: Point[] = []
   private isDrawing = false
 
+  get sid() {
+    return ArchiveContext.state.sid!
+  }
+
+  get title() {
+    return CanvasMetaContext.state.title
+  }
+
   get phase() {
-    return CanvasDrawingContext.state.phase
+    return CanvasMetaContext.state.phase
   }
 
   get snapshots() {
@@ -69,6 +80,20 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     refineCanvasRatioForRetinaDisplay(this.$root)
   }
 
+  afterMount() {
+    this.fetchArchive(this.sid)
+  }
+
+  private async fetchArchive(sid: UUID) {
+    const data = await getArchive(sid)
+    if (data) {
+      const snapshots = data.snapshot ? [data.snapshot] : []
+      CanvasDrawingContext.dispatch({ action: 'HISTORY_INIT', data: snapshots })
+    } else {
+      CanvasDrawingContext.dispatch({ action: 'HISTORY_INIT', data: [] })
+    }
+  }
+
   bindEventListener() {
     this.addEventListener('mousedown', this.setup)
     this.addEventListener('mouseup', this.cleanup)
@@ -82,10 +107,23 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   subscribeContext() {
-    CanvasDrawingContext.subscribe({
-      action: 'PUSH_SNAPSHOT',
+    ArchiveContext.subscribe({
+      action: 'SET_SESSION_ID',
       effect: (context) => {
-        console.log(context.state.snapshots)
+        const sid = context.state.sid
+        this.fetchArchive(sid)
+      },
+    })
+    CanvasDrawingContext.subscribe({
+      action: 'HISTORY_INIT',
+      effect: (context) => {
+        const snapshot = lastOf(context.state.snapshots)
+
+        if (snapshot) {
+          reflectSnapshot(this.$root, snapshot)
+        } else {
+          clearCanvas(this.$root)
+        }
       },
     })
     CanvasDrawingContext.subscribe({

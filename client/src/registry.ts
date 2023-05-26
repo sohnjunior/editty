@@ -7,6 +7,8 @@ import Menu from '@atoms/menu/menu'
 import TextInput from '@atoms/text-input/text-input'
 import RangeSlider from '@atoms/range-slider/range-slider'
 import Divider from '@atoms/divider/divider'
+import CanvasPreview from '@atoms/canvas-preview/canvas-preview'
+import Toast from '@atoms/toast/toast'
 import IconButton from '@molecules/icon-button/icon-button'
 import CanvasBackgroundLayer from '@molecules/canvas-layer/background-layer'
 import CanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
@@ -15,6 +17,7 @@ import InputContainer from '@molecules/input-container/input-container'
 import ColorPalette from '@molecules/color-palette/color-palette'
 import ColorMenu from '@molecules/color-menu/color-menu'
 import StrokeMenu from '@molecules/stroke-menu/stroke-menu'
+import ArchiveMenu from '@molecules/archive-menu/archive-menu'
 import CanvasContainer from '@organisms/canvas-container/canvas-container'
 import CanvasToolbox from '@organisms/canvas-toolbox/canvas-toolbox'
 import HistoryToolbox from '@organisms/history-toolbox/history-toolbox'
@@ -28,6 +31,8 @@ export function defineCustomElements() {
   customElements.define(Icon.tag, Icon)
   customElements.define(ColorTile.tag, ColorTile)
   customElements.define(IconButton.tag, IconButton)
+  customElements.define(Toast.tag, Toast)
+  customElements.define(CanvasPreview.tag, CanvasPreview)
   customElements.define(CanvasContainer.tag, CanvasContainer)
   customElements.define(CanvasBackgroundLayer.tag, CanvasBackgroundLayer)
   customElements.define(CanvasDrawingLayer.tag, CanvasDrawingLayer)
@@ -42,4 +47,5 @@ export function defineCustomElements() {
   customElements.define(ColorPalette.tag, ColorPalette)
   customElements.define(ColorMenu.tag, ColorMenu)
   customElements.define(StrokeMenu.tag, StrokeMenu)
+  customElements.define(ArchiveMenu.tag, ArchiveMenu)
 }

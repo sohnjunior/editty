@@ -14,6 +14,7 @@ template.innerHTML = `
     <v-icon-button data-icon="back" icon="back-arrow" size="medium"></v-icon-button>
     <v-icon-button data-icon="forward" icon="forward-arrow" size="medium"></v-icon-button>
     <v-icon-button data-icon="trash" icon="trash" size="medium"></v-icon-button>
+    <v-icon-button data-icon="disk" icon="disk" size="medium"></v-icon-button>
   </v-container>
 `
 
@@ -30,19 +31,39 @@ export default class VHistoryToolbox extends VComponent {
 
       switch ($target.dataset.icon) {
         case 'back':
-          CanvasDrawingContext.dispatch({ action: 'HISTORY_BACK' })
+          this.handleHistoryBack()
           break
         case 'forward':
-          CanvasDrawingContext.dispatch({ action: 'HISTORY_FORWARD' })
+          this.handleHistoryForward()
           break
-        case 'trash': {
-          const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
-          isConfirmed && EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
+        case 'trash':
+          this.handleClearCanvas()
           break
-        }
+        case 'disk':
+          this.handleSaveCanvas()
+          break
         default:
           return
       }
     })
+  }
+
+  handleHistoryBack() {
+    CanvasDrawingContext.dispatch({ action: 'HISTORY_BACK' })
+  }
+
+  handleHistoryForward() {
+    CanvasDrawingContext.dispatch({ action: 'HISTORY_FORWARD' })
+  }
+
+  handleClearCanvas() {
+    const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
+    if (isConfirmed) {
+      EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
+    }
+  }
+
+  handleSaveCanvas() {
+    EventBus.getInstance().emit(EVENT_KEY.SAVE_ARCHIVE)
   }
 }

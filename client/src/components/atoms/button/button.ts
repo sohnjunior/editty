@@ -1,11 +1,11 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-  :host > button {
-    color: blue;
+  :host {
+    display: block;
   }
   </style>
   <button>
@@ -15,24 +15,35 @@ template.innerHTML = `
 
 export default class VButton extends VComponent {
   static tag = 'v-button'
-  static get observedAttributes() {
-    return ['color']
-  }
-
-  get color() {
-    /** TODO: getter - setter @Prop 으로 변경 */
-    return this.getAttribute('color')
-  }
 
   constructor() {
     super(template)
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
+  static get observedAttributes() {
+    return ['color']
+  }
+
+  get color() {
+    return this.getAttribute('color') || 'red'
+  }
+  set color(newValue: string) {
+    this.setAttribute('color', newValue)
+  }
+
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'color', value: this.color })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'color':
-        this.$root.style.color = value
+        this.updateColorStyle(value)
         break
     }
+  }
+
+  private updateColorStyle(value: string) {
+    this.$root.style.color = value
   }
 }

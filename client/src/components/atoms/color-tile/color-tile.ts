@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
-import type { UpdateStyleParam } from '@/modules/v-component'
-import { PALETTE_COLORS } from '@/utils/constant'
+import type { ReflectAttributeParam } from '@/modules/v-component/types'
+import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -20,45 +20,54 @@ template.innerHTML = `
 export default class VColorTile extends VComponent {
   static tag = 'v-color-tile'
 
-  static get observedAttributes() {
-    return ['color', 'size']
-  }
-
-  get colorAttribute() {
-    return (
-      this.getAttribute('color') || console.error('🚨 color tile element need color attributes')
-    )
-  }
-
-  get sizeAttribute() {
-    return this.getAttribute('size') || '10px'
-  }
-
   constructor() {
     super(template)
   }
 
-  bindInitialStyle() {
-    const { colorAttribute, sizeAttribute } = this
+  static get observedAttributes() {
+    return ['color', 'size']
+  }
 
-    if (colorAttribute) {
-      this.updateStyle({ attribute: 'color', value: colorAttribute })
+  get color() {
+    const value = this.getAttribute('color')
+    if (!value) {
+      console.error('🚨 color-tile element require color attributes')
     }
 
-    if (sizeAttribute) {
-      this.updateStyle({ attribute: 'size', value: sizeAttribute })
+    return this.getAttribute('color') || ''
+  }
+  set color(newValue: string) {
+    this.setAttribute('color', newValue)
+  }
+
+  get size() {
+    return this.getAttribute('size') || '10px'
+  }
+  set size(newValue: string) {
+    this.setAttribute('size', newValue)
+  }
+
+  bindInitialProp() {
+    this.reflectAttribute({ attribute: 'size', value: this.size })
+  }
+
+  protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
+    switch (attribute) {
+      case 'color':
+        this.updateColorStyle(value)
+        break
+      case 'size':
+        this.updateSizeStyle(value)
+        break
     }
   }
 
-  updateStyle({ attribute, value }: UpdateStyleParam) {
-    switch (attribute) {
-      case 'color':
-        this.$root.style.backgroundColor = PALETTE_COLORS[value]
-        break
-      case 'size':
-        this.$root.style.width = value
-        this.$root.style.height = value
-        break
-    }
+  private updateColorStyle(value: string) {
+    this.$root.style.backgroundColor = PALETTE_COLORS[value]
+  }
+
+  private updateSizeStyle(value: string) {
+    this.$root.style.width = value
+    this.$root.style.height = value
   }
 }
