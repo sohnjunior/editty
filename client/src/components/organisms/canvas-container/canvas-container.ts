@@ -119,7 +119,7 @@ export default class VCanvasContainer extends VComponent {
       images: [],
     })
 
-    ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id })
+    await ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id })
     ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
   }
 }
