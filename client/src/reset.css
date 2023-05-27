@@ -138,3 +138,8 @@ body {
 #app {
   height: 100%;
 }
+
+/** remove webkit tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
