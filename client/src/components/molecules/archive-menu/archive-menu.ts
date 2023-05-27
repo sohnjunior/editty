@@ -8,7 +8,7 @@ type ArchivePreview = Omit<Archive, 'snapshot' | 'images'>
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    @media screen and (min-width: 401px) { 
+    @media screen and (min-width: 421px) { 
       :host div.preview-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr); 
@@ -20,7 +20,7 @@ template.innerHTML = `
       }
     }
 
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 420px) {
       :host div.preview-container {
         display: grid;
         grid-auto-flow: column;
