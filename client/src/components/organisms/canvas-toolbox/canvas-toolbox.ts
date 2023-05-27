@@ -52,7 +52,6 @@ template.innerHTML = `
 
 export default class VCanvasToolbox extends VComponent {
   static tag = 'v-canvas-toolbox'
-  private $selectRef?: HTMLElement
   private $colorMenu!: VColorMenu
   private $colorPreview!: HTMLElement
   private $strokeMenu!: VStrokeMenu
@@ -77,8 +76,8 @@ export default class VCanvasToolbox extends VComponent {
   afterCreated(): void {
     this.initInnerElement()
     this.initArchives()
-    this.toggleCanvasPhase('draw')
     this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
+    this.toggleOption('draw')
   }
 
   private initInnerElement() {
@@ -114,7 +113,7 @@ export default class VCanvasToolbox extends VComponent {
     this.$archiveMenu.addEventListener('close:menu', this.handleCloseArchiveMenu.bind(this))
   }
 
-  subscribeContext() {
+  protected subscribeContext() {
     ArchiveContext.subscribe({
       action: 'FETCH_ARCHIVES_FROM_IDB',
       effect: (context) => {
@@ -140,7 +139,7 @@ export default class VCanvasToolbox extends VComponent {
     CanvasMetaContext.subscribe({
       action: 'SET_PHASE',
       effect: (context) => {
-        this.toggleCanvasPhase(context.state.phase)
+        this.toggleOption(context.state.phase)
       },
     })
     CanvasDrawingContext.subscribe({
@@ -149,6 +148,38 @@ export default class VCanvasToolbox extends VComponent {
         this.setPencilColorPreview(context.state.pencilColor)
       },
     })
+  }
+
+  private toggleOption(type: Phase) {
+    const optionMap: Record<Phase, string> = {
+      cursor: 'cursor',
+      draw: 'stroke',
+      erase: 'stroke',
+      emoji: 'emoji',
+      gallery: 'gallery',
+      color: 'color',
+    }
+
+    const $oldSelected = this.$root.querySelector<HTMLElement>('[data-selected="true"]')
+    const $selected = this.$root.querySelector<HTMLElement>(`[data-phase="${optionMap[type]}"]`)
+    if (!$selected) {
+      return
+    }
+
+    const isStrokeOption = type === 'draw' || type === 'erase'
+    if (isStrokeOption) {
+      $selected.setAttribute('icon', type)
+      this.$strokeMenu.stroke = type
+    }
+
+    if ($oldSelected) {
+      $oldSelected.dataset.selected = 'false'
+    }
+    $selected.dataset.selected = 'true'
+  }
+
+  private setPencilColorPreview(color: string) {
+    this.$colorPreview.setAttribute('color', color)
   }
 
   private updateArchivePreviews(archives: Archive[]) {
@@ -188,15 +219,22 @@ export default class VCanvasToolbox extends VComponent {
 
   enterStrokePhase() {
     this.handleOpenStrokeMenu()
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: this.$strokeMenu.stroke })
   }
 
   enterGalleryPhase() {
-    this.uploadImage()
+    this.openImageUploadWindow()
     this.enterCursorPhase()
+  }
+
+  private async openImageUploadWindow() {
+    const dataUrls = await selectImageFromDevice()
+    EventBus.getInstance().emit(EVENT_KEY.UPLOAD_IMAGE, dataUrls)
   }
 
   enterColorPhase() {
     this.handleOpenColorMenu()
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
   enterFolderPhase() {
@@ -210,7 +248,6 @@ export default class VCanvasToolbox extends VComponent {
 
   handleOpenColorMenu() {
     this.$colorMenu.open = true
-    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: 'color' })
   }
 
   handleCloseColorMenu() {
@@ -256,42 +293,5 @@ export default class VCanvasToolbox extends VComponent {
   handleResizeStroke(ev: Event) {
     const size = (ev as CustomEvent).detail.value
     CanvasDrawingContext.dispatch({ action: 'SET_STROKE_SIZE', data: size })
-  }
-
-  private setPencilColorPreview(color: string) {
-    this.$colorPreview.setAttribute('color', color)
-  }
-
-  private toggleCanvasPhase(type: Phase) {
-    if (this.$selectRef) {
-      this.$selectRef.dataset.selected = 'false'
-    }
-
-    const optionMap = {
-      cursor: 'cursor',
-      draw: 'stroke',
-      erase: 'stroke',
-      emoji: 'emoji',
-      gallery: 'gallery',
-      color: 'color',
-    }
-
-    const $selected = this.$shadow.querySelector<HTMLElement>(`[data-phase="${optionMap[type]}"]`)
-    if (!$selected) {
-      return
-    }
-
-    $selected.dataset.selected = 'true'
-    this.$selectRef = $selected
-
-    if (type === 'draw' || type === 'erase') {
-      this.$strokeMenu.stroke = type
-      $selected.setAttribute('icon', type)
-    }
-  }
-
-  private async uploadImage() {
-    const dataUrls = await selectImageFromDevice()
-    EventBus.getInstance().emit(EVENT_KEY.UPLOAD_IMAGE, dataUrls)
   }
 }

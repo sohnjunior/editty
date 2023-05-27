@@ -90,8 +90,8 @@ export default class VStrokeMenu extends VComponent {
     this.setAttribute('open', `${newValue}`)
   }
 
-  get stroke() {
-    return this.getAttribute('stroke') || 'draw'
+  get stroke(): Stroke {
+    return (this.getAttribute('stroke') as Stroke) || 'draw'
   }
   set stroke(newValue: string) {
     this.setAttribute('stroke', newValue)
