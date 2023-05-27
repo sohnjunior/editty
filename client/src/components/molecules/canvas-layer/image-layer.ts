@@ -17,7 +17,6 @@ import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'
-import type { UUID } from '@/utils/crypto'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
@@ -88,7 +87,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     this.fetchArchive(this.sid)
   }
 
-  private async fetchArchive(sid: UUID) {
+  private async fetchArchive(sid: string) {
     const data = await getArchive(sid)
     if (data) {
       const createImageObjects = data.images.map(async (image) => {

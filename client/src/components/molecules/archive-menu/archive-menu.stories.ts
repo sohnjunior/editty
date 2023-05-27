@@ -16,13 +16,13 @@ export const Basic = ({ open, value }: Props) => {
       const $menu = document.querySelector<VArchiveMenu>('v-archive-menu')
       if ($menu) {
         $menu.archives = [
-          { id: '1-1-1-1-1', title: '스냅샷1' },
-          { id: '2-2-2-2-2', title: '스냅샷2' },
-          { id: '3-3-3-3-3', title: '스냅샷3' },
-          { id: '4-4-4-4-4', title: '스냅샷4' },
-          { id: '5-5-5-5-5', title: '스냅샷5' },
-          { id: '6-6-6-6-6', title: '스냅샷6' },
-          { id: '7-7-7-7-7', title: '스냅샷7' },
+          { id: '0', title: '스냅샷1' },
+          { id: '1', title: '스냅샷2' },
+          { id: '2', title: '스냅샷3' },
+          { id: '3', title: '스냅샷4' },
+          { id: '4', title: '스냅샷5' },
+          { id: '5', title: '스냅샷6' },
+          { id: '6', title: '스냅샷7' },
         ]
       }
     }, 1000)
