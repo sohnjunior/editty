@@ -1,17 +1,16 @@
 import SessionStorage from '@/modules/storage/session'
-import { getRandomUUID } from '@/utils/crypto'
-import type { UUID } from '@/utils/crypto'
 
 const KEY = 'sid'
 
 export function getSessionId() {
-  return SessionStorage.getInstance().getItem<UUID>(KEY)
+  return SessionStorage.getInstance().getItem<string>(KEY)
 }
 
-export function setSessionId(id: UUID) {
+export function setSessionId(id: string) {
   SessionStorage.getInstance().setItem(KEY, id)
 }
 
-export function getOneTimeSessionId(): UUID {
-  return getRandomUUID()
+export function getOneTimeSessionId() {
+  const timestamp = Date.now().toString()
+  return timestamp
 }

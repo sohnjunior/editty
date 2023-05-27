@@ -1,12 +1,11 @@
 import { Context } from '@/contexts/shared/context'
 import type { Reducer } from '@/contexts/shared/context'
 import type { Archive } from '@/services/archive'
-import type { UUID } from '@/utils/crypto'
 import { getAllArchive, deleteArchive } from '@/services/archive'
 import { setSessionId } from '@/services/session'
 
 type State = {
-  sid: UUID
+  sid: string
   archives: Archive[]
 }
 
@@ -16,7 +15,7 @@ type Action =
   | { action: 'SET_SESSION_ID'; data: State['sid'] }
 
 const initState: State = {
-  sid: '0-0-0-0-0', // 💡 App 초기화 과정에서 할당됨을 보장합니다.
+  sid: '0', // 💡 App 초기화 과정에서 할당됨을 보장합니다.
   archives: [],
 }
 

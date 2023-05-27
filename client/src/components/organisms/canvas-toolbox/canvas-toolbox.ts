@@ -98,7 +98,7 @@ export default class VCanvasToolbox extends VComponent {
 
   private async initArchives() {
     ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
-    this.$archiveMenu.value = this.sid ?? ''
+    this.$archiveMenu.value = `${this.sid ?? 0}`
   }
 
   bindEventListener() {
@@ -134,7 +134,7 @@ export default class VCanvasToolbox extends VComponent {
     ArchiveContext.subscribe({
       action: 'SET_SESSION_ID',
       effect: (context) => {
-        this.$archiveMenu.value = context.state.sid
+        this.$archiveMenu.value = context.state.sid.toString()
       },
     })
     CanvasMetaContext.subscribe({

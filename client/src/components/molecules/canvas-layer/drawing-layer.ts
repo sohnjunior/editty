@@ -14,7 +14,6 @@ import {
 } from '@/modules/canvas-utils/engine'
 import { getArchive } from '@/services/archive'
 import type { Point } from './types'
-import type { UUID } from '@/utils/crypto'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -84,7 +83,7 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     this.fetchArchive(this.sid)
   }
 
-  private async fetchArchive(sid: UUID) {
+  private async fetchArchive(sid: string) {
     const data = await getArchive(sid)
     if (data) {
       const snapshots = data.snapshot ? [data.snapshot] : []
