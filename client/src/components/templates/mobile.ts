@@ -7,6 +7,7 @@ template.innerHTML = `
       display: block;
       height: 100%;
       background-color: var(--color-gray);
+      user-select: none;
     }
 
     ::slotted([slot="main"]) {

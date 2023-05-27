@@ -7,7 +7,6 @@ template.innerHTML = `
   <style>
     :host {
       display: block;
-      user-select: none;
     }
 
     :host .toast-container {
