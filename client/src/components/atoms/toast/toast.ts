@@ -7,6 +7,7 @@ template.innerHTML = `
   <style>
     :host {
       display: block;
+      user-select: none;
     }
 
     :host .toast-container {
@@ -149,10 +150,14 @@ export default class VToast extends VComponent {
 
   private updateOpenStyle(value: string) {
     if (value === 'true') {
-      this.$root.classList.add('open')
-      this.setAutocloseTimer()
+      this.$root.style.display = 'flex'
+      requestAnimationFrame(() => {
+        this.$root.classList.add('open')
+        this.setAutocloseTimer()
+      })
     } else {
       this.$root.classList.remove('open')
+      this.$root.style.display = 'none'
     }
   }
 
@@ -162,7 +167,7 @@ export default class VToast extends VComponent {
       this.autocloseTimerId = window.setTimeout(() => {
         this.open = false
         this.autocloseTimerId = undefined
-      }, 2000)
+      }, 2200)
     }
   }
 
