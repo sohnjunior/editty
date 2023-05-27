@@ -188,6 +188,7 @@ export default class VCanvasToolbox extends VComponent {
 
   enterStrokePhase() {
     this.handleOpenStrokeMenu()
+    this.setCurrentStrokeType()
   }
 
   enterGalleryPhase() {
@@ -220,6 +221,11 @@ export default class VCanvasToolbox extends VComponent {
 
   handleOpenStrokeMenu() {
     this.$strokeMenu.open = true
+  }
+
+  setCurrentStrokeType() {
+    const currentStrokeType = this.$strokeMenu.stroke
+    CanvasMetaContext.dispatch({ action: 'SET_PHASE', data: currentStrokeType as Phase })
   }
 
   handleCloseStrokeMenu() {
@@ -282,12 +288,13 @@ export default class VCanvasToolbox extends VComponent {
     }
 
     $selected.dataset.selected = 'true'
-    this.$selectRef = $selected
 
     if (type === 'draw' || type === 'erase') {
       this.$strokeMenu.stroke = type
       $selected.setAttribute('icon', type)
     }
+
+    this.$selectRef = $selected
   }
 
   private async uploadImage() {
