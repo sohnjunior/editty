@@ -67,20 +67,20 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   constructor() {
-    const initCanvasContext = () => {
-      const ctx = this.$root.getContext('2d')
-      if (!ctx) {
-        throw new Error('🚨 canvas load fail')
-      }
-      this.context = ctx
-    }
-
     super(template)
-    initCanvasContext()
   }
 
   afterCreated() {
+    this.initCanvasContext()
     refineCanvasRatioForRetinaDisplay(this.$root)
+  }
+
+  private initCanvasContext() {
+    const ctx = this.$root.getContext('2d')
+    if (!ctx) {
+      throw new Error('🚨 canvas load fail')
+    }
+    this.context = ctx
   }
 
   afterMount() {
