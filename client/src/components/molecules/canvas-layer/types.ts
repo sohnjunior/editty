@@ -1,16 +1,4 @@
-export interface Point {
-  x: number
-  y: number
-}
-
-export interface BoundingRect {
-  /** top-left x position */
-  sx: number
-  /** top-left y position */
-  sy: number
-  width: number
-  height: number
-}
+import type { BoundingRect } from '@/modules/canvas-utils/types'
 
 export interface ImageObject extends BoundingRect {
   /** image dataUrl */

@@ -13,7 +13,8 @@ import {
   drawCircle,
   drawRect,
 } from '@/modules/canvas-utils/engine'
-import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
+import { Point } from '@/modules/canvas-utils/types'
+import type { Resize, Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'

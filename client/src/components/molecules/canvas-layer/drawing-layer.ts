@@ -13,7 +13,7 @@ import {
   refineCanvasRatioForRetinaDisplay,
 } from '@/modules/canvas-utils/engine'
 import { getArchive } from '@/services/archive'
-import type { Point } from './types'
+import type { Point } from '@/modules/canvas-utils/types'
 
 const template = document.createElement('template')
 template.innerHTML = `

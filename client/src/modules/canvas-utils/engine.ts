@@ -1,5 +1,6 @@
 import { isTouchEvent } from '@/utils/dom'
-import type { Point, ImageObject, BoundingRect, Resize } from '@molecules/canvas-layer/types'
+import type { ImageObject, Resize } from '@molecules/canvas-layer/types'
+import type { Point, BoundingRect, BoundingRectVertices } from './types'
 
 /**
  * 캔버스 요소 기준으로 선택된 터치(혹은 클릭) 지점을 px 단위로 반환합니다.
@@ -146,13 +147,6 @@ export function getRotatedCartesianRectCoordinate({
   }
 
   return shiftBack
-}
-
-interface BoundingRectVertices {
-  nw: Point
-  ne: Point
-  sw: Point
-  se: Point
 }
 
 /**
