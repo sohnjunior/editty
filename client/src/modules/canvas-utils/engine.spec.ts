@@ -5,7 +5,7 @@ import {
   getBoundingRectVertices,
   getRotatedCartesianRectCoordinate,
   getCartesianCoordinate,
-  getCenterOfCartesianRect,
+  getCenterOfBoundingRect,
   resizeRect,
 } from './engine'
 
@@ -71,9 +71,7 @@ describe('Canvas graphic tool', () => {
       expect(resizeRect(example)).toStrictEqual({ sx: 100, sy: 200, width: 500, height: 500 })
     })
   })
-})
 
-describe('Cartesian Coordinate System', () => {
   it('get2dMiddlePoint', () => {
     const pointA = { x: 0, y: 0 }
     const pointB = { x: 2, y: 0 }
@@ -91,7 +89,7 @@ describe('Cartesian Coordinate System', () => {
   describe('getBoundingRectVertices', () => {
     it('should get corner coordinates with given needle and width, height info', () => {
       const example = {
-        swPoint: { x: 50, y: 50 },
+        topLeftPoint: { x: 50, y: 50 },
         width: 100,
         height: 100,
       }
@@ -101,12 +99,14 @@ describe('Cartesian Coordinate System', () => {
       expect(result).toStrictEqual({
         nw: { x: 50, y: 50 },
         ne: { x: 150, y: 50 },
-        sw: { x: 50, y: -50 },
-        se: { x: 150, y: -50 },
+        sw: { x: 50, y: 150 },
+        se: { x: 150, y: 150 },
       })
     })
   })
+})
 
+describe('Cartesian Coordinate System', () => {
   describe('getRotatedCartesianRectCoordinate', () => {
     it('should get corner coordinates with rotate-angle: 0', () => {
       const example = {
@@ -223,7 +223,7 @@ describe('Cartesian Coordinate System', () => {
         se: { x: 3, y: 1 },
       }
 
-      const result = getCenterOfCartesianRect(example)
+      const result = getCenterOfBoundingRect(example)
 
       expect(result).toStrictEqual({
         x: 2,

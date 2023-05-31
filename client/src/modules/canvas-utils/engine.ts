@@ -113,28 +113,32 @@ export function isPointInsideRect({ pivot, pos }: { pivot: BoundingRect; pos: Po
   return false
 }
 
-/** sw 좌표지점과 주어진 너비 & 높이를 기준으로 회전되지 않은 사각형의 꼭짓점좌표를 반환합니다. */
+/** top-left 좌표지점과 주어진 너비 & 높이를 기준으로 회전되지 않은 사각형의 꼭짓점좌표를 반환합니다. */
 export function getBoundingRectVertices({
-  swPoint,
+  topLeftPoint,
   width,
   height,
 }: {
-  swPoint: Point
+  topLeftPoint: Point
   width: number
   height: number
 }) {
-  const { x: sx, y: sy } = swPoint
+  const { x: sx, y: sy } = topLeftPoint
   const vertices: BoundingRectVertices = {
     nw: { x: sx, y: sy },
     ne: { x: sx + width, y: sy },
-    sw: { x: sx, y: sy - height },
-    se: { x: sx + width, y: sy - height },
+    sw: { x: sx, y: sy + height },
+    se: { x: sx + width, y: sy + height },
   }
 
   return vertices
 }
 
 /**
+ * NOTE
+ * 다음 함수는 전형적인 데카르트 공간에서만 사용할 수 있어서 canvas 의 좌표 시스템과는 호환이 안된다.
+ * 학습차원에서 구현된 것이니 실제 애플리케이션 코드에서는 canvas 에서 제공해주는 rotate 함수를 사용하자.
+ *
  * degree 만큼 회전된 사각형 영역의 네 꼭지점 좌표를 반환합니다.
  *
  * @reference
@@ -147,7 +151,7 @@ export function getRotatedCartesianRectCoordinate({
   vertices: BoundingRectVertices
   degree: number
 }) {
-  const center = getCenterOfCartesianRect(vertices)
+  const center = getCenterOfBoundingRect(vertices)
   const shiftedToOrigin = {
     nw: { x: vertices.nw.x - center.x, y: vertices.nw.y - center.y },
     ne: { x: vertices.ne.x - center.x, y: vertices.ne.y - center.y },
@@ -171,16 +175,6 @@ export function getRotatedCartesianRectCoordinate({
 }
 
 /**
- * 사각형의 중점을 반환합니다.
- */
-export function getCenterOfCartesianRect({ nw, ne, se }: BoundingRectVertices) {
-  const x = Math.round((nw.x + ne.x) / 2)
-  const y = Math.round((nw.y + se.y) / 2)
-
-  return { x, y }
-}
-
-/**
  * 원점을 기준으로 _degree_ 만큼 화전된 데카르트 좌표계를 반환합니다.
  *
  * @reference
@@ -195,6 +189,16 @@ export function getCartesianCoordinate({ point, degree }: { point: Point; degree
   }
 
   return vector
+}
+
+/**
+ * 사각형의 중점을 반환합니다.
+ */
+export function getCenterOfBoundingRect({ nw, ne, se }: BoundingRectVertices) {
+  const x = Math.round((nw.x + ne.x) / 2)
+  const y = Math.round((nw.y + se.y) / 2)
+
+  return { x, y }
 }
 
 /**
@@ -377,7 +381,7 @@ export function drawLine({
   path.moveTo(from.x, from.y)
   path.lineTo(to.x, to.y)
 
-  context.strokeStyle = 'rgba(151, 222, 255)'
+  context.strokeStyle = 'rgba(151, 222, 1)'
   context.lineWidth = 5
   context.lineCap = 'round'
   context.stroke(path)
