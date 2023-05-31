@@ -113,6 +113,84 @@ export function isPointInsideRect({ pivot, pos }: { pivot: BoundingRect; pos: Po
 }
 
 /**
+ * degree 만큼 회전된 사각형 영역의 네 꼭지점 좌표를 반환합니다.
+ *
+ * @reference
+ *  https://math.stackexchange.com/questions/126967/rotating-a-rectangle-via-a-rotation-matrix
+ */
+export function getRotatedCartesianRectCoordinate({
+  vertices,
+  degree,
+}: {
+  vertices: BoundingRectVertices
+  degree: number
+}) {
+  const center = getCenterOfCartesianRect(vertices)
+  const shiftedToOrigin = {
+    nw: { x: vertices.nw.x - center.x, y: vertices.nw.y - center.y },
+    ne: { x: vertices.ne.x - center.x, y: vertices.ne.y - center.y },
+    sw: { x: vertices.sw.x - center.x, y: vertices.sw.y - center.y },
+    se: { x: vertices.se.x - center.x, y: vertices.se.y - center.y },
+  }
+  const rotated = {
+    nw: getCartesianCoordinate({ point: shiftedToOrigin.nw, degree }),
+    ne: getCartesianCoordinate({ point: shiftedToOrigin.ne, degree }),
+    sw: getCartesianCoordinate({ point: shiftedToOrigin.sw, degree }),
+    se: getCartesianCoordinate({ point: shiftedToOrigin.se, degree }),
+  }
+  const shiftBack = {
+    nw: { x: rotated.nw.x + center.x, y: rotated.nw.y + center.y },
+    ne: { x: rotated.ne.x + center.x, y: rotated.ne.y + center.y },
+    sw: { x: rotated.sw.x + center.x, y: rotated.sw.y + center.y },
+    se: { x: rotated.se.x + center.x, y: rotated.se.y + center.y },
+  }
+
+  return shiftBack
+}
+
+interface BoundingRectVertices {
+  nw: Point
+  ne: Point
+  sw: Point
+  se: Point
+}
+
+/**
+ * 사각형의 중점을 반환합니다.
+ */
+export function getCenterOfCartesianRect({ nw, ne, se }: BoundingRectVertices) {
+  const x = Math.round((nw.x + ne.x) / 2)
+  const y = Math.round((nw.y + se.y) / 2)
+
+  return { x, y }
+}
+
+/**
+ * 원점을 기준으로 _degree_ 만큼 화전된 데카르트 좌표계를 반환합니다.
+ *
+ * @reference
+ *  https://en.wikipedia.org/wiki/Rotation_matrix
+ */
+export function getCartesianCoordinate({ point, degree }: { point: Point; degree: number }) {
+  const { x, y } = point
+  const radian = degreeToRadian(degree)
+  const vector = {
+    x: Math.round(x * Math.cos(radian) - y * Math.sin(radian)),
+    y: Math.round(x * Math.sin(radian) + y * Math.cos(radian)),
+  }
+
+  return vector
+}
+
+/**
+ * degree 를 radian 으로 변환합니다.
+ * degree > 0 이면 반시계방향, 그 반대이면 시계방향으로 회전된 각입니다.
+ * */
+function degreeToRadian(degree: number) {
+  return (degree * Math.PI) / 180
+}
+
+/**
  * 이미지 비율을 유지하되 canvas 너비(portrait) 혹은 높이(landscape)에 맞춰서 크기를 재산정합니다.
  * @param canvas 캔버스 요소 및 최대 적용 비율 (default: 60%)
  * @param original 원본 이미지 너비, 높이
