@@ -349,15 +349,15 @@ function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point
 
 export function drawCircle({
   context,
-  point,
+  centerPoint,
   radius,
 }: {
   context: CanvasRenderingContext2D
-  point: Point
+  centerPoint: Point
   radius: number
 }) {
   const path = new Path2D()
-  path.arc(point.x, point.y, radius, 0, Math.PI * 2)
+  path.arc(centerPoint.x, centerPoint.y, radius, 0, Math.PI * 2)
   context.fillStyle = 'rgba(151, 222, 255)'
   context.fill(path)
 
