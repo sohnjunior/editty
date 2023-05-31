@@ -113,6 +113,27 @@ export function isPointInsideRect({ pivot, pos }: { pivot: BoundingRect; pos: Po
   return false
 }
 
+/** sw 좌표지점과 주어진 너비 & 높이를 기준으로 회전되지 않은 사각형의 꼭짓점좌표를 반환합니다. */
+export function getBoundingRectVertices({
+  swPoint,
+  width,
+  height,
+}: {
+  swPoint: Point
+  width: number
+  height: number
+}) {
+  const { x: sx, y: sy } = swPoint
+  const vertices: BoundingRectVertices = {
+    nw: { x: sx, y: sy },
+    ne: { x: sx + width, y: sy },
+    sw: { x: sx, y: sy - height },
+    se: { x: sx + width, y: sy - height },
+  }
+
+  return vertices
+}
+
 /**
  * degree 만큼 회전된 사각형 영역의 네 꼭지점 좌표를 반환합니다.
  *
