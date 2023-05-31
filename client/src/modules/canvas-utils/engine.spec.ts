@@ -2,6 +2,7 @@ import {
   isPointInsideRect,
   get2dMiddlePoint,
   get2dDistance,
+  getBoundingRectVertices,
   getRotatedCartesianRectCoordinate,
   getCartesianCoordinate,
   getCenterOfCartesianRect,
@@ -85,6 +86,25 @@ describe('Cartesian Coordinate System', () => {
     const pointB = { x: 2, y: 0 }
 
     expect(get2dDistance(pointA, pointB)).toBe(2)
+  })
+
+  describe('getBoundingRectVertices', () => {
+    it('should get corner coordinates with given needle and width, height info', () => {
+      const example = {
+        swPoint: { x: 50, y: 50 },
+        width: 100,
+        height: 100,
+      }
+
+      const result = getBoundingRectVertices(example)
+
+      expect(result).toStrictEqual({
+        nw: { x: 50, y: 50 },
+        ne: { x: 150, y: 50 },
+        sw: { x: 50, y: -50 },
+        se: { x: 150, y: -50 },
+      })
+    })
   })
 
   describe('getRotatedCartesianRectCoordinate', () => {
