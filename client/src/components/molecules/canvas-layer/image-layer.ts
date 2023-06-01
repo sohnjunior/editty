@@ -446,7 +446,12 @@ function findAnchorInPath({
 function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
   const ANCHOR_RADIUS = 20
 
-  const path2d = drawCircle({ context, centerPoint: point, radius: ANCHOR_RADIUS })
+  const path2d = drawCircle({
+    context,
+    centerPoint: point,
+    radius: ANCHOR_RADIUS,
+    color: 'rgba(28,39,76, 0.6)',
+  })
   drawCrossLine({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
   return path2d
@@ -455,7 +460,12 @@ function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2
 function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
   const ANCHOR_RADIUS = 20
 
-  const path2d = drawCircle({ context, centerPoint: point, radius: ANCHOR_RADIUS })
+  const path2d = drawCircle({
+    context,
+    centerPoint: point,
+    radius: ANCHOR_RADIUS,
+    color: 'rgba(28,39,76, 0.6)',
+  })
   drawDiagonalArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
   return path2d

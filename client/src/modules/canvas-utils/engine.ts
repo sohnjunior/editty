@@ -355,14 +355,16 @@ export function drawCircle({
   context,
   centerPoint,
   radius,
+  color = 'rgba(151, 222, 255)',
 }: {
   context: CanvasRenderingContext2D
   centerPoint: Point
   radius: number
+  color?: string
 }) {
   const path = new Path2D()
   path.arc(centerPoint.x, centerPoint.y, radius, 0, Math.PI * 2)
-  context.fillStyle = 'rgba(151, 222, 255)'
+  context.fillStyle = color
   context.fill(path)
 
   return path
