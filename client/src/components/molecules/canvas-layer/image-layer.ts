@@ -445,7 +445,7 @@ function findAnchorInPath({
 }
 
 function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
-  const ANCHOR_RADIUS = 20
+  const ANCHOR_RADIUS = 24
 
   const path2d = drawCircle({
     context,
@@ -459,7 +459,7 @@ function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2
 }
 
 function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
-  const ANCHOR_RADIUS = 20
+  const ANCHOR_RADIUS = 24
 
   const path2d = drawCircle({
     context,
