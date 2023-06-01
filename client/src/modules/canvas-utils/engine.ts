@@ -398,29 +398,35 @@ export function drawLine({
 export function drawRect({
   context,
   vertices: { nw, ne, sw, se },
+  color = 'rgba(151, 222, 255)',
 }: {
   context: CanvasRenderingContext2D
   vertices: BoundingRectVertices
+  color?: string
 }) {
   drawLine({
     context,
     from: nw,
     to: ne,
+    color,
   })
   drawLine({
     context,
     from: ne,
     to: se,
+    color,
   })
   drawLine({
     context,
     from: se,
     to: sw,
+    color,
   })
   drawLine({
     context,
     from: sw,
     to: nw,
+    color,
   })
 }
 

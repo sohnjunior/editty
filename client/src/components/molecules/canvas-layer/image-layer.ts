@@ -418,6 +418,7 @@ function drawAnchorBorder({
   drawRect({
     context,
     vertices,
+    color: 'rgba(151, 222, 255, 0.7)',
   })
 
   const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.ne })
