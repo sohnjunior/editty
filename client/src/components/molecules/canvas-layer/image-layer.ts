@@ -409,7 +409,7 @@ function drawAnchorBorder({
   topLeftPoint: Point
   size: { width: number; height: number }
 }): Anchor[] {
-  const { nw, ne, sw, se } = getBoundingRectVertices({
+  const vertices = getBoundingRectVertices({
     topLeftPoint,
     width: size.width,
     height: size.height,
@@ -417,11 +417,11 @@ function drawAnchorBorder({
 
   drawRect({
     context,
-    corners: [nw, ne, se, sw],
+    vertices,
   })
 
-  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: ne })
-  const resizeAnchorPath2d = drawResizeAnchor({ context, point: se })
+  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.ne })
+  const resizeAnchorPath2d = drawResizeAnchor({ context, point: vertices.se })
 
   const anchors: Anchor[] = [
     { type: 'DELETE', path2d: deleteAnchorPath2d },

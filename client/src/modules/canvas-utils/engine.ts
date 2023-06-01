@@ -393,33 +393,32 @@ export function drawLine({
   return path
 }
 
-// TODO: corners 대신 vertices 로 변경
 export function drawRect({
   context,
-  corners,
+  vertices: { nw, ne, sw, se },
 }: {
   context: CanvasRenderingContext2D
-  corners: Point[]
+  vertices: BoundingRectVertices
 }) {
   drawLine({
     context,
-    from: { x: corners[0].x, y: corners[0].y },
-    to: { x: corners[1].x, y: corners[1].y },
+    from: nw,
+    to: ne,
   })
   drawLine({
     context,
-    from: { x: corners[1].x, y: corners[1].y },
-    to: { x: corners[2].x, y: corners[2].y },
+    from: ne,
+    to: se,
   })
   drawLine({
     context,
-    from: { x: corners[2].x, y: corners[2].y },
-    to: { x: corners[3].x, y: corners[3].y },
+    from: se,
+    to: sw,
   })
   drawLine({
     context,
-    from: { x: corners[3].x, y: corners[3].y },
-    to: { x: corners[0].x, y: corners[0].y },
+    from: sw,
+    to: nw,
   })
 }
 
