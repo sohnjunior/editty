@@ -13,7 +13,8 @@ import {
   resizeRect,
   drawCircle,
   drawRect,
-  drawLine,
+  drawCrossLine,
+  drawDiagonalArrow,
 } from '@/modules/canvas-utils/engine'
 import { Point } from '@/modules/canvas-utils/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
@@ -451,27 +452,6 @@ function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2
   return path2d
 }
 
-function drawCrossLine({
-  context,
-  centerPoint,
-  lineLength,
-}: {
-  context: CanvasRenderingContext2D
-  centerPoint: Point
-  lineLength: number
-}) {
-  const LINE_WIDTH = 3
-  const topLeftPoint = { x: centerPoint.x - lineLength / 2, y: centerPoint.y - lineLength / 2 }
-  const { nw, ne, sw, se } = getBoundingRectVertices({
-    topLeftPoint,
-    width: lineLength,
-    height: lineLength,
-  })
-
-  drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
-  drawLine({ context, from: ne, to: sw, color: '#f8f8f8', lineWidth: LINE_WIDTH })
-}
-
 function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
   const ANCHOR_RADIUS = 20
 
@@ -479,56 +459,4 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
   drawDiagonalArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
   return path2d
-}
-
-function drawDiagonalArrow({
-  context,
-  centerPoint,
-  lineLength,
-}: {
-  context: CanvasRenderingContext2D
-  centerPoint: Point
-  lineLength: number
-}) {
-  const LINE_WIDTH = 3
-  const topLeftPoint = { x: centerPoint.x - lineLength / 2, y: centerPoint.y - lineLength / 2 }
-  const { nw, se } = getBoundingRectVertices({
-    topLeftPoint,
-    width: lineLength,
-    height: lineLength,
-  })
-
-  drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
-
-  // 죄측 상단 꺽쇠 그리기
-  drawLine({
-    context,
-    from: nw,
-    to: { x: nw.x, y: centerPoint.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
-  })
-  drawLine({
-    context,
-    from: nw,
-    to: { x: centerPoint.x, y: nw.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
-  })
-
-  // 우측 하단 꺽쇠 그리기
-  drawLine({
-    context,
-    from: se,
-    to: { x: centerPoint.x, y: se.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
-  })
-  drawLine({
-    context,
-    from: se,
-    to: { x: se.x, y: centerPoint.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
-  })
 }
