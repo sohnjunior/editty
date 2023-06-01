@@ -9,22 +9,22 @@ import {
   isPointInsideRect,
   refineImageScale,
   createImageObject,
+  getBoundingRectVertices,
   resizeRect,
   drawCircle,
   drawRect,
+  drawLine,
 } from '@/modules/canvas-utils/engine'
 import { Point } from '@/modules/canvas-utils/types'
-import type { Resize, Anchor, ImageTransform, ImageObject } from './types'
+import type { Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
-  TOP_LEFT: 'nwse-resize',
-  TOP_RIGHT: 'nesw-resize',
-  BOTTOM_LEFT: 'nesw-resize',
-  BOTTOM_RIGHT: 'nwse-resize',
+  RESIZE: 'nwse-resize',
+  DELETE: 'pointer',
 }
 
 const template = document.createElement('template')
@@ -354,7 +354,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     const image = this.focused.image
 
     const resizedBoundingRect = resizeRect({
-      type: this.transformType,
+      type: 'BOTTOM_RIGHT',
       originalBoundingRect: {
         sx: image.sx,
         sy: image.sy,
@@ -408,27 +408,26 @@ function drawAnchorBorder({
   topLeftPoint: Point
   size: { width: number; height: number }
 }): Anchor[] {
-  const corners: Record<Resize, Point> = {
-    TOP_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y },
-    TOP_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y },
-    BOTTOM_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y + size.height },
-    BOTTOM_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y + size.height },
-  }
+  const { nw, ne, sw, se } = getBoundingRectVertices({
+    topLeftPoint,
+    width: size.width,
+    height: size.height,
+  })
 
   drawRect({
     context,
-    corners: Object.values(corners),
+    corners: [nw, ne, se, sw],
   })
 
-  const anchorTypes = Object.keys(corners) as Resize[]
-  const anchorPath2ds = drawAnchor({ context, corners: Object.values(corners) })
-  const anchors = anchorPath2ds.map((path2d, index) => ({ type: anchorTypes[index], path2d }))
+  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: ne })
+  const resizeAnchorPath2d = drawResizeAnchor({ context, point: se })
+
+  const anchors: Anchor[] = [
+    { type: 'DELETE', path2d: deleteAnchorPath2d },
+    { type: 'RESIZE', path2d: resizeAnchorPath2d },
+  ]
 
   return anchors
-}
-
-function drawAnchor({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
-  return corners.map((point) => drawCircle({ context, centerPoint: point, radius: 12 }))
 }
 
 function findAnchorInPath({
