@@ -1,5 +1,5 @@
 import { isTouchEvent } from '@/utils/dom'
-import type { ImageObject, Resize } from '@molecules/canvas-layer/types'
+import type { ImageObject } from '@molecules/canvas-layer/types'
 import type { Point, BoundingRect, BoundingRectVertices } from './types'
 
 /**
@@ -275,7 +275,7 @@ export function resizeRect({
   originalBoundingRect,
   vectorTerminalPoint,
 }: {
-  type: Resize
+  type: 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT'
   originalBoundingRect: BoundingRect
   vectorTerminalPoint: Point
 }) {
@@ -372,23 +372,28 @@ export function drawLine({
   context,
   from,
   to,
+  color = 'rgba(151, 222, 255)',
+  lineWidth = 5,
 }: {
   context: CanvasRenderingContext2D
   from: Point
   to: Point
+  color?: string
+  lineWidth?: number
 }) {
   const path = new Path2D()
   path.moveTo(from.x, from.y)
   path.lineTo(to.x, to.y)
 
-  context.strokeStyle = 'rgba(151, 222, 1)'
-  context.lineWidth = 5
+  context.strokeStyle = color
+  context.lineWidth = lineWidth
   context.lineCap = 'round'
   context.stroke(path)
 
   return path
 }
 
+// TODO: corners 대신 vertices 로 변경
 export function drawRect({
   context,
   corners,
