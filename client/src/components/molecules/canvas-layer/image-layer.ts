@@ -135,6 +135,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       },
     })
     CanvasImageContext.subscribe({
+      action: 'DELETE_IMAGE',
+      effect: () => {
+        this.resetInteractionAndPaint()
+      },
+    })
+    CanvasImageContext.subscribe({
       action: 'CLEAR_IMAGE',
       effect: () => {
         this.paintImages()
@@ -233,9 +239,23 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   handleTouchEnd() {
     this.isPressed = false
-    if (this.focused) {
+
+    // if user click inside image
+    if (this.focused?.point) {
       this.focused.point = null
     }
+
+    // if user click image delete anchor
+    if (this.transformType === 'DELETE') {
+      const imageId = this.focused?.image.id
+      if (imageId) {
+        this.deleteImage(imageId)
+      }
+    }
+  }
+
+  private deleteImage(imageId: string) {
+    CanvasImageContext.dispatch({ action: 'DELETE_IMAGE', data: imageId })
   }
 
   touch(ev: MouseEvent | TouchEvent) {
@@ -291,6 +311,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   onTouchBlurArea() {
+    this.resetInteractionAndPaint()
+  }
+
+  private resetInteractionAndPaint() {
     this.resetFocusedImage()
     this.resetTransformType()
     this.paintImages()
@@ -320,10 +344,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     if (this.focused?.point) {
       this.dragImage(ev)
-      this.paintImages()
-    } else if (this.focused) {
+    } else if (this.transformType === 'RESIZE') {
       this.resizeImage(ev)
-      this.paintImages()
     }
   }
 
@@ -344,6 +366,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     dragstart.x = x
     dragstart.y = y
+
+    this.paintImages()
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
@@ -369,6 +393,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     image.sy = resizedBoundingRect.sy
     image.width = resizedBoundingRect.width
     image.height = resizedBoundingRect.height
+
+    this.paintImages()
   }
 
   private paintImages() {
