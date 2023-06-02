@@ -263,10 +263,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     const imageIndex = this.findTouchedImage(touchPoint)
     const anchor = this.findTouchedAnchor(touchPoint)
 
-    if (imageIndex > -1) {
-      this.onTouchImageArea(imageIndex, touchPoint)
-    } else if (anchor) {
+    if (anchor) {
       this.onTouchAnchorArea(anchor)
+    } else if (imageIndex > -1) {
+      this.onTouchImageArea(imageIndex, touchPoint)
     } else {
       this.onTouchBlurArea()
     }
