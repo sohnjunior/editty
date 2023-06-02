@@ -248,12 +248,15 @@ export async function createImageObject({
   dataUrl: string
   topLeftPoint: Point
 }): Promise<ImageObject> {
+  const id = crypto.randomUUID()
+
   return new Promise((resolve, reject) => {
     const $image = new Image()
     $image.src = dataUrl
 
     $image.onload = () => {
       resolve({
+        id,
         dataUrl,
         sx: topLeftPoint.x,
         sy: topLeftPoint.y,
