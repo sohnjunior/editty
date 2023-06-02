@@ -94,6 +94,7 @@ export default class VCanvasContainer extends VComponent {
 
   private async onSaveArchive() {
     const images: Archive['images'] = this.images.map((image) => ({
+      id: image.id,
       dataUrl: image.dataUrl,
       sx: image.sx,
       sy: image.sy,

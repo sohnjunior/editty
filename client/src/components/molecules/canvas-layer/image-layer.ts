@@ -9,21 +9,23 @@ import {
   isPointInsideRect,
   refineImageScale,
   createImageObject,
+  getBoundingRectVertices,
   resizeRect,
   drawCircle,
   drawRect,
+  drawCrossLine,
+  drawDiagonalArrow,
 } from '@/modules/canvas-utils/engine'
-import type { Point, Resize, Anchor, ImageTransform, ImageObject } from './types'
+import { Point } from '@/modules/canvas-utils/types'
+import type { Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
 import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
-  TOP_LEFT: 'nwse-resize',
-  TOP_RIGHT: 'nesw-resize',
-  BOTTOM_LEFT: 'nesw-resize',
-  BOTTOM_RIGHT: 'nwse-resize',
+  RESIZE: 'nwse-resize',
+  DELETE: 'pointer',
 }
 
 const template = document.createElement('template')
@@ -67,20 +69,20 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   constructor() {
-    const initCanvasContext = () => {
-      const ctx = this.$root.getContext('2d')
-      if (!ctx) {
-        throw new Error('🚨 canvas load fail')
-      }
-      this.context = ctx
-    }
-
     super(template)
-    initCanvasContext()
   }
 
   afterCreated() {
+    this.initCanvasContext()
     refineCanvasRatioForRetinaDisplay(this.$root)
+  }
+
+  private initCanvasContext() {
+    const ctx = this.$root.getContext('2d')
+    if (!ctx) {
+      throw new Error('🚨 canvas load fail')
+    }
+    this.context = ctx
   }
 
   afterMount() {
@@ -130,6 +132,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       action: 'PUSH_IMAGE',
       effect: () => {
         this.paintImages()
+      },
+    })
+    CanvasImageContext.subscribe({
+      action: 'DELETE_IMAGE',
+      effect: () => {
+        this.resetInteractionAndPaint()
       },
     })
     CanvasImageContext.subscribe({
@@ -231,9 +239,23 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   handleTouchEnd() {
     this.isPressed = false
-    if (this.focused) {
+
+    // if user click inside image
+    if (this.focused?.point) {
       this.focused.point = null
     }
+
+    // if user click image delete anchor
+    if (this.transformType === 'DELETE') {
+      const imageId = this.focused?.image.id
+      if (imageId) {
+        this.deleteImage(imageId)
+      }
+    }
+  }
+
+  private deleteImage(imageId: string) {
+    CanvasImageContext.dispatch({ action: 'DELETE_IMAGE', data: imageId })
   }
 
   touch(ev: MouseEvent | TouchEvent) {
@@ -241,10 +263,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     const imageIndex = this.findTouchedImage(touchPoint)
     const anchor = this.findTouchedAnchor(touchPoint)
 
-    if (imageIndex > -1) {
-      this.onTouchImageArea(imageIndex, touchPoint)
-    } else if (anchor) {
+    if (anchor) {
       this.onTouchAnchorArea(anchor)
+    } else if (imageIndex > -1) {
+      this.onTouchImageArea(imageIndex, touchPoint)
     } else {
       this.onTouchBlurArea()
     }
@@ -289,6 +311,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   onTouchBlurArea() {
+    this.resetInteractionAndPaint()
+  }
+
+  private resetInteractionAndPaint() {
     this.resetFocusedImage()
     this.resetTransformType()
     this.paintImages()
@@ -318,10 +344,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     if (this.focused?.point) {
       this.dragImage(ev)
-      this.paintImages()
-    } else if (this.focused) {
+    } else if (this.transformType === 'RESIZE') {
       this.resizeImage(ev)
-      this.paintImages()
     }
   }
 
@@ -342,6 +366,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     dragstart.x = x
     dragstart.y = y
+
+    this.paintImages()
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
@@ -353,7 +379,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     const image = this.focused.image
 
     const resizedBoundingRect = resizeRect({
-      type: this.transformType,
+      type: 'BOTTOM_RIGHT',
       originalBoundingRect: {
         sx: image.sx,
         sy: image.sy,
@@ -367,6 +393,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     image.sy = resizedBoundingRect.sy
     image.width = resizedBoundingRect.width
     image.height = resizedBoundingRect.height
+
+    this.paintImages()
   }
 
   private paintImages() {
@@ -407,27 +435,27 @@ function drawAnchorBorder({
   topLeftPoint: Point
   size: { width: number; height: number }
 }): Anchor[] {
-  const corners: Record<Resize, Point> = {
-    TOP_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y },
-    TOP_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y },
-    BOTTOM_RIGHT: { x: topLeftPoint.x + size.width, y: topLeftPoint.y + size.height },
-    BOTTOM_LEFT: { x: topLeftPoint.x, y: topLeftPoint.y + size.height },
-  }
+  const vertices = getBoundingRectVertices({
+    topLeftPoint,
+    width: size.width,
+    height: size.height,
+  })
 
   drawRect({
     context,
-    corners: Object.values(corners),
+    vertices,
+    color: 'rgba(151, 222, 255, 0.7)',
   })
 
-  const anchorTypes = Object.keys(corners) as Resize[]
-  const anchorPath2ds = drawAnchor({ context, corners: Object.values(corners) })
-  const anchors = anchorPath2ds.map((path2d, index) => ({ type: anchorTypes[index], path2d }))
+  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.ne })
+  const resizeAnchorPath2d = drawResizeAnchor({ context, point: vertices.se })
+
+  const anchors: Anchor[] = [
+    { type: 'DELETE', path2d: deleteAnchorPath2d },
+    { type: 'RESIZE', path2d: resizeAnchorPath2d },
+  ]
 
   return anchors
-}
-
-function drawAnchor({ context, corners }: { context: CanvasRenderingContext2D; corners: Point[] }) {
-  return corners.map((point) => drawCircle({ context, point, radius: 12 }))
 }
 
 function findAnchorInPath({
@@ -440,4 +468,32 @@ function findAnchorInPath({
   point: Point
 }) {
   return anchors.find((anchor) => context.isPointInPath(anchor.path2d, point.x, point.y))
+}
+
+function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
+  const ANCHOR_RADIUS = 24
+
+  const path2d = drawCircle({
+    context,
+    centerPoint: point,
+    radius: ANCHOR_RADIUS,
+    color: 'rgba(28,39,76, 0.6)',
+  })
+  drawCrossLine({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
+
+  return path2d
+}
+
+function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
+  const ANCHOR_RADIUS = 24
+
+  const path2d = drawCircle({
+    context,
+    centerPoint: point,
+    radius: ANCHOR_RADIUS,
+    color: 'rgba(28,39,76, 0.6)',
+  })
+  drawDiagonalArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
+
+  return path2d
 }

@@ -9,6 +9,7 @@ type State = {
 type Action =
   | { action: 'INIT_IMAGE'; data: State['images'] }
   | { action: 'PUSH_IMAGE'; data: State['images'][number] }
+  | { action: 'DELETE_IMAGE'; data: State['images'][number]['id'] }
   | { action: 'CLEAR_IMAGE' }
   | { action: 'SELECT_IMAGE'; data: number }
 
@@ -25,6 +26,12 @@ const reducer: Reducer<State, Action> = async ({ state, payload }) => {
     case 'PUSH_IMAGE': {
       const images = [...state.images]
       images.push(payload.data)
+
+      return { ...state, images }
+    }
+    case 'DELETE_IMAGE': {
+      const imageId = payload.data
+      const images = state.images.filter((image) => image.id !== imageId)
 
       return { ...state, images }
     }

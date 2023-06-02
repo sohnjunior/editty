@@ -1,5 +1,6 @@
 import { isTouchEvent } from '@/utils/dom'
-import type { Point, ImageObject, BoundingRect, Resize } from '@molecules/canvas-layer/types'
+import type { ImageObject } from '@molecules/canvas-layer/types'
+import type { Point, BoundingRect, BoundingRectVertices } from './types'
 
 /**
  * 캔버스 요소 기준으로 선택된 터치(혹은 클릭) 지점을 px 단위로 반환합니다.
@@ -112,6 +113,102 @@ export function isPointInsideRect({ pivot, pos }: { pivot: BoundingRect; pos: Po
   return false
 }
 
+/** top-left 좌표지점과 주어진 너비 & 높이를 기준으로 회전되지 않은 사각형의 꼭짓점좌표를 반환합니다. */
+export function getBoundingRectVertices({
+  topLeftPoint,
+  width,
+  height,
+}: {
+  topLeftPoint: Point
+  width: number
+  height: number
+}) {
+  const { x: sx, y: sy } = topLeftPoint
+  const vertices: BoundingRectVertices = {
+    nw: { x: sx, y: sy },
+    ne: { x: sx + width, y: sy },
+    sw: { x: sx, y: sy + height },
+    se: { x: sx + width, y: sy + height },
+  }
+
+  return vertices
+}
+
+/**
+ * NOTE
+ * 다음 함수는 전형적인 데카르트 공간에서만 사용할 수 있어서 canvas 의 좌표 시스템과는 호환이 안된다.
+ * 학습차원에서 구현된 것이니 실제 애플리케이션 코드에서는 canvas 에서 제공해주는 rotate 함수를 사용하자.
+ *
+ * degree 만큼 회전된 사각형 영역의 네 꼭지점 좌표를 반환합니다.
+ *
+ * @reference
+ *  https://math.stackexchange.com/questions/126967/rotating-a-rectangle-via-a-rotation-matrix
+ */
+export function getRotatedCartesianRectCoordinate({
+  vertices,
+  degree,
+}: {
+  vertices: BoundingRectVertices
+  degree: number
+}) {
+  const center = getCenterOfBoundingRect(vertices)
+  const shiftedToOrigin = {
+    nw: { x: vertices.nw.x - center.x, y: vertices.nw.y - center.y },
+    ne: { x: vertices.ne.x - center.x, y: vertices.ne.y - center.y },
+    sw: { x: vertices.sw.x - center.x, y: vertices.sw.y - center.y },
+    se: { x: vertices.se.x - center.x, y: vertices.se.y - center.y },
+  }
+  const rotated = {
+    nw: getCartesianCoordinate({ point: shiftedToOrigin.nw, degree }),
+    ne: getCartesianCoordinate({ point: shiftedToOrigin.ne, degree }),
+    sw: getCartesianCoordinate({ point: shiftedToOrigin.sw, degree }),
+    se: getCartesianCoordinate({ point: shiftedToOrigin.se, degree }),
+  }
+  const shiftBack = {
+    nw: { x: rotated.nw.x + center.x, y: rotated.nw.y + center.y },
+    ne: { x: rotated.ne.x + center.x, y: rotated.ne.y + center.y },
+    sw: { x: rotated.sw.x + center.x, y: rotated.sw.y + center.y },
+    se: { x: rotated.se.x + center.x, y: rotated.se.y + center.y },
+  }
+
+  return shiftBack
+}
+
+/**
+ * 원점을 기준으로 _degree_ 만큼 화전된 데카르트 좌표계를 반환합니다.
+ *
+ * @reference
+ *  https://en.wikipedia.org/wiki/Rotation_matrix
+ */
+export function getCartesianCoordinate({ point, degree }: { point: Point; degree: number }) {
+  const { x, y } = point
+  const radian = degreeToRadian(degree)
+  const vector = {
+    x: Math.round(x * Math.cos(radian) - y * Math.sin(radian)),
+    y: Math.round(x * Math.sin(radian) + y * Math.cos(radian)),
+  }
+
+  return vector
+}
+
+/**
+ * 사각형의 중점을 반환합니다.
+ */
+export function getCenterOfBoundingRect({ nw, ne, se }: BoundingRectVertices) {
+  const x = Math.round((nw.x + ne.x) / 2)
+  const y = Math.round((nw.y + se.y) / 2)
+
+  return { x, y }
+}
+
+/**
+ * degree 를 radian 으로 변환합니다.
+ * degree > 0 이면 반시계방향, 그 반대이면 시계방향으로 회전된 각입니다.
+ * */
+function degreeToRadian(degree: number) {
+  return (degree * Math.PI) / 180
+}
+
 /**
  * 이미지 비율을 유지하되 canvas 너비(portrait) 혹은 높이(landscape)에 맞춰서 크기를 재산정합니다.
  * @param canvas 캔버스 요소 및 최대 적용 비율 (default: 60%)
@@ -151,12 +248,15 @@ export async function createImageObject({
   dataUrl: string
   topLeftPoint: Point
 }): Promise<ImageObject> {
+  const id = crypto.randomUUID()
+
   return new Promise((resolve, reject) => {
     const $image = new Image()
     $image.src = dataUrl
 
     $image.onload = () => {
       resolve({
+        id,
         dataUrl,
         sx: topLeftPoint.x,
         sy: topLeftPoint.y,
@@ -178,7 +278,7 @@ export function resizeRect({
   originalBoundingRect,
   vectorTerminalPoint,
 }: {
-  type: Resize
+  type: 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT'
   originalBoundingRect: BoundingRect
   vectorTerminalPoint: Point
 }) {
@@ -256,16 +356,18 @@ function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point
 
 export function drawCircle({
   context,
-  point,
+  centerPoint,
   radius,
+  color = 'rgba(151, 222, 255)',
 }: {
   context: CanvasRenderingContext2D
-  point: Point
+  centerPoint: Point
   radius: number
+  color?: string
 }) {
   const path = new Path2D()
-  path.arc(point.x, point.y, radius, 0, Math.PI * 2)
-  context.fillStyle = 'rgba(151, 222, 255)'
+  path.arc(centerPoint.x, centerPoint.y, radius, 0, Math.PI * 2)
+  context.fillStyle = color
   context.fill(path)
 
   return path
@@ -275,17 +377,21 @@ export function drawLine({
   context,
   from,
   to,
+  color = 'rgba(151, 222, 255)',
+  lineWidth = 5,
 }: {
   context: CanvasRenderingContext2D
   from: Point
   to: Point
+  color?: string
+  lineWidth?: number
 }) {
   const path = new Path2D()
   path.moveTo(from.x, from.y)
   path.lineTo(to.x, to.y)
 
-  context.strokeStyle = 'rgba(151, 222, 255)'
-  context.lineWidth = 5
+  context.strokeStyle = color
+  context.lineWidth = lineWidth
   context.lineCap = 'round'
   context.stroke(path)
 
@@ -294,29 +400,108 @@ export function drawLine({
 
 export function drawRect({
   context,
-  corners,
+  vertices: { nw, ne, sw, se },
+  color = 'rgba(151, 222, 255)',
 }: {
   context: CanvasRenderingContext2D
-  corners: Point[]
+  vertices: BoundingRectVertices
+  color?: string
 }) {
   drawLine({
     context,
-    from: { x: corners[0].x, y: corners[0].y },
-    to: { x: corners[1].x, y: corners[1].y },
+    from: nw,
+    to: ne,
+    color,
   })
   drawLine({
     context,
-    from: { x: corners[1].x, y: corners[1].y },
-    to: { x: corners[2].x, y: corners[2].y },
+    from: ne,
+    to: se,
+    color,
   })
   drawLine({
     context,
-    from: { x: corners[2].x, y: corners[2].y },
-    to: { x: corners[3].x, y: corners[3].y },
+    from: se,
+    to: sw,
+    color,
   })
   drawLine({
     context,
-    from: { x: corners[3].x, y: corners[3].y },
-    to: { x: corners[0].x, y: corners[0].y },
+    from: sw,
+    to: nw,
+    color,
+  })
+}
+
+export function drawCrossLine({
+  context,
+  centerPoint,
+  lineLength,
+}: {
+  context: CanvasRenderingContext2D
+  centerPoint: Point
+  lineLength: number
+}) {
+  const LINE_WIDTH = 3
+  const topLeftPoint = { x: centerPoint.x - lineLength / 2, y: centerPoint.y - lineLength / 2 }
+  const { nw, ne, sw, se } = getBoundingRectVertices({
+    topLeftPoint,
+    width: lineLength,
+    height: lineLength,
+  })
+
+  drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
+  drawLine({ context, from: ne, to: sw, color: '#f8f8f8', lineWidth: LINE_WIDTH })
+}
+
+export function drawDiagonalArrow({
+  context,
+  centerPoint,
+  lineLength,
+}: {
+  context: CanvasRenderingContext2D
+  centerPoint: Point
+  lineLength: number
+}) {
+  const LINE_WIDTH = 3
+  const topLeftPoint = { x: centerPoint.x - lineLength / 2, y: centerPoint.y - lineLength / 2 }
+  const { nw, se } = getBoundingRectVertices({
+    topLeftPoint,
+    width: lineLength,
+    height: lineLength,
+  })
+
+  drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
+
+  // 죄측 상단 꺽쇠 그리기
+  drawLine({
+    context,
+    from: nw,
+    to: { x: nw.x, y: centerPoint.y },
+    color: '#f8f8f8',
+    lineWidth: LINE_WIDTH,
+  })
+  drawLine({
+    context,
+    from: nw,
+    to: { x: centerPoint.x, y: nw.y },
+    color: '#f8f8f8',
+    lineWidth: LINE_WIDTH,
+  })
+
+  // 우측 하단 꺽쇠 그리기
+  drawLine({
+    context,
+    from: se,
+    to: { x: centerPoint.x, y: se.y },
+    color: '#f8f8f8',
+    lineWidth: LINE_WIDTH,
+  })
+  drawLine({
+    context,
+    from: se,
+    to: { x: se.x, y: centerPoint.y },
+    color: '#f8f8f8',
+    lineWidth: LINE_WIDTH,
   })
 }

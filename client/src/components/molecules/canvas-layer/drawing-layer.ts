@@ -13,7 +13,7 @@ import {
   refineCanvasRatioForRetinaDisplay,
 } from '@/modules/canvas-utils/engine'
 import { getArchive } from '@/services/archive'
-import type { Point } from './types'
+import type { Point } from '@/modules/canvas-utils/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -63,20 +63,20 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
   }
 
   constructor() {
-    const initCanvasContext = () => {
-      const ctx = this.$root.getContext('2d')
-      if (!ctx) {
-        throw new Error('🚨 canvas load fail')
-      }
-      this.context = ctx
-    }
-
     super(template)
-    initCanvasContext()
   }
 
   afterCreated() {
+    this.initCanvasContext()
     refineCanvasRatioForRetinaDisplay(this.$root)
+  }
+
+  private initCanvasContext() {
+    const ctx = this.$root.getContext('2d')
+    if (!ctx) {
+      throw new Error('🚨 canvas load fail')
+    }
+    this.context = ctx
   }
 
   afterMount() {
