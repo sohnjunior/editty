@@ -26,7 +26,7 @@ template.innerHTML = `
         grid-auto-flow: column;
         grid-template-rows: repeat(2, 1fr); 
         gap: 10px 15px;
-        width: 220px;
+        width: 200px;
         height: 270px;
         overflow-x: scroll;
       }
