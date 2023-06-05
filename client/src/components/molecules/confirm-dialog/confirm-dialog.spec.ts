@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event'
-import { screen, waitFor } from '@testing-library/dom'
-import { renderToHtml, getTemplateRootElement, getInitialStyle } from '@/modules/wc-test-utils'
+import { screen } from '@testing-library/dom'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 import VDialog from '@atoms/dialog/dialog'
 import VConfirmDialog from './confirm-dialog'
 
