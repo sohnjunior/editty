@@ -8,3 +8,7 @@ export const Z_INDEX = {
   MENU_LAYER: 6,
   TOAST_LAYER: 7,
 }
+
+export const NOOP = () => {
+  return
+}
