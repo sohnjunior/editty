@@ -1,10 +1,13 @@
 :root {
   /** component design unit */
   --color-black: #0a0a0a;
+  --color-davy-gray: #555555;
   --color-gray: #f3f3f3;
   --color-white: #fafafa;
   --color-neutral: #cbd2e1;
   --color-platinum: #e4e5e7;
+  --color-azure: rgba(70, 130, 252, 1);
+  --color-azure15: rgba(70, 130, 252, 0.15);
   --color-primary: rgba(145, 181, 253, 1);
   --color-primary40: rgba(151, 222, 255, 0.4);
   --color-primary30: rgba(151, 222, 255, 0.3);
