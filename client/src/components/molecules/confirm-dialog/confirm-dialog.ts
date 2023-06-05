@@ -83,8 +83,10 @@ export default class VConfirmDialog extends VComponent<VDialog> {
   private updateOpenStyle(value: string) {
     if (value === 'true') {
       this.$root.open = 'true'
+      this.$root.style.display = 'block'
     } else {
       this.$root.open = 'false'
+      this.$root.style.display = 'none'
     }
   }
 
