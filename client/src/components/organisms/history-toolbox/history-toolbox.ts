@@ -57,10 +57,10 @@ export default class VHistoryToolbox extends VComponent {
   }
 
   handleClearCanvas() {
-    const isConfirmed = window.confirm('지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?')
-    if (isConfirmed) {
-      EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
-    }
+    EventBus.getInstance().emit(
+      EVENT_KEY.SHOW_CONFIRM,
+      '지금까지 작성한 기록이 사라집니다. 삭제하시겠습니까?'
+    )
   }
 
   handleSaveCanvas() {

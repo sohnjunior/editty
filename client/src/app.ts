@@ -2,6 +2,7 @@ import { VComponent } from '@/modules/v-component'
 import { Z_INDEX } from '@/utils/constant'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import VToast from '@atoms/toast/toast'
+import VConfirmDialog from '@molecules/confirm-dialog/confirm-dialog'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -33,8 +34,8 @@ template.innerHTML = `
       <v-canvas-container></v-canvas-container>
       <v-canvas-toolbox></v-canvas-toolbox>
       <v-history-toolbox></v-history-toolbox>
-
       <v-toast variant="success" open="false" autoclose="true" title="" description=""></v-toast>
+      <v-confirm-dialog open="false" content=""></v-confirm-dialog>
     </main>
   </v-mobile-layout>
 `
@@ -47,6 +48,7 @@ export default class App extends VComponent {
   }
 
   private $toast!: VToast
+  private $dialog!: VConfirmDialog
 
   protected afterCreated() {
     this.initToastElement()
@@ -54,15 +56,27 @@ export default class App extends VComponent {
 
   private initToastElement() {
     const $toast = this.$root.querySelector<VToast>('v-toast')
-    if (!$toast) {
+    const $dialog = this.$root.querySelector<VConfirmDialog>('v-confirm-dialog')
+    if (!$toast || !$dialog) {
       throw new Error('initialize fail')
     }
 
     this.$toast = $toast
+    this.$dialog = $dialog
+  }
+
+  protected bindEventListener() {
+    this.$dialog.addEventListener('dialog:confirm', this.handleClearConfirm)
+    this.$dialog.addEventListener('dialog:cancel', () => {})
+  }
+
+  private handleClearConfirm() {
+    EventBus.getInstance().emit(EVENT_KEY.CLEAR_ALL)
   }
 
   subscribeEventBus() {
     EventBus.getInstance().on(EVENT_KEY.SHOW_TOAST, this.onShowToast.bind(this))
+    EventBus.getInstance().on(EVENT_KEY.SHOW_CONFIRM, this.onShowConfirmDialog.bind(this))
   }
 
   private onShowToast(variant: string, title: string, description: string) {
@@ -78,5 +92,10 @@ export default class App extends VComponent {
   private updateToastContent(title: string, description: string) {
     this.$toast.title = title
     this.$toast.description = description
+  }
+
+  private onShowConfirmDialog(content: string) {
+    this.$dialog.content = content
+    this.$dialog.open = 'true'
   }
 }
