@@ -72,6 +72,10 @@ export default class VDialog extends VComponent<HTMLDialogElement> {
     this.setAttribute('open', newValue)
   }
 
+  protected bindEventListener() {
+    this.$root.addEventListener('cancel', (ev) => ev.preventDefault())
+  }
+
   protected bindInitialProp() {
     this.reflectAttribute({ attribute: 'open', value: this.open })
   }
