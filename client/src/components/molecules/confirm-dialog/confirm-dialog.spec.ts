@@ -3,6 +3,7 @@ import { screen } from '@testing-library/dom'
 import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 import VDialog from '@atoms/dialog/dialog'
 import VConfirmDialog from './confirm-dialog'
+import { NOOP } from '@/utils/constant'
 
 describe('confirm-dialog', () => {
   beforeAll(() => {
@@ -27,7 +28,7 @@ describe('confirm-dialog', () => {
     const $dialog = screen.getByTestId<VConfirmDialog>('confirm-dialog')
     const $root = getTemplateRootElement<VDialog>($dialog)
 
-    const mockListener = jest.fn(() => {})
+    const mockListener = jest.fn(NOOP)
 
     $dialog.open = 'true'
     $dialog.addEventListener('dialog:confirm', mockListener)
@@ -49,7 +50,7 @@ describe('confirm-dialog', () => {
     const $dialog = screen.getByTestId<VConfirmDialog>('confirm-dialog')
     const $root = getTemplateRootElement<VDialog>($dialog)
 
-    const mockListener = jest.fn(() => {})
+    const mockListener = jest.fn(NOOP)
 
     $dialog.open = 'true'
     $dialog.addEventListener('dialog:cancel', mockListener)

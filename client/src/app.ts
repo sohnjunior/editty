@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { Z_INDEX } from '@/utils/constant'
+import { Z_INDEX, NOOP } from '@/utils/constant'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 import VToast from '@atoms/toast/toast'
 import VConfirmDialog from '@molecules/confirm-dialog/confirm-dialog'
@@ -67,7 +67,7 @@ export default class App extends VComponent {
 
   protected bindEventListener() {
     this.$dialog.addEventListener('dialog:confirm', this.handleClearConfirm)
-    this.$dialog.addEventListener('dialog:cancel', () => {})
+    this.$dialog.addEventListener('dialog:cancel', NOOP)
   }
 
   private handleClearConfirm() {
