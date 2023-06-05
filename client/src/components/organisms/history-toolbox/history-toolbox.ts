@@ -13,8 +13,8 @@ template.innerHTML = `
   <v-container>
     <v-icon-button data-icon="back" icon="back-arrow" size="medium"></v-icon-button>
     <v-icon-button data-icon="forward" icon="forward-arrow" size="medium"></v-icon-button>
-    <v-icon-button data-icon="trash" icon="trash" size="medium"></v-icon-button>
     <v-icon-button data-icon="disk" icon="disk" size="medium"></v-icon-button>
+    <v-icon-button data-icon="trash" icon="trash" size="medium"></v-icon-button>
   </v-container>
 `
 
