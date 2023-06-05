@@ -7,8 +7,29 @@ template.innerHTML = `
   :host {
     display: block;
   }
+
+  :host button {
+    width: 100%;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    padding: 13px 16px;
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  :host button[data-variant="primary"][data-mode="fill"] {
+    color: var(--color-white);
+    background-color: var(--color-azure);
+  }
+
+  :host button[data-variant="primary"][data-mode="outline"] {
+    color: var(--color-azure);
+    background-color: var(--color-azure15);
+  }
+
   </style>
-  <button>
+  <button data-mode="outline" data-variant="primary">
     <slot></slot>
   </button>
 `
@@ -21,29 +42,44 @@ export default class VButton extends VComponent {
   }
 
   static get observedAttributes() {
-    return ['color']
+    return ['mode', 'variant']
   }
 
-  get color() {
-    return this.getAttribute('color') || 'red'
+  get mode() {
+    return this.getAttribute('mode') || 'fill'
   }
-  set color(newValue: string) {
-    this.setAttribute('color', newValue)
+  set mode(newValue: string) {
+    this.setAttribute('mode', newValue)
+  }
+
+  get variant() {
+    return this.getAttribute('variant') || 'primary'
+  }
+  set variant(newValue: string) {
+    this.setAttribute('variant', newValue)
   }
 
   bindInitialProp() {
-    this.reflectAttribute({ attribute: 'color', value: this.color })
+    this.reflectAttribute({ attribute: 'mode', value: this.mode })
+    this.reflectAttribute({ attribute: 'variant', value: this.variant })
   }
 
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
-      case 'color':
-        this.updateColorStyle(value)
+      case 'mode':
+        this.updateMode(value)
+        break
+      case 'variant':
+        this.updateVariant(value)
         break
     }
   }
 
-  private updateColorStyle(value: string) {
-    this.$root.style.color = value
+  private updateMode(value: string) {
+    this.$root.dataset.mode = value
+  }
+
+  private updateVariant(value: string) {
+    this.$root.dataset.variant = value
   }
 }
