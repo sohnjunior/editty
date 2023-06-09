@@ -143,3 +143,9 @@ body {
 * {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* System Fonts with system-ui */
+body {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol';
+}
