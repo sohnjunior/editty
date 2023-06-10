@@ -140,7 +140,7 @@ export function getBoundingRectVertices({
  * @reference
  *  https://math.stackexchange.com/questions/126967/rotating-a-rectangle-via-a-rotation-matrix
  */
-export function getRotatedBoundingRectCoordinate({
+export function getRotatedBoundingRectVertices({
   vertices,
   degree,
 }: {
@@ -274,64 +274,13 @@ export function resizeRect({
   originalBoundingRect,
   vectorTerminalPoint,
 }: {
-  type: 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT'
+  type: 'BOTTOM_RIGHT'
   originalBoundingRect: BoundingRect
   vectorTerminalPoint: Point
 }) {
   switch (type) {
-    case 'TOP_LEFT':
-      return resizeTL(originalBoundingRect, vectorTerminalPoint)
-    case 'TOP_RIGHT':
-      return resizeTR(originalBoundingRect, vectorTerminalPoint)
-    case 'BOTTOM_LEFT':
-      return resizeBL(originalBoundingRect, vectorTerminalPoint)
     case 'BOTTOM_RIGHT':
       return resizeBR(originalBoundingRect, vectorTerminalPoint)
-  }
-}
-
-function resizeTL(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, width: oWidth, height: oHeight } = originalBoundingRect
-  const vectorInitialPoint: Point = { x: sx + oWidth, y: sy + oHeight }
-
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
-
-  return {
-    sx: vectorTerminalPoint.x,
-    sy: vectorTerminalPoint.y,
-    width,
-    height,
-  }
-}
-
-function resizeTR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, height: oHeight } = originalBoundingRect
-  const vectorInitialPoint: Point = { x: sx, y: sy + oHeight }
-
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
-
-  return {
-    sx,
-    sy: vectorTerminalPoint.y,
-    width,
-    height,
-  }
-}
-
-function resizeBL(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, width: oWidth } = originalBoundingRect
-  const vectorInitialPoint: Point = { x: sx + oWidth, y: sy }
-
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
-
-  return {
-    sx: vectorTerminalPoint.x,
-    sy: vectorInitialPoint.y,
-    width,
-    height,
   }
 }
 

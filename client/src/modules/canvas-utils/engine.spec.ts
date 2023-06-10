@@ -3,7 +3,7 @@ import {
   get2dMiddlePoint,
   get2dDistance,
   getBoundingRectVertices,
-  getRotatedBoundingRectCoordinate,
+  getRotatedBoundingRectVertices,
   getCartesianCoordinate,
   getCenterOfBoundingRect,
   resizeRect,
@@ -31,26 +31,6 @@ describe('Canvas graphic tool', () => {
   })
 
   describe('resizeRect', () => {
-    it('should resize rect from top-left', () => {
-      const example = {
-        type: 'TOP_LEFT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
-        vectorTerminalPoint: { x: 100, y: 100 },
-      } as const
-
-      expect(resizeRect(example)).toStrictEqual({ sx: 100, sy: 100, width: 500, height: 500 })
-    })
-
-    it('should resize rect from top-right', () => {
-      const example = {
-        type: 'TOP_RIGHT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
-        vectorTerminalPoint: { x: 700, y: 100 },
-      } as const
-
-      expect(resizeRect(example)).toStrictEqual({ sx: 200, sy: 100, width: 500, height: 500 })
-    })
-
     it('should resize rect from bottom-right', () => {
       const example = {
         type: 'BOTTOM_RIGHT',
@@ -59,16 +39,6 @@ describe('Canvas graphic tool', () => {
       } as const
 
       expect(resizeRect(example)).toStrictEqual({ sx: 200, sy: 200, width: 500, height: 500 })
-    })
-
-    it('should resize rect from bottom-left', () => {
-      const example = {
-        type: 'BOTTOM_LEFT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
-        vectorTerminalPoint: { x: 100, y: 700 },
-      } as const
-
-      expect(resizeRect(example)).toStrictEqual({ sx: 100, sy: 200, width: 500, height: 500 })
     })
   })
 
@@ -107,7 +77,7 @@ describe('Canvas graphic tool', () => {
 })
 
 describe('Cartesian Coordinate System', () => {
-  describe('getRotatedBoundingRectCoordinate', () => {
+  describe('getRotatedBoundingRectVertices', () => {
     it('should get corner coordinates with rotate-angle: 0', () => {
       const example = {
         vertices: {
@@ -119,7 +89,7 @@ describe('Cartesian Coordinate System', () => {
         degree: 0,
       }
 
-      const result = getRotatedBoundingRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
         nw: { x: 10, y: 10 },
@@ -140,7 +110,7 @@ describe('Cartesian Coordinate System', () => {
         degree: 30,
       }
 
-      const result = getRotatedBoundingRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
         nw: { x: 13, y: 8 },
@@ -161,7 +131,7 @@ describe('Cartesian Coordinate System', () => {
         degree: 210,
       }
 
-      const result = getRotatedBoundingRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
         nw: { x: 17, y: 22 },
@@ -182,7 +152,7 @@ describe('Cartesian Coordinate System', () => {
         degree: 360,
       }
 
-      const result = getRotatedBoundingRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
         nw: { x: 10, y: 10 },
@@ -203,7 +173,7 @@ describe('Cartesian Coordinate System', () => {
         degree: 720,
       }
 
-      const result = getRotatedBoundingRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
         nw: { x: 10, y: 10 },
