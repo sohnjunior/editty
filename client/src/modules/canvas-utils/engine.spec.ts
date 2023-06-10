@@ -13,7 +13,7 @@ describe('Canvas graphic tool', () => {
   describe('isPointInsideRect', () => {
     it('should detect point inside rect', () => {
       const example = {
-        pivot: { sx: 100, sy: 100, width: 200, height: 200 },
+        pivot: { sx: 100, sy: 100, width: 200, height: 200, degree: 0 },
         pos: { x: 150, y: 150 },
       }
 
@@ -22,7 +22,7 @@ describe('Canvas graphic tool', () => {
 
     it('should detect point outside rect', () => {
       const example = {
-        pivot: { sx: 100, sy: 100, width: 200, height: 200 },
+        pivot: { sx: 100, sy: 100, width: 200, height: 200, degree: 0 },
         pos: { x: 310, y: 310 },
       }
 
@@ -34,11 +34,17 @@ describe('Canvas graphic tool', () => {
     it('should resize rect from bottom-right', () => {
       const example = {
         type: 'BOTTOM_RIGHT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
+        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400, degree: 0 },
         vectorTerminalPoint: { x: 700, y: 700 },
       } as const
 
-      expect(resizeRect(example)).toStrictEqual({ sx: 200, sy: 200, width: 500, height: 500 })
+      expect(resizeRect(example)).toStrictEqual({
+        sx: 200,
+        sy: 200,
+        width: 500,
+        height: 500,
+        degree: 0,
+      })
     })
   })
 

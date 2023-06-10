@@ -10,6 +10,7 @@ export interface BoundingRect {
   sy: number
   width: number
   height: number
+  degree: number
 }
 
 export interface BoundingRectVertices {

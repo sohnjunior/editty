@@ -10,6 +10,7 @@ import {
   refineImageScale,
   createImageObject,
   getBoundingRectVertices,
+  getRotatedBoundingRectVertices,
   resizeRect,
   drawCircle,
   drawRect,
@@ -26,6 +27,7 @@ import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
   RESIZE: 'nwse-resize',
   DELETE: 'pointer',
+  ROTATE: 'pointer',
 }
 
 const template = document.createElement('template')
@@ -280,6 +282,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
           sy: image.sy,
           width: image.width,
           height: image.height,
+          degree: image.degree,
         },
         pos: point,
       })
@@ -346,6 +349,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       this.dragImage(ev)
     } else if (this.transformType === 'RESIZE') {
       this.resizeImage(ev)
+    } else if (this.transformType === 'ROTATE') {
+      console.log('TODO: 각도 계산하고 회전하기')
     }
   }
 
@@ -385,6 +390,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         sy: image.sy,
         width: image.width,
         height: image.height,
+        degree: image.degree,
       },
       vectorTerminalPoint: touchPoint,
     })
@@ -436,10 +442,13 @@ function drawAnchorBorder({
   topLeftPoint: Point
   size: { width: number; height: number }
 }): Anchor[] {
-  const vertices = getBoundingRectVertices({
-    topLeftPoint,
-    width: size.width,
-    height: size.height,
+  const vertices = getRotatedBoundingRectVertices({
+    vertices: getBoundingRectVertices({
+      topLeftPoint,
+      width: size.width,
+      height: size.height,
+    }),
+    degree: 30, // TODO: 동적으로 변경
   })
 
   drawRect({
@@ -448,12 +457,14 @@ function drawAnchorBorder({
     color: 'rgba(151, 222, 255, 0.7)',
   })
 
-  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.ne })
+  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.nw })
+  const rotateAnchorPath2d = drawRotateAnchor({ context, point: vertices.ne })
   const resizeAnchorPath2d = drawResizeAnchor({ context, point: vertices.se })
 
   const anchors: Anchor[] = [
     { type: 'DELETE', path2d: deleteAnchorPath2d },
     { type: 'RESIZE', path2d: resizeAnchorPath2d },
+    { type: 'ROTATE', path2d: rotateAnchorPath2d },
   ]
 
   return anchors
@@ -495,6 +506,19 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
     color: 'rgba(28,39,76, 0.6)',
   })
   drawDiagonalArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
+
+  return path2d
+}
+
+function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
+  const ANCHOR_RADIUS = 26
+
+  const path2d = drawCircle({
+    context,
+    centerPoint: point,
+    radius: ANCHOR_RADIUS,
+    color: 'rgba(28,39,76, 0.6)',
+  })
 
   return path2d
 }

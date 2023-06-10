@@ -258,6 +258,7 @@ export async function createImageObject({
         sy: topLeftPoint.y,
         width: $image.width,
         height: $image.height,
+        degree: 0,
         ref: $image,
       })
     }
@@ -285,7 +286,7 @@ export function resizeRect({
 }
 
 function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy } = originalBoundingRect
+  const { sx, sy, degree } = originalBoundingRect
   const vectorInitialPoint: Point = { x: sx, y: sy }
 
   const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
@@ -296,6 +297,7 @@ function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point
     sy: vectorInitialPoint.y,
     width,
     height,
+    degree,
   }
 }
 
