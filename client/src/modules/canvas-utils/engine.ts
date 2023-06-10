@@ -135,36 +135,32 @@ export function getBoundingRectVertices({
 }
 
 /**
- * NOTE
- * 다음 함수는 전형적인 데카르트 공간에서만 사용할 수 있어서 canvas 의 좌표 시스템과는 호환이 안된다.
- * 학습차원에서 구현된 것이니 실제 애플리케이션 코드에서는 canvas 에서 제공해주는 rotate 함수를 사용하자.
- *
  * degree 만큼 회전된 사각형 영역의 네 꼭지점 좌표를 반환합니다.
  *
  * @reference
  *  https://math.stackexchange.com/questions/126967/rotating-a-rectangle-via-a-rotation-matrix
  */
-export function getRotatedCartesianRectCoordinate({
+export function getRotatedBoundingRectCoordinate({
   vertices,
   degree,
 }: {
   vertices: BoundingRectVertices
   degree: number
-}) {
+}): BoundingRectVertices {
   const center = getCenterOfBoundingRect(vertices)
-  const shiftedToOrigin = {
+  const shiftedToOrigin: BoundingRectVertices = {
     nw: { x: vertices.nw.x - center.x, y: vertices.nw.y - center.y },
     ne: { x: vertices.ne.x - center.x, y: vertices.ne.y - center.y },
     sw: { x: vertices.sw.x - center.x, y: vertices.sw.y - center.y },
     se: { x: vertices.se.x - center.x, y: vertices.se.y - center.y },
   }
-  const rotated = {
+  const rotated: BoundingRectVertices = {
     nw: getCartesianCoordinate({ point: shiftedToOrigin.nw, degree }),
     ne: getCartesianCoordinate({ point: shiftedToOrigin.ne, degree }),
     sw: getCartesianCoordinate({ point: shiftedToOrigin.sw, degree }),
     se: getCartesianCoordinate({ point: shiftedToOrigin.se, degree }),
   }
-  const shiftBack = {
+  const shiftBack: BoundingRectVertices = {
     nw: { x: rotated.nw.x + center.x, y: rotated.nw.y + center.y },
     ne: { x: rotated.ne.x + center.x, y: rotated.ne.y + center.y },
     sw: { x: rotated.sw.x + center.x, y: rotated.sw.y + center.y },
@@ -175,7 +171,7 @@ export function getRotatedCartesianRectCoordinate({
 }
 
 /**
- * 원점을 기준으로 _degree_ 만큼 화전된 데카르트 좌표계를 반환합니다.
+ * 원점을 기준으로 _degree_ 만큼 화전된 좌표를 반환합니다.
  *
  * @reference
  *  https://en.wikipedia.org/wiki/Rotation_matrix
