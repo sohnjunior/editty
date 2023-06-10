@@ -125,13 +125,13 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     CanvasImageContext.subscribe({
       action: 'INIT_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
     CanvasImageContext.subscribe({
       action: 'PUSH_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
     CanvasImageContext.subscribe({
@@ -143,13 +143,13 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     CanvasImageContext.subscribe({
       action: 'CLEAR_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
     CanvasImageContext.subscribe({
       action: 'SELECT_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
   }
@@ -317,7 +317,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private resetInteractionAndPaint() {
     this.resetFocusedImage()
     this.resetTransformType()
-    this.paintImages()
+    this.paintImagesWithAnchor()
   }
 
   hover(ev: MouseEvent) {
@@ -367,7 +367,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     dragstart.x = x
     dragstart.y = y
 
-    this.paintImages()
+    this.paintImagesWithAnchor()
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
@@ -394,21 +394,22 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     image.width = resizedBoundingRect.width
     image.height = resizedBoundingRect.height
 
+    this.paintImagesWithAnchor()
+  }
+
+  private paintImagesWithAnchor() {
+    clearCanvas(this.$root)
+
     this.paintImages()
+    this.paintFocusedImageAnchorBorder()
   }
 
   private paintImages() {
-    clearCanvas(this.$root)
-
     this.images.forEach(({ ref, sx, sy, width, height }) => {
       if (ref) {
         this.context.drawImage(ref, sx, sy, width, height)
       }
     })
-
-    if (this.focused) {
-      this.paintFocusedImageAnchorBorder()
-    }
   }
 
   private paintFocusedImageAnchorBorder() {
