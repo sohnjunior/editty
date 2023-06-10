@@ -352,7 +352,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     } else if (this.transformType === 'RESIZE') {
       this.resizeImage(ev)
     } else if (this.transformType === 'ROTATE') {
-      console.log('TODO: 각도 계산하고 회전하기')
+      this.rotateImage(ev)
     }
   }
 
@@ -401,6 +401,19 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     image.sy = resizedBoundingRect.sy
     image.width = resizedBoundingRect.width
     image.height = resizedBoundingRect.height
+
+    this.paintImagesWithAnchor()
+  }
+
+  private rotateImage(ev: MouseEvent | TouchEvent) {
+    if (!this.focused || !this.transformType) {
+      return
+    }
+
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
+    const image = this.focused.image
+
+    // TODO: 중점을 기준으로 회전각 구하기
 
     this.paintImagesWithAnchor()
   }
