@@ -9,8 +9,10 @@ import {
   isPointInsideRect,
   refineImageScale,
   createImageObject,
+  getCenterOfBoundingRect,
   getBoundingRectVertices,
   getRotatedBoundingRectVertices,
+  degreeToRadian,
   resizeRect,
   drawCircle,
   drawRect,
@@ -411,10 +413,20 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   }
 
   private paintImages() {
-    this.images.forEach(({ ref, sx, sy, width, height }) => {
-      if (ref) {
-        this.context.drawImage(ref, sx, sy, width, height)
+    this.images.forEach(({ ref, sx, sy, width, height, degree }) => {
+      if (!ref) {
+        return
       }
+
+      this.context.save()
+      const center = getCenterOfBoundingRect(
+        getBoundingRectVertices({ topLeftPoint: { x: sx, y: sy }, width, height })
+      )
+      this.context.translate(center.x, center.y)
+      this.context.rotate(degreeToRadian(degree))
+      this.context.translate(-center.x, -center.y)
+      this.context.drawImage(ref, sx, sy, width, height)
+      this.context.restore()
     })
   }
 
@@ -423,11 +435,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       return
     }
 
-    const { width, height, sx, sy } = this.focused.image
+    const { width, height, sx, sy, degree } = this.focused.image
     const anchors = drawAnchorBorder({
       context: this.context,
       size: { width, height },
       topLeftPoint: { x: sx, y: sy },
+      degree,
     })
     this.focused.anchors = filterNullish(anchors)
   }
@@ -437,10 +450,12 @@ function drawAnchorBorder({
   context,
   topLeftPoint,
   size,
+  degree,
 }: {
   context: CanvasRenderingContext2D
   topLeftPoint: Point
   size: { width: number; height: number }
+  degree: number
 }): Anchor[] {
   const vertices = getRotatedBoundingRectVertices({
     vertices: getBoundingRectVertices({
@@ -448,7 +463,7 @@ function drawAnchorBorder({
       width: size.width,
       height: size.height,
     }),
-    degree: 30, // TODO: 동적으로 변경
+    degree,
   })
 
   drawRect({
