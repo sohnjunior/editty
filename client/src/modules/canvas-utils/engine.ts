@@ -1,6 +1,6 @@
 import { isTouchEvent } from '@/utils/dom'
 import type { ImageObject } from '@molecules/canvas-layer/types'
-import type { Point, BoundingRect, BoundingRectVertices } from './types'
+import type { Point, Vector, BoundingRect, BoundingRectVertices } from './types'
 
 /**
  * 캔버스 요소 기준으로 선택된 터치(혹은 클릭) 지점을 px 단위로 반환합니다.
@@ -203,6 +203,20 @@ export function getCenterOfBoundingRect({ nw, ne, se }: BoundingRectVertices) {
  * */
 export function degreeToRadian(degree: number) {
   return (degree * Math.PI) / 180
+}
+
+function radianToDegree(radian: number) {
+  return (radian * 180) / Math.PI
+}
+
+/**
+ * _vector_ 와 _vector.begin_ 에 수직인 벡터 사이의 각(방위각)을 구합니다.
+ */
+export function getBearingDegree(vector: Vector) {
+  const thetaA = Math.atan2(vector.end.x - vector.begin.x, -vector.end.y + vector.begin.y)
+  const theta = thetaA >= 0 ? thetaA : Math.PI * 2 + thetaA
+
+  return Math.floor(radianToDegree(theta))
 }
 
 /**

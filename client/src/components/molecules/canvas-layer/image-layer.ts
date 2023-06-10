@@ -12,12 +12,14 @@ import {
   getCenterOfBoundingRect,
   getBoundingRectVertices,
   getRotatedBoundingRectVertices,
+  get2dMiddlePoint,
   degreeToRadian,
   resizeRect,
   drawCircle,
   drawRect,
   drawCrossLine,
   drawDiagonalArrow,
+  getBearingDegree,
 } from '@/modules/canvas-utils/engine'
 import { Point } from '@/modules/canvas-utils/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
@@ -103,6 +105,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         })
         imageObject.width = image.width
         imageObject.height = image.height
+        imageObject.degree = image.degree
 
         return imageObject
       })
@@ -412,8 +415,14 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
     const touchPoint = getSyntheticTouchPoint(this.$root, ev)
     const image = this.focused.image
-
-    // TODO: 중점을 기준으로 회전각 구하기
+    const vertices = getBoundingRectVertices({
+      topLeftPoint: { x: image.sx, y: image.sy },
+      width: image.width,
+      height: image.height,
+    })
+    const center = getCenterOfBoundingRect(vertices)
+    const degree = getBearingDegree({ begin: center, end: touchPoint })
+    image.degree = degree
 
     this.paintImagesWithAnchor()
   }
@@ -485,8 +494,11 @@ function drawAnchorBorder({
     color: 'rgba(151, 222, 255, 0.7)',
   })
 
-  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.nw })
-  const rotateAnchorPath2d = drawRotateAnchor({ context, point: vertices.ne })
+  const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.ne })
+  const rotateAnchorPath2d = drawRotateAnchor({
+    context,
+    point: get2dMiddlePoint(vertices.ne, vertices.nw),
+  })
   const resizeAnchorPath2d = drawResizeAnchor({ context, point: vertices.se })
 
   const anchors: Anchor[] = [

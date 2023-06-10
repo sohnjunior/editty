@@ -6,6 +6,7 @@ import {
   getRotatedBoundingRectVertices,
   getRotatedPoint,
   getCenterOfBoundingRect,
+  getBearingDegree,
   resizeRect,
 } from './engine'
 
@@ -229,6 +230,16 @@ describe('Cartesian Coordinate System', () => {
         x: -1,
         y: 1,
       })
+    })
+  })
+
+  describe('getBearingDegree', () => {
+    it('should calculate bearing degree', () => {
+      const example = { begin: { x: 5, y: 5 }, end: { x: 7, y: 3 } }
+
+      const result = getBearingDegree(example)
+
+      expect(result).toBe(45)
     })
   })
 })
