@@ -4,7 +4,7 @@ import {
   get2dDistance,
   getBoundingRectVertices,
   getRotatedBoundingRectVertices,
-  getCartesianCoordinate,
+  getRotatedPoint,
   getCenterOfBoundingRect,
   resizeRect,
 } from './engine'
@@ -208,11 +208,11 @@ describe('Cartesian Coordinate System', () => {
     })
   })
 
-  describe('getCartesianCoordinate', () => {
+  describe('getRotatedPoint', () => {
     it('should get coordinate with rotated clockwise 90', () => {
       const example = { x: 1, y: 1 }
 
-      const result = getCartesianCoordinate({ point: example, degree: -90 })
+      const result = getRotatedPoint({ point: example, degree: -90 })
 
       expect(result).toStrictEqual({
         x: 1,
@@ -223,7 +223,7 @@ describe('Cartesian Coordinate System', () => {
     it('should get coordinate with rotated counter-clockwise 90', () => {
       const example = { x: 1, y: 1 }
 
-      const result = getCartesianCoordinate({ point: example, degree: 90 })
+      const result = getRotatedPoint({ point: example, degree: 90 })
 
       expect(result).toStrictEqual({
         x: -1,

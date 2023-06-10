@@ -155,10 +155,10 @@ export function getRotatedBoundingRectVertices({
     se: { x: vertices.se.x - center.x, y: vertices.se.y - center.y },
   }
   const rotated: BoundingRectVertices = {
-    nw: getCartesianCoordinate({ point: shiftedToOrigin.nw, degree }),
-    ne: getCartesianCoordinate({ point: shiftedToOrigin.ne, degree }),
-    sw: getCartesianCoordinate({ point: shiftedToOrigin.sw, degree }),
-    se: getCartesianCoordinate({ point: shiftedToOrigin.se, degree }),
+    nw: getRotatedPoint({ point: shiftedToOrigin.nw, degree }),
+    ne: getRotatedPoint({ point: shiftedToOrigin.ne, degree }),
+    sw: getRotatedPoint({ point: shiftedToOrigin.sw, degree }),
+    se: getRotatedPoint({ point: shiftedToOrigin.se, degree }),
   }
   const shiftBack: BoundingRectVertices = {
     nw: { x: rotated.nw.x + center.x, y: rotated.nw.y + center.y },
@@ -176,7 +176,7 @@ export function getRotatedBoundingRectVertices({
  * @reference
  *  https://en.wikipedia.org/wiki/Rotation_matrix
  */
-export function getCartesianCoordinate({ point, degree }: { point: Point; degree: number }) {
+export function getRotatedPoint({ point, degree }: { point: Point; degree: number }) {
   const { x, y } = point
   const radian = degreeToRadian(degree)
   const vector = {
@@ -199,9 +199,9 @@ export function getCenterOfBoundingRect({ nw, ne, se }: BoundingRectVertices) {
 
 /**
  * degree 를 radian 으로 변환합니다.
- * degree > 0 이면 반시계방향, 그 반대이면 시계방향으로 회전된 각입니다.
+ * degree > 0 이면 시계방향, 그 반대이면 반시계방향으로 회전된 각입니다.
  * */
-function degreeToRadian(degree: number) {
+export function degreeToRadian(degree: number) {
   return (degree * Math.PI) / 180
 }
 
