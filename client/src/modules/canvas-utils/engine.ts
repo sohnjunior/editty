@@ -492,3 +492,21 @@ export function drawCramp({
     lineWidth,
   })
 }
+
+export function drawArc({
+  context,
+  center,
+  radius,
+  startAngle = 0,
+  endAngle,
+}: {
+  context: CanvasRenderingContext2D
+  center: Point
+  radius: number
+  startAngle?: number
+  endAngle: number
+}) {
+  context.beginPath()
+  context.arc(center.x, center.y, radius, startAngle, endAngle)
+  context.stroke()
+}

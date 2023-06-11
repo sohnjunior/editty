@@ -19,6 +19,8 @@ import {
   drawRect,
   drawCrossLine,
   drawDiagonalArrow,
+  drawCramp,
+  drawArc,
   getBearingDegree,
 } from '@/modules/canvas-utils/engine'
 import { Point } from '@/modules/canvas-utils/types'
@@ -552,12 +554,28 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
 
 function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
   const ANCHOR_RADIUS = 26
+  const ARC_RADIUS = ANCHOR_RADIUS - 14
 
   const path2d = drawCircle({
     context,
     centerPoint: point,
     radius: ANCHOR_RADIUS,
     color: 'rgba(28,39,76, 0.6)',
+  })
+  drawArc({
+    context,
+    center: point,
+    radius: ARC_RADIUS,
+    startAngle: 0.3,
+    endAngle: 1.8 * Math.PI,
+  })
+  drawCramp({
+    context,
+    type: 'se',
+    from: { x: point.x + ARC_RADIUS, y: point.y - 5 },
+    lineLength: 8,
+    lineWidth: 3,
+    color: '#f8f8f8',
   })
 
   return path2d
