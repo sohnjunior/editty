@@ -531,7 +531,7 @@ function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2
     context,
     centerPoint: point,
     radius: ANCHOR_RADIUS,
-    color: 'rgba(28,39,76, 0.6)',
+    color: 'rgba(28, 39, 76, 0.6)',
   })
   drawCrossLine({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
@@ -545,7 +545,7 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
     context,
     centerPoint: point,
     radius: ANCHOR_RADIUS,
-    color: 'rgba(28,39,76, 0.6)',
+    color: 'rgba(28, 39, 76, 0.6)',
   })
   drawCrossArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
@@ -560,7 +560,7 @@ function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2
     context,
     centerPoint: point,
     radius: ANCHOR_RADIUS,
-    color: 'rgba(28,39,76, 0.6)',
+    color: 'rgba(28, 39, 76, 0.6)',
   })
   drawArc({
     context,
