@@ -18,7 +18,7 @@ import {
   drawCircle,
   drawRect,
   drawCrossLine,
-  drawDiagonalArrow,
+  drawCrossArrow,
   drawSECramp,
   drawArc,
   getBearingDegree,
@@ -547,7 +547,7 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
     radius: ANCHOR_RADIUS,
     color: 'rgba(28,39,76, 0.6)',
   })
-  drawDiagonalArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
+  drawCrossArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
   return path2d
 }

@@ -420,7 +420,7 @@ export function drawCrossLine({
   drawLine({ context, from: ne, to: sw, color: '#f8f8f8', lineWidth: LINE_WIDTH })
 }
 
-export function drawDiagonalArrow({
+export function drawCrossArrow({
   context,
   centerPoint,
   lineLength,
@@ -431,18 +431,35 @@ export function drawDiagonalArrow({
 }) {
   const LINE_WIDTH = 3
   const topLeftPoint = { x: centerPoint.x - lineLength / 2, y: centerPoint.y - lineLength / 2 }
-  const { nw, se } = getBoundingRectVertices({
+  const { nw, ne, sw, se } = getBoundingRectVertices({
     topLeftPoint,
     width: lineLength,
     height: lineLength,
   })
 
   drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
+  drawLine({ context, from: ne, to: sw, color: '#f8f8f8', lineWidth: LINE_WIDTH })
 
   drawNWCramp({
     context,
     from: nw,
-    lineLength: 10,
+    lineLength: 6,
+    lineWidth: LINE_WIDTH,
+    color: '#f8f8f8',
+  })
+
+  drawNECramp({
+    context,
+    from: ne,
+    lineLength: 6,
+    lineWidth: LINE_WIDTH,
+    color: '#f8f8f8',
+  })
+
+  drawSWCramp({
+    context,
+    from: sw,
+    lineLength: 6,
     lineWidth: LINE_WIDTH,
     color: '#f8f8f8',
   })
@@ -450,9 +467,47 @@ export function drawDiagonalArrow({
   drawSECramp({
     context,
     from: se,
-    lineLength: 10,
+    lineLength: 6,
     lineWidth: LINE_WIDTH,
     color: '#f8f8f8',
+  })
+}
+
+export function drawNECramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x - lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y + lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
+  })
+  drawLine({
+    context,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
   })
 }
 
@@ -509,6 +564,44 @@ export function drawSECramp({
 }) {
   const horizontalEndPoint: Point = {
     x: from.x - lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y - lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
+  })
+  drawLine({
+    context,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
+  })
+}
+
+export function drawSWCramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x + lineLength,
     y: from.y,
   }
   const verticalEndPoint: Point = {
