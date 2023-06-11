@@ -9,7 +9,7 @@ export interface ImageObject extends BoundingRect {
   ref?: HTMLImageElement
 }
 
-export type ImageTransform = 'RESIZE' | 'DELETE'
+export type ImageTransform = 'RESIZE' | 'DELETE' | 'ROTATE'
 export interface Anchor {
   type: ImageTransform
   path2d: Path2D

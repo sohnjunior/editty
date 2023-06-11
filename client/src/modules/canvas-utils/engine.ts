@@ -1,6 +1,6 @@
 import { isTouchEvent } from '@/utils/dom'
 import type { ImageObject } from '@molecules/canvas-layer/types'
-import type { Point, BoundingRect, BoundingRectVertices } from './types'
+import type { Point, Vector, BoundingRect, BoundingRectVertices } from './types'
 
 /**
  * 캔버스 요소 기준으로 선택된 터치(혹은 클릭) 지점을 px 단위로 반환합니다.
@@ -135,36 +135,32 @@ export function getBoundingRectVertices({
 }
 
 /**
- * NOTE
- * 다음 함수는 전형적인 데카르트 공간에서만 사용할 수 있어서 canvas 의 좌표 시스템과는 호환이 안된다.
- * 학습차원에서 구현된 것이니 실제 애플리케이션 코드에서는 canvas 에서 제공해주는 rotate 함수를 사용하자.
- *
  * degree 만큼 회전된 사각형 영역의 네 꼭지점 좌표를 반환합니다.
  *
  * @reference
  *  https://math.stackexchange.com/questions/126967/rotating-a-rectangle-via-a-rotation-matrix
  */
-export function getRotatedCartesianRectCoordinate({
+export function getRotatedBoundingRectVertices({
   vertices,
   degree,
 }: {
   vertices: BoundingRectVertices
   degree: number
-}) {
+}): BoundingRectVertices {
   const center = getCenterOfBoundingRect(vertices)
-  const shiftedToOrigin = {
+  const shiftedToOrigin: BoundingRectVertices = {
     nw: { x: vertices.nw.x - center.x, y: vertices.nw.y - center.y },
     ne: { x: vertices.ne.x - center.x, y: vertices.ne.y - center.y },
     sw: { x: vertices.sw.x - center.x, y: vertices.sw.y - center.y },
     se: { x: vertices.se.x - center.x, y: vertices.se.y - center.y },
   }
-  const rotated = {
-    nw: getCartesianCoordinate({ point: shiftedToOrigin.nw, degree }),
-    ne: getCartesianCoordinate({ point: shiftedToOrigin.ne, degree }),
-    sw: getCartesianCoordinate({ point: shiftedToOrigin.sw, degree }),
-    se: getCartesianCoordinate({ point: shiftedToOrigin.se, degree }),
+  const rotated: BoundingRectVertices = {
+    nw: getRotatedPoint({ point: shiftedToOrigin.nw, degree }),
+    ne: getRotatedPoint({ point: shiftedToOrigin.ne, degree }),
+    sw: getRotatedPoint({ point: shiftedToOrigin.sw, degree }),
+    se: getRotatedPoint({ point: shiftedToOrigin.se, degree }),
   }
-  const shiftBack = {
+  const shiftBack: BoundingRectVertices = {
     nw: { x: rotated.nw.x + center.x, y: rotated.nw.y + center.y },
     ne: { x: rotated.ne.x + center.x, y: rotated.ne.y + center.y },
     sw: { x: rotated.sw.x + center.x, y: rotated.sw.y + center.y },
@@ -175,12 +171,12 @@ export function getRotatedCartesianRectCoordinate({
 }
 
 /**
- * 원점을 기준으로 _degree_ 만큼 화전된 데카르트 좌표계를 반환합니다.
+ * 원점을 기준으로 _degree_ 만큼 화전된 좌표를 반환합니다.
  *
  * @reference
  *  https://en.wikipedia.org/wiki/Rotation_matrix
  */
-export function getCartesianCoordinate({ point, degree }: { point: Point; degree: number }) {
+export function getRotatedPoint({ point, degree }: { point: Point; degree: number }) {
   const { x, y } = point
   const radian = degreeToRadian(degree)
   const vector = {
@@ -203,10 +199,24 @@ export function getCenterOfBoundingRect({ nw, ne, se }: BoundingRectVertices) {
 
 /**
  * degree 를 radian 으로 변환합니다.
- * degree > 0 이면 반시계방향, 그 반대이면 시계방향으로 회전된 각입니다.
+ * degree > 0 이면 시계방향, 그 반대이면 반시계방향으로 회전된 각입니다.
  * */
-function degreeToRadian(degree: number) {
+export function degreeToRadian(degree: number) {
   return (degree * Math.PI) / 180
+}
+
+function radianToDegree(radian: number) {
+  return (radian * 180) / Math.PI
+}
+
+/**
+ * _vector_ 와 _vector.begin_ 에 수직인 벡터 사이의 각(방위각)을 구합니다.
+ */
+export function getBearingDegree(vector: Vector) {
+  const thetaA = Math.atan2(vector.end.x - vector.begin.x, -vector.end.y + vector.begin.y)
+  const theta = thetaA >= 0 ? thetaA : Math.PI * 2 + thetaA
+
+  return Math.floor(radianToDegree(theta))
 }
 
 /**
@@ -262,6 +272,7 @@ export async function createImageObject({
         sy: topLeftPoint.y,
         width: $image.width,
         height: $image.height,
+        degree: 0,
         ref: $image,
       })
     }
@@ -278,79 +289,34 @@ export function resizeRect({
   originalBoundingRect,
   vectorTerminalPoint,
 }: {
-  type: 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT'
+  type: 'BOTTOM_RIGHT'
   originalBoundingRect: BoundingRect
   vectorTerminalPoint: Point
 }) {
   switch (type) {
-    case 'TOP_LEFT':
-      return resizeTL(originalBoundingRect, vectorTerminalPoint)
-    case 'TOP_RIGHT':
-      return resizeTR(originalBoundingRect, vectorTerminalPoint)
-    case 'BOTTOM_LEFT':
-      return resizeBL(originalBoundingRect, vectorTerminalPoint)
     case 'BOTTOM_RIGHT':
       return resizeBR(originalBoundingRect, vectorTerminalPoint)
   }
 }
 
-function resizeTL(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, width: oWidth, height: oHeight } = originalBoundingRect
-  const vectorInitialPoint: Point = { x: sx + oWidth, y: sy + oHeight }
-
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
-
-  return {
-    sx: vectorTerminalPoint.x,
-    sy: vectorTerminalPoint.y,
-    width,
-    height,
-  }
-}
-
-function resizeTR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, height: oHeight } = originalBoundingRect
-  const vectorInitialPoint: Point = { x: sx, y: sy + oHeight }
-
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
-
-  return {
-    sx,
-    sy: vectorTerminalPoint.y,
-    width,
-    height,
-  }
-}
-
-function resizeBL(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, width: oWidth } = originalBoundingRect
-  const vectorInitialPoint: Point = { x: sx + oWidth, y: sy }
-
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
-
-  return {
-    sx: vectorTerminalPoint.x,
-    sy: vectorInitialPoint.y,
-    width,
-    height,
-  }
-}
-
 function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy } = originalBoundingRect
+  const { sx, sy, width, height, degree } = originalBoundingRect
   const vectorInitialPoint: Point = { x: sx, y: sy }
+  const vertices = getBoundingRectVertices({ topLeftPoint: vectorInitialPoint, width, height })
 
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
+  const ov = get2dDistance(vertices.nw, vertices.se)
+  const v = get2dDistance(vectorInitialPoint, vectorTerminalPoint)
+  const ratio = v / ov
+
+  const resizedWidth = Math.abs(width * ratio)
+  const resizedHeight = Math.abs(height * ratio)
 
   return {
     sx: vectorInitialPoint.x,
     sy: vectorInitialPoint.y,
-    width,
-    height,
+    width: resizedWidth,
+    height: resizedHeight,
+    degree,
   }
 }
 
@@ -454,7 +420,7 @@ export function drawCrossLine({
   drawLine({ context, from: ne, to: sw, color: '#f8f8f8', lineWidth: LINE_WIDTH })
 }
 
-export function drawDiagonalArrow({
+export function drawCrossArrow({
   context,
   centerPoint,
   lineLength,
@@ -465,43 +431,214 @@ export function drawDiagonalArrow({
 }) {
   const LINE_WIDTH = 3
   const topLeftPoint = { x: centerPoint.x - lineLength / 2, y: centerPoint.y - lineLength / 2 }
-  const { nw, se } = getBoundingRectVertices({
+  const { nw, ne, sw, se } = getBoundingRectVertices({
     topLeftPoint,
     width: lineLength,
     height: lineLength,
   })
 
   drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
+  drawLine({ context, from: ne, to: sw, color: '#f8f8f8', lineWidth: LINE_WIDTH })
 
-  // 죄측 상단 꺽쇠 그리기
-  drawLine({
+  drawNWCramp({
     context,
     from: nw,
-    to: { x: nw.x, y: centerPoint.y },
-    color: '#f8f8f8',
+    lineLength: 6,
     lineWidth: LINE_WIDTH,
-  })
-  drawLine({
-    context,
-    from: nw,
-    to: { x: centerPoint.x, y: nw.y },
     color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
   })
 
-  // 우측 하단 꺽쇠 그리기
-  drawLine({
+  drawNECramp({
+    context,
+    from: ne,
+    lineLength: 6,
+    lineWidth: LINE_WIDTH,
+    color: '#f8f8f8',
+  })
+
+  drawSWCramp({
+    context,
+    from: sw,
+    lineLength: 6,
+    lineWidth: LINE_WIDTH,
+    color: '#f8f8f8',
+  })
+
+  drawSECramp({
     context,
     from: se,
-    to: { x: centerPoint.x, y: se.y },
-    color: '#f8f8f8',
+    lineLength: 6,
     lineWidth: LINE_WIDTH,
+    color: '#f8f8f8',
+  })
+}
+
+export function drawNECramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x - lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y + lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
   })
   drawLine({
     context,
-    from: se,
-    to: { x: se.x, y: centerPoint.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
   })
+}
+
+export function drawNWCramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x + lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y + lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
+  })
+  drawLine({
+    context,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
+  })
+}
+
+export function drawSECramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x - lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y - lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
+  })
+  drawLine({
+    context,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
+  })
+}
+
+export function drawSWCramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x + lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y - lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
+  })
+  drawLine({
+    context,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
+  })
+}
+
+export function drawArc({
+  context,
+  center,
+  radius,
+  startAngle = 0,
+  endAngle,
+}: {
+  context: CanvasRenderingContext2D
+  center: Point
+  radius: number
+  startAngle?: number
+  endAngle: number
+}) {
+  context.beginPath()
+  context.arc(center.x, center.y, radius, startAngle, endAngle)
+  context.stroke()
 }

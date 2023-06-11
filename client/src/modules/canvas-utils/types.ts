@@ -3,6 +3,11 @@ export interface Point {
   y: number
 }
 
+export interface Vector {
+  begin: Point
+  end: Point
+}
+
 export interface BoundingRect {
   /** top-left x position */
   sx: number
@@ -10,6 +15,7 @@ export interface BoundingRect {
   sy: number
   width: number
   height: number
+  degree: number
 }
 
 export interface BoundingRectVertices {

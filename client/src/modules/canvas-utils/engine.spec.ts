@@ -3,9 +3,10 @@ import {
   get2dMiddlePoint,
   get2dDistance,
   getBoundingRectVertices,
-  getRotatedCartesianRectCoordinate,
-  getCartesianCoordinate,
+  getRotatedBoundingRectVertices,
+  getRotatedPoint,
   getCenterOfBoundingRect,
+  getBearingDegree,
   resizeRect,
 } from './engine'
 
@@ -13,7 +14,7 @@ describe('Canvas graphic tool', () => {
   describe('isPointInsideRect', () => {
     it('should detect point inside rect', () => {
       const example = {
-        pivot: { sx: 100, sy: 100, width: 200, height: 200 },
+        pivot: { sx: 100, sy: 100, width: 200, height: 200, degree: 0 },
         pos: { x: 150, y: 150 },
       }
 
@@ -22,7 +23,7 @@ describe('Canvas graphic tool', () => {
 
     it('should detect point outside rect', () => {
       const example = {
-        pivot: { sx: 100, sy: 100, width: 200, height: 200 },
+        pivot: { sx: 100, sy: 100, width: 200, height: 200, degree: 0 },
         pos: { x: 310, y: 310 },
       }
 
@@ -31,44 +32,20 @@ describe('Canvas graphic tool', () => {
   })
 
   describe('resizeRect', () => {
-    it('should resize rect from top-left', () => {
-      const example = {
-        type: 'TOP_LEFT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
-        vectorTerminalPoint: { x: 100, y: 100 },
-      } as const
-
-      expect(resizeRect(example)).toStrictEqual({ sx: 100, sy: 100, width: 500, height: 500 })
-    })
-
-    it('should resize rect from top-right', () => {
-      const example = {
-        type: 'TOP_RIGHT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
-        vectorTerminalPoint: { x: 700, y: 100 },
-      } as const
-
-      expect(resizeRect(example)).toStrictEqual({ sx: 200, sy: 100, width: 500, height: 500 })
-    })
-
     it('should resize rect from bottom-right', () => {
       const example = {
         type: 'BOTTOM_RIGHT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
+        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400, degree: 0 },
         vectorTerminalPoint: { x: 700, y: 700 },
       } as const
 
-      expect(resizeRect(example)).toStrictEqual({ sx: 200, sy: 200, width: 500, height: 500 })
-    })
-
-    it('should resize rect from bottom-left', () => {
-      const example = {
-        type: 'BOTTOM_LEFT',
-        originalBoundingRect: { sx: 200, sy: 200, width: 400, height: 400 },
-        vectorTerminalPoint: { x: 100, y: 700 },
-      } as const
-
-      expect(resizeRect(example)).toStrictEqual({ sx: 100, sy: 200, width: 500, height: 500 })
+      expect(resizeRect(example)).toStrictEqual({
+        sx: 200,
+        sy: 200,
+        width: 500,
+        height: 500,
+        degree: 0,
+      })
     })
   })
 
@@ -107,109 +84,109 @@ describe('Canvas graphic tool', () => {
 })
 
 describe('Cartesian Coordinate System', () => {
-  describe('getRotatedCartesianRectCoordinate', () => {
+  describe('getRotatedBoundingRectVertices', () => {
     it('should get corner coordinates with rotate-angle: 0', () => {
       const example = {
         vertices: {
-          nw: { x: 50, y: 50 },
-          ne: { x: 150, y: 50 },
-          sw: { x: 50, y: 0 },
-          se: { x: 150, y: 0 },
+          nw: { x: 10, y: 10 },
+          ne: { x: 20, y: 10 },
+          sw: { x: 10, y: 20 },
+          se: { x: 20, y: 20 },
         },
         degree: 0,
       }
 
-      const result = getRotatedCartesianRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
-        nw: { x: 50, y: 50 },
-        ne: { x: 150, y: 50 },
-        sw: { x: 50, y: 0 },
-        se: { x: 150, y: 0 },
+        nw: { x: 10, y: 10 },
+        ne: { x: 20, y: 10 },
+        sw: { x: 10, y: 20 },
+        se: { x: 20, y: 20 },
       })
     })
 
     it('should get corner coordinates with rotate-angle: 30', () => {
       const example = {
         vertices: {
-          nw: { x: 50, y: 50 },
-          ne: { x: 150, y: 50 },
-          sw: { x: 50, y: 0 },
-          se: { x: 150, y: 0 },
+          nw: { x: 10, y: 10 },
+          ne: { x: 20, y: 10 },
+          sw: { x: 10, y: 20 },
+          se: { x: 20, y: 20 },
         },
         degree: 30,
       }
 
-      const result = getRotatedCartesianRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
-        nw: { x: 44, y: 22 },
-        ne: { x: 131, y: 72 },
-        sw: { x: 69, y: -22 },
-        se: { x: 156, y: 28 },
+        nw: { x: 13, y: 8 },
+        ne: { x: 22, y: 13 },
+        sw: { x: 8, y: 17 },
+        se: { x: 17, y: 22 },
       })
     })
 
     it('should get corner coordinates with rotate-angle: 210', () => {
       const example = {
         vertices: {
-          nw: { x: 50, y: 50 },
-          ne: { x: 150, y: 50 },
-          sw: { x: 50, y: 0 },
-          se: { x: 150, y: 0 },
+          nw: { x: 10, y: 10 },
+          ne: { x: 20, y: 10 },
+          sw: { x: 10, y: 20 },
+          se: { x: 20, y: 20 },
         },
         degree: 210,
       }
 
-      const result = getRotatedCartesianRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
-        nw: { x: 156, y: 28 },
-        ne: { x: 69, y: -22 },
-        sw: { x: 131, y: 72 },
-        se: { x: 44, y: 22 },
+        nw: { x: 17, y: 22 },
+        ne: { x: 8, y: 17 },
+        sw: { x: 22, y: 13 },
+        se: { x: 13, y: 8 },
       })
     })
 
     it('should get corner coordinates with rotate-angle: 360', () => {
       const example = {
         vertices: {
-          nw: { x: 50, y: 50 },
-          ne: { x: 150, y: 50 },
-          sw: { x: 50, y: 0 },
-          se: { x: 150, y: 0 },
+          nw: { x: 10, y: 10 },
+          ne: { x: 20, y: 10 },
+          sw: { x: 10, y: 20 },
+          se: { x: 20, y: 20 },
         },
         degree: 360,
       }
 
-      const result = getRotatedCartesianRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
-        nw: { x: 50, y: 50 },
-        ne: { x: 150, y: 50 },
-        sw: { x: 50, y: 0 },
-        se: { x: 150, y: 0 },
+        nw: { x: 10, y: 10 },
+        ne: { x: 20, y: 10 },
+        sw: { x: 10, y: 20 },
+        se: { x: 20, y: 20 },
       })
     })
 
     it('should get corner coordinates with rotate-angle: 720', () => {
       const example = {
         vertices: {
-          nw: { x: 50, y: 50 },
-          ne: { x: 150, y: 50 },
-          sw: { x: 50, y: 0 },
-          se: { x: 150, y: 0 },
+          nw: { x: 10, y: 10 },
+          ne: { x: 20, y: 10 },
+          sw: { x: 10, y: 20 },
+          se: { x: 20, y: 20 },
         },
         degree: 720,
       }
 
-      const result = getRotatedCartesianRectCoordinate(example)
+      const result = getRotatedBoundingRectVertices(example)
 
       expect(result).toStrictEqual({
-        nw: { x: 50, y: 50 },
-        ne: { x: 150, y: 50 },
-        sw: { x: 50, y: 0 },
-        se: { x: 150, y: 0 },
+        nw: { x: 10, y: 10 },
+        ne: { x: 20, y: 10 },
+        sw: { x: 10, y: 20 },
+        se: { x: 20, y: 20 },
       })
     })
   })
@@ -232,11 +209,11 @@ describe('Cartesian Coordinate System', () => {
     })
   })
 
-  describe('getCartesianCoordinate', () => {
+  describe('getRotatedPoint', () => {
     it('should get coordinate with rotated clockwise 90', () => {
       const example = { x: 1, y: 1 }
 
-      const result = getCartesianCoordinate({ point: example, degree: -90 })
+      const result = getRotatedPoint({ point: example, degree: -90 })
 
       expect(result).toStrictEqual({
         x: 1,
@@ -247,12 +224,22 @@ describe('Cartesian Coordinate System', () => {
     it('should get coordinate with rotated counter-clockwise 90', () => {
       const example = { x: 1, y: 1 }
 
-      const result = getCartesianCoordinate({ point: example, degree: 90 })
+      const result = getRotatedPoint({ point: example, degree: 90 })
 
       expect(result).toStrictEqual({
         x: -1,
         y: 1,
       })
+    })
+  })
+
+  describe('getBearingDegree', () => {
+    it('should calculate bearing degree', () => {
+      const example = { begin: { x: 5, y: 5 }, end: { x: 7, y: 3 } }
+
+      const result = getBearingDegree(example)
+
+      expect(result).toBe(45)
     })
   })
 })

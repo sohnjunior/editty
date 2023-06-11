@@ -100,6 +100,7 @@ export default class VCanvasContainer extends VComponent {
       sy: image.sy,
       width: image.width,
       height: image.height,
+      degree: image.degree,
     }))
     await addOrUpdateArchive({
       id: this.sid,

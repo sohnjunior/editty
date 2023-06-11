@@ -9,12 +9,19 @@ import {
   isPointInsideRect,
   refineImageScale,
   createImageObject,
+  getCenterOfBoundingRect,
   getBoundingRectVertices,
+  getRotatedBoundingRectVertices,
+  get2dMiddlePoint,
+  degreeToRadian,
   resizeRect,
   drawCircle,
   drawRect,
   drawCrossLine,
-  drawDiagonalArrow,
+  drawCrossArrow,
+  drawSECramp,
+  drawArc,
+  getBearingDegree,
 } from '@/modules/canvas-utils/engine'
 import { Point } from '@/modules/canvas-utils/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
@@ -26,6 +33,7 @@ import { setMouseCursor, isTouchEvent } from '@/utils/dom'
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
   RESIZE: 'nwse-resize',
   DELETE: 'pointer',
+  ROTATE: 'pointer',
 }
 
 const template = document.createElement('template')
@@ -99,6 +107,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         })
         imageObject.width = image.width
         imageObject.height = image.height
+        imageObject.degree = image.degree
 
         return imageObject
       })
@@ -125,13 +134,13 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     CanvasImageContext.subscribe({
       action: 'INIT_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
     CanvasImageContext.subscribe({
       action: 'PUSH_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
     CanvasImageContext.subscribe({
@@ -143,13 +152,13 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     CanvasImageContext.subscribe({
       action: 'CLEAR_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
     CanvasImageContext.subscribe({
       action: 'SELECT_IMAGE',
       effect: () => {
-        this.paintImages()
+        this.paintImagesWithAnchor()
       },
     })
   }
@@ -280,6 +289,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
           sy: image.sy,
           width: image.width,
           height: image.height,
+          degree: image.degree,
         },
         pos: point,
       })
@@ -317,7 +327,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
   private resetInteractionAndPaint() {
     this.resetFocusedImage()
     this.resetTransformType()
-    this.paintImages()
+    this.paintImagesWithAnchor()
   }
 
   hover(ev: MouseEvent) {
@@ -346,6 +356,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       this.dragImage(ev)
     } else if (this.transformType === 'RESIZE') {
       this.resizeImage(ev)
+    } else if (this.transformType === 'ROTATE') {
+      this.rotateImage(ev)
     }
   }
 
@@ -367,7 +379,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     dragstart.x = x
     dragstart.y = y
 
-    this.paintImages()
+    this.paintImagesWithAnchor()
   }
 
   private resizeImage(ev: MouseEvent | TouchEvent) {
@@ -385,6 +397,7 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         sy: image.sy,
         width: image.width,
         height: image.height,
+        degree: image.degree,
       },
       vectorTerminalPoint: touchPoint,
     })
@@ -394,21 +407,51 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     image.width = resizedBoundingRect.width
     image.height = resizedBoundingRect.height
 
+    this.paintImagesWithAnchor()
+  }
+
+  private rotateImage(ev: MouseEvent | TouchEvent) {
+    if (!this.focused || !this.transformType) {
+      return
+    }
+
+    const touchPoint = getSyntheticTouchPoint(this.$root, ev)
+    const image = this.focused.image
+    const vertices = getBoundingRectVertices({
+      topLeftPoint: { x: image.sx, y: image.sy },
+      width: image.width,
+      height: image.height,
+    })
+    const center = getCenterOfBoundingRect(vertices)
+    const degree = getBearingDegree({ begin: center, end: touchPoint })
+    image.degree = degree
+
+    this.paintImagesWithAnchor()
+  }
+
+  private paintImagesWithAnchor() {
+    clearCanvas(this.$root)
+
     this.paintImages()
+    this.paintFocusedImageAnchorBorder()
   }
 
   private paintImages() {
-    clearCanvas(this.$root)
-
-    this.images.forEach(({ ref, sx, sy, width, height }) => {
-      if (ref) {
-        this.context.drawImage(ref, sx, sy, width, height)
+    this.images.forEach(({ ref, sx, sy, width, height, degree }) => {
+      if (!ref) {
+        return
       }
-    })
 
-    if (this.focused) {
-      this.paintFocusedImageAnchorBorder()
-    }
+      this.context.save()
+      const center = getCenterOfBoundingRect(
+        getBoundingRectVertices({ topLeftPoint: { x: sx, y: sy }, width, height })
+      )
+      this.context.translate(center.x, center.y)
+      this.context.rotate(degreeToRadian(degree))
+      this.context.translate(-center.x, -center.y)
+      this.context.drawImage(ref, sx, sy, width, height)
+      this.context.restore()
+    })
   }
 
   private paintFocusedImageAnchorBorder() {
@@ -416,11 +459,12 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
       return
     }
 
-    const { width, height, sx, sy } = this.focused.image
+    const { width, height, sx, sy, degree } = this.focused.image
     const anchors = drawAnchorBorder({
       context: this.context,
       size: { width, height },
       topLeftPoint: { x: sx, y: sy },
+      degree,
     })
     this.focused.anchors = filterNullish(anchors)
   }
@@ -430,15 +474,20 @@ function drawAnchorBorder({
   context,
   topLeftPoint,
   size,
+  degree,
 }: {
   context: CanvasRenderingContext2D
   topLeftPoint: Point
   size: { width: number; height: number }
+  degree: number
 }): Anchor[] {
-  const vertices = getBoundingRectVertices({
-    topLeftPoint,
-    width: size.width,
-    height: size.height,
+  const vertices = getRotatedBoundingRectVertices({
+    vertices: getBoundingRectVertices({
+      topLeftPoint,
+      width: size.width,
+      height: size.height,
+    }),
+    degree,
   })
 
   drawRect({
@@ -448,11 +497,16 @@ function drawAnchorBorder({
   })
 
   const deleteAnchorPath2d = drawDeleteAnchor({ context, point: vertices.ne })
+  const rotateAnchorPath2d = drawRotateAnchor({
+    context,
+    point: get2dMiddlePoint(vertices.ne, vertices.nw),
+  })
   const resizeAnchorPath2d = drawResizeAnchor({ context, point: vertices.se })
 
   const anchors: Anchor[] = [
     { type: 'DELETE', path2d: deleteAnchorPath2d },
     { type: 'RESIZE', path2d: resizeAnchorPath2d },
+    { type: 'ROTATE', path2d: rotateAnchorPath2d },
   ]
 
   return anchors
@@ -477,7 +531,7 @@ function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2
     context,
     centerPoint: point,
     radius: ANCHOR_RADIUS,
-    color: 'rgba(28,39,76, 0.6)',
+    color: 'rgba(28, 39, 76, 0.6)',
   })
   drawCrossLine({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
 
@@ -491,9 +545,37 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
     context,
     centerPoint: point,
     radius: ANCHOR_RADIUS,
-    color: 'rgba(28,39,76, 0.6)',
+    color: 'rgba(28, 39, 76, 0.6)',
   })
-  drawDiagonalArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
+  drawCrossArrow({ context, centerPoint: point, lineLength: ANCHOR_RADIUS - 4 })
+
+  return path2d
+}
+
+function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
+  const ANCHOR_RADIUS = 26
+  const ARC_RADIUS = ANCHOR_RADIUS - 14
+
+  const path2d = drawCircle({
+    context,
+    centerPoint: point,
+    radius: ANCHOR_RADIUS,
+    color: 'rgba(28, 39, 76, 0.6)',
+  })
+  drawArc({
+    context,
+    center: point,
+    radius: ARC_RADIUS,
+    startAngle: 0.3,
+    endAngle: 1.8 * Math.PI,
+  })
+  drawSECramp({
+    context,
+    from: { x: point.x + ARC_RADIUS, y: point.y - 5 },
+    lineLength: 8,
+    lineWidth: 3,
+    color: '#f8f8f8',
+  })
 
   return path2d
 }
