@@ -300,17 +300,22 @@ export function resizeRect({
 }
 
 function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point): BoundingRect {
-  const { sx, sy, degree } = originalBoundingRect
+  const { sx, sy, width, height, degree } = originalBoundingRect
   const vectorInitialPoint: Point = { x: sx, y: sy }
+  const vertices = getBoundingRectVertices({ topLeftPoint: vectorInitialPoint, width, height })
 
-  const width = Math.abs(vectorTerminalPoint.x - vectorInitialPoint.x)
-  const height = Math.abs(vectorTerminalPoint.y - vectorInitialPoint.y)
+  const ov = get2dDistance(vertices.nw, vertices.se)
+  const v = get2dDistance(vectorInitialPoint, vectorTerminalPoint)
+  const ratio = v / ov
+
+  const resizedWidth = Math.abs(width * ratio)
+  const resizedHeight = Math.abs(height * ratio)
 
   return {
     sx: vectorInitialPoint.x,
     sy: vectorInitialPoint.y,
-    width,
-    height,
+    width: resizedWidth,
+    height: resizedHeight,
     degree,
   }
 }
