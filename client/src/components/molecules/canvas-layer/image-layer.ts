@@ -19,7 +19,7 @@ import {
   drawRect,
   drawCrossLine,
   drawDiagonalArrow,
-  drawCramp,
+  drawSECramp,
   drawArc,
   getBearingDegree,
 } from '@/modules/canvas-utils/engine'
@@ -569,9 +569,8 @@ function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2
     startAngle: 0.3,
     endAngle: 1.8 * Math.PI,
   })
-  drawCramp({
+  drawSECramp({
     context,
-    type: 'se',
     from: { x: point.x + ARC_RADIUS, y: point.y - 5 },
     lineLength: 8,
     lineWidth: 3,

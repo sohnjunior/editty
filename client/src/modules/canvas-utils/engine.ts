@@ -439,18 +439,16 @@ export function drawDiagonalArrow({
 
   drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
 
-  drawCramp({
+  drawNWCramp({
     context,
-    type: 'nw',
     from: nw,
     lineLength: 10,
     lineWidth: LINE_WIDTH,
     color: '#f8f8f8',
   })
 
-  drawCramp({
+  drawSECramp({
     context,
-    type: 'se',
     from: se,
     lineLength: 10,
     lineWidth: LINE_WIDTH,
@@ -458,28 +456,64 @@ export function drawDiagonalArrow({
   })
 }
 
-export function drawCramp({
+export function drawNWCramp({
   context,
-  type,
   from,
   lineLength,
   lineWidth,
   color,
 }: {
   context: CanvasRenderingContext2D
-  type: 'nw' | 'se'
   from: Point
   lineLength: number
   lineWidth: number
   color: string
 }) {
   const horizontalEndPoint: Point = {
-    x: type === 'nw' ? from.x + lineLength : from.x - lineLength,
+    x: from.x + lineLength,
     y: from.y,
   }
   const verticalEndPoint: Point = {
     x: from.x,
-    y: type === 'nw' ? from.y + lineLength : from.y - lineLength,
+    y: from.y + lineLength,
+  }
+
+  drawLine({
+    context,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
+  })
+  drawLine({
+    context,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
+  })
+}
+
+export function drawSECramp({
+  context,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: from.x - lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: from.y - lineLength,
   }
 
   drawLine({
