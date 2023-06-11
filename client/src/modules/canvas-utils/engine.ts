@@ -434,35 +434,61 @@ export function drawDiagonalArrow({
 
   drawLine({ context, from: nw, to: se, color: '#f8f8f8', lineWidth: LINE_WIDTH })
 
-  // 죄측 상단 꺽쇠 그리기
-  drawLine({
+  drawCramp({
     context,
+    type: 'nw',
     from: nw,
-    to: { x: nw.x, y: centerPoint.y },
-    color: '#f8f8f8',
+    lineLength: 10,
     lineWidth: LINE_WIDTH,
-  })
-  drawLine({
-    context,
-    from: nw,
-    to: { x: centerPoint.x, y: nw.y },
     color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
   })
 
-  // 우측 하단 꺽쇠 그리기
+  drawCramp({
+    context,
+    type: 'se',
+    from: se,
+    lineLength: 10,
+    lineWidth: LINE_WIDTH,
+    color: '#f8f8f8',
+  })
+}
+
+export function drawCramp({
+  context,
+  type,
+  from,
+  lineLength,
+  lineWidth,
+  color,
+}: {
+  context: CanvasRenderingContext2D
+  type: 'nw' | 'se'
+  from: Point
+  lineLength: number
+  lineWidth: number
+  color: string
+}) {
+  const horizontalEndPoint: Point = {
+    x: type === 'nw' ? from.x + lineLength : from.x - lineLength,
+    y: from.y,
+  }
+  const verticalEndPoint: Point = {
+    x: from.x,
+    y: type === 'nw' ? from.y + lineLength : from.y - lineLength,
+  }
+
   drawLine({
     context,
-    from: se,
-    to: { x: centerPoint.x, y: se.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
+    from,
+    to: horizontalEndPoint,
+    color,
+    lineWidth,
   })
   drawLine({
     context,
-    from: se,
-    to: { x: se.x, y: centerPoint.y },
-    color: '#f8f8f8',
-    lineWidth: LINE_WIDTH,
+    from,
+    to: verticalEndPoint,
+    color,
+    lineWidth,
   })
 }
