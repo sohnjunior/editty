@@ -32,7 +32,7 @@ import { setMouseCursor, isTouchDevice } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
-  RESIZE: 'nwse-resize',
+  RESIZE: 'move',
   DELETE: 'pointer',
   ROTATE: 'pointer',
 }
