@@ -1,6 +1,6 @@
 import { VComponent } from '@/modules/v-component'
 import type { ReflectAttributeParam } from '@/modules/v-component/types'
-import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-engine/constant'
 
 const template = document.createElement('template')
 template.innerHTML = `

@@ -22,8 +22,8 @@ import {
   drawSECramp,
   drawArc,
   getBearingDegree,
-} from '@/modules/canvas-utils/engine'
-import { Point } from '@/modules/canvas-utils/types'
+} from '@/modules/canvas-engine/engine'
+import { Point } from '@/modules/canvas-engine/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'

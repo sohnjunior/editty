@@ -4,7 +4,7 @@ import { Z_INDEX } from '@/utils/constant'
 import {
   fillBackgroundColor,
   refineCanvasRatioForRetinaDisplay,
-} from '@/modules/canvas-utils/engine'
+} from '@/modules/canvas-engine/engine'
 import { ReflectAttributeParam } from '@/modules/v-component/types'
 
 const template = document.createElement('template')

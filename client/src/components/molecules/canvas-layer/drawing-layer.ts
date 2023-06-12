@@ -1,5 +1,5 @@
 import { VComponent } from '@/modules/v-component'
-import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-engine/constant'
 import { Z_INDEX } from '@/utils/constant'
 import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
@@ -11,9 +11,9 @@ import {
   reflectSnapshot,
   clearCanvas,
   refineCanvasRatioForRetinaDisplay,
-} from '@/modules/canvas-utils/engine'
+} from '@/modules/canvas-engine/engine'
 import { getArchive } from '@/services/archive'
-import type { Point } from '@/modules/canvas-utils/types'
+import type { Point } from '@/modules/canvas-engine/types'
 
 const template = document.createElement('template')
 template.innerHTML = `
