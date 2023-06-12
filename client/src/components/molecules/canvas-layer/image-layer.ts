@@ -22,12 +22,13 @@ import {
   drawSECramp,
   drawArc,
   getBearingDegree,
-} from '@/modules/canvas-engine/engine'
+  isTouchEvent,
+} from '@/modules/canvas-engine'
 import { Point } from '@/modules/canvas-engine/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
-import { setMouseCursor, isTouchEvent } from '@/utils/dom'
+import { setMouseCursor } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {

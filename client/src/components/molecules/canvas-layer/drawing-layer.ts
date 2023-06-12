@@ -11,7 +11,7 @@ import {
   reflectSnapshot,
   clearCanvas,
   refineCanvasRatioForRetinaDisplay,
-} from '@/modules/canvas-engine/engine'
+} from '@/modules/canvas-engine'
 import { getArchive } from '@/services/archive'
 import type { Point } from '@/modules/canvas-engine/types'
 
