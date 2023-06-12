@@ -1,7 +1,7 @@
 import { getBoundingRectVertices, get2dDistance } from './coordinate-space'
 import type { Point, BoundingRect, BoundingRectVertices } from './types'
 
-export function fillBackgroundColor(canvas: HTMLCanvasElement, color: string) {
+export function fillCanvasBackgroundColor(canvas: HTMLCanvasElement, color: string) {
   const context = canvas.getContext('2d')
   if (!context) {
     return

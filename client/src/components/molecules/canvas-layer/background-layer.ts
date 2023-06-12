@@ -2,7 +2,7 @@ import { VComponent } from '@/modules/v-component'
 
 import { Z_INDEX } from '@/utils/constant'
 import {
-  fillBackgroundColor,
+  fillCanvasBackgroundColor,
   refineCanvasRatioForRetinaDisplay,
 } from '@/modules/canvas-engine/graphic'
 import { ReflectAttributeParam } from '@/modules/v-component/types'
@@ -49,7 +49,7 @@ export default class VCanvasBackgroundLayer extends VComponent<HTMLCanvasElement
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam) {
     switch (attribute) {
       case 'color': {
-        fillBackgroundColor(this.$root, value)
+        fillCanvasBackgroundColor(this.$root, value)
         break
       }
     }
