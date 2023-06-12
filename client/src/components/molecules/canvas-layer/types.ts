@@ -1,4 +1,4 @@
-import type { BoundingRect } from '@/modules/canvas-utils/types'
+import type { BoundingRect } from '@/modules/canvas-engine/types'
 
 export interface ImageObject extends BoundingRect {
   /** image id */

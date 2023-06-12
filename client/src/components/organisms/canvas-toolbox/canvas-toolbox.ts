@@ -3,7 +3,7 @@ import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/conte
 import type { Phase } from '@/contexts'
 import { selectImageFromDevice } from '@/utils/file'
 import { EventBus, EVENT_KEY } from '@/event-bus'
-import { PALETTE_COLORS } from '@/modules/canvas-utils/constant'
+import { PALETTE_COLORS } from '@/modules/canvas-engine/constant'
 import VColorMenu from '@molecules/color-menu/color-menu'
 import VStrokeMenu from '@molecules/stroke-menu/stroke-menu'
 import VArchiveMenu from '@molecules/archive-menu/archive-menu'

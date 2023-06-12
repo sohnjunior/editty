@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/dom'
-import { renderToHtml, getTemplateRootElement, getInitialStyle } from '@/modules/wc-test-utils'
+import { renderToHtml, getTemplateRootElement } from '@/modules/wc-test-utils'
 import VDialog from './dialog'
 
 describe('dialog', () => {

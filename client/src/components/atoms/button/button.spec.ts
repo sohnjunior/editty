@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/dom'
-import { renderToHtml, getTemplateRootElement, getInitialStyle } from '@/modules/wc-test-utils'
+import { renderToHtml } from '@/modules/wc-test-utils'
 
 describe('button', () => {
   it('should render slot', async () => {
