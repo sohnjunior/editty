@@ -9,7 +9,7 @@ export function get2dMiddlePoint(p1: Point, p2: Point) {
 }
 
 /** 2차원 평면좌표에서 두점 사이의 거리를 반환합니다. */
-export function get2dDistance(p1: Point, p2: Point) {
+export function getEuclideanDistance(p1: Point, p2: Point) {
   return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
 }
 

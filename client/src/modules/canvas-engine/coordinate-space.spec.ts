@@ -1,7 +1,7 @@
 import {
   isPointInsideRect,
   get2dMiddlePoint,
-  get2dDistance,
+  getEuclideanDistance,
   getBoundingRectVertices,
   getRotatedBoundingRectVertices,
   getCenterOfBoundingRect,
@@ -36,11 +36,11 @@ it('get2dMiddlePoint', () => {
   expect(get2dMiddlePoint(pointA, pointB)).toStrictEqual({ x: 1, y: 0 })
 })
 
-it('get2dDistance', () => {
+it('getEuclideanDistance', () => {
   const pointA = { x: 0, y: 0 }
   const pointB = { x: 2, y: 0 }
 
-  expect(get2dDistance(pointA, pointB)).toBe(2)
+  expect(getEuclideanDistance(pointA, pointB)).toBe(2)
 })
 
 describe('getBoundingRectVertices', () => {

@@ -1,4 +1,4 @@
-import { getBoundingRectVertices, get2dDistance } from './coordinate-space'
+import { getBoundingRectVertices, getEuclideanDistance } from './coordinate-space'
 import type { Point, BoundingRect, BoundingRectVertices } from './types'
 
 export function fillCanvasBackgroundColor(canvas: HTMLCanvasElement, color: string) {
@@ -99,8 +99,8 @@ function resizeBR(originalBoundingRect: BoundingRect, vectorTerminalPoint: Point
   const vectorInitialPoint: Point = { x: sx, y: sy }
   const vertices = getBoundingRectVertices({ topLeftPoint: vectorInitialPoint, width, height })
 
-  const ov = get2dDistance(vertices.nw, vertices.se)
-  const v = get2dDistance(vectorInitialPoint, vectorTerminalPoint)
+  const ov = getEuclideanDistance(vertices.nw, vertices.se)
+  const v = getEuclideanDistance(vectorInitialPoint, vectorTerminalPoint)
   const ratio = v / ov
 
   const resizedWidth = Math.abs(width * ratio)
