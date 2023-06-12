@@ -28,7 +28,7 @@ import { Point } from '@/modules/canvas-engine/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
 import { getArchive } from '@/services/archive'
 import { filterNullish, findLastIndexOf } from '@/utils/ramda'
-import { setMouseCursor } from '@/utils/dom'
+import { setMouseCursor, isTouchDevice } from '@/utils/dom'
 
 /** @reference https://developer.mozilla.org/en-US/docs/Web/CSS/cursor */
 const MOUSE_CURSOR: Record<ImageTransform, string> = {
@@ -526,7 +526,7 @@ function findAnchorInPath({
 }
 
 function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
-  const ANCHOR_RADIUS = 26
+  const ANCHOR_RADIUS = isTouchDevice() ? 40 : 26
 
   const path2d = drawCircle({
     context,
@@ -540,7 +540,7 @@ function drawDeleteAnchor({ context, point }: { context: CanvasRenderingContext2
 }
 
 function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
-  const ANCHOR_RADIUS = 26
+  const ANCHOR_RADIUS = isTouchDevice() ? 40 : 26
 
   const path2d = drawCircle({
     context,
@@ -554,7 +554,7 @@ function drawResizeAnchor({ context, point }: { context: CanvasRenderingContext2
 }
 
 function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2D; point: Point }) {
-  const ANCHOR_RADIUS = 26
+  const ANCHOR_RADIUS = isTouchDevice() ? 40 : 26
   const ARC_RADIUS = ANCHOR_RADIUS - 14
 
   const path2d = drawCircle({
