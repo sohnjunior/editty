@@ -175,9 +175,10 @@ function rescaleImageData(originalImageData: ImageData, targetWidth: number, tar
   const kh = h1 / h2
   const kw = w1 / w2
   const cur_img1pixel_sum = new Int32Array(4)
+
   for (let i2 = 0; i2 < h2; i2 += 1) {
     for (let j2 = 0; j2 < w2; j2 += 1) {
-      for (let i in cur_img1pixel_sum) cur_img1pixel_sum[i] = 0
+      for (const i in cur_img1pixel_sum) cur_img1pixel_sum[i] = 0
       let cur_img1pixel_n = 0
       for (let i1 = Math.ceil(i2 * kh); i1 < (i2 + 1) * kh; i1 += 1) {
         for (let j1 = Math.ceil(j2 * kw); j1 < (j2 + 1) * kw; j1 += 1) {
