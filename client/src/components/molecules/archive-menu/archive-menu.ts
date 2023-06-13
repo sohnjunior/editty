@@ -55,7 +55,7 @@ template.innerHTML = `
     <div class="preview-container" slot="content">
       <div data-value="add" class="add-new-canvas-button">
         <v-icon icon="add-circle" size="large"></v-icon>
-        new canvas
+        create!
       </div>
       <!-- lazy load archives -->
     </div>
