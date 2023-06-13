@@ -3,7 +3,7 @@ import type { ReflectAttributeParam } from '@/modules/v-component/types'
 import VCanvasPreview from '@atoms/canvas-preview/canvas-preview'
 import type { Archive } from '@/services/archive'
 
-type ArchivePreview = Omit<Archive, 'snapshot' | 'images'>
+type ArchivePreview = Omit<Archive, 'images'>
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -93,6 +93,7 @@ export default class VArchiveMenu extends VComponent {
   set archives(newValue: ArchivePreview[]) {
     this._archives = newValue
     this.updateArchives()
+    this.updatePreview()
     this.updateValueProp(this.value)
   }
 
@@ -110,6 +111,14 @@ export default class VArchiveMenu extends VComponent {
         .join('')
       $archiveContainer.insertAdjacentHTML('beforeend', html)
     }
+  }
+
+  private updatePreview() {
+    const $previews = this.$root.querySelectorAll<VCanvasPreview>('v-canvas-preview')
+    this.archives.forEach((archive, idx) => {
+      const imageData = [...(archive.snapshot ? [archive.snapshot] : [])] // TODO: image snapshot 추가하기
+      $previews[idx].imageData = imageData
+    })
   }
 
   protected bindEventListener() {

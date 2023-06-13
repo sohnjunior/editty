@@ -186,6 +186,8 @@ export default class VCanvasToolbox extends VComponent {
     const archivePreviews = archives.map((archive) => ({
       id: archive.id,
       title: archive.title,
+      snapshot: archive.snapshot,
+      // TODO: image snapshot 추가하기
     }))
     this.$archiveMenu.archives = archivePreviews
   }
