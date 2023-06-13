@@ -23,6 +23,7 @@ import {
   drawArc,
   getBearingDegree,
   isTouchEvent,
+  takeSnapshot,
 } from '@/modules/canvas-engine'
 import { Point } from '@/modules/canvas-engine/types'
 import type { Anchor, ImageTransform, ImageObject } from './types'
@@ -75,6 +76,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
 
   get isActivePhase() {
     return ['cursor', 'gallery'].includes(this.phase)
+  }
+
+  get imageSnapshot() {
+    return takeSnapshot(this.$root)
   }
 
   constructor() {
