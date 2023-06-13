@@ -116,7 +116,10 @@ export default class VArchiveMenu extends VComponent {
   private updatePreview() {
     const $previews = this.$root.querySelectorAll<VCanvasPreview>('v-canvas-preview')
     this.archives.forEach((archive, idx) => {
-      const imageData = [...(archive.snapshot ? [archive.snapshot] : [])] // TODO: image snapshot 추가하기
+      const imageData = {
+        image: archive.imageSnapshot,
+        drawing: archive.snapshot,
+      }
       $previews[idx].imageData = imageData
     })
   }

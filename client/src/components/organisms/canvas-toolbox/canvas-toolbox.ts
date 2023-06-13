@@ -187,7 +187,7 @@ export default class VCanvasToolbox extends VComponent {
       id: archive.id,
       title: archive.title,
       snapshot: archive.snapshot,
-      // TODO: image snapshot 추가하기
+      imageSnapshot: archive.imageSnapshot,
     }))
     this.$archiveMenu.archives = archivePreviews
   }

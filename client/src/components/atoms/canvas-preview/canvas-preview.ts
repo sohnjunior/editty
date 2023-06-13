@@ -30,6 +30,15 @@ template.innerHTML = `
       height: ${PREVIEW_CONTENT_SIZE}px;
     }
 
+    :host figure > .figure-content > .canvas-container {
+      position: relative;
+    }
+
+    :host figure > .figure-content > .canvas-container > canvas {
+      position: absolute;
+      top: 0;
+    }
+
     :host figure > .figure-content > v-icon {
       position: absolute;
       top: 0px;
@@ -44,7 +53,10 @@ template.innerHTML = `
   </style>
   <figure>
     <div class="figure-content">
-      <canvas width="100%" height="100%"></canvas>  
+      <div class="canvas-container">
+        <canvas id="image-canvas" width="100%" height="100%"></canvas>
+        <canvas id="drawing-canvas" width="100%" height="100%"></canvas>  
+      </div>
       <v-icon icon="close-circle" size="xlarge"></v-icon>
     </div>
     <figcaption></figcaption>
@@ -76,31 +88,39 @@ export default class VCanvasPreview extends VComponent {
     this.setAttribute('selected', `${newValue}`)
   }
 
-  private _imageData: ImageData[] = []
+  private _imageData: { drawing?: ImageData; image?: ImageData } = {}
   get imageData() {
     return this._imageData
   }
-  set imageData(newValue: ImageData[]) {
+  set imageData(newValue: { drawing?: ImageData; image?: ImageData }) {
     this._imageData = newValue
     this.reflectImageData(newValue)
   }
 
-  private async reflectImageData(snapshots: ImageData[]) {
-    const $canvas = this.$root.querySelector<HTMLCanvasElement>('canvas')
-    if (!$canvas) {
+  private async reflectImageData(snapshots: { drawing?: ImageData; image?: ImageData }) {
+    const $imageCanvas = this.$root.querySelector<HTMLCanvasElement>('#image-canvas')
+    const $drawingCanvas = this.$root.querySelector<HTMLCanvasElement>('#drawing-canvas')
+    if (!$imageCanvas || !$drawingCanvas) {
       return
     }
 
-    snapshots.forEach(async (snapshot) => {
+    if (snapshots.image) {
       const resizedImageData = await rescaleImageData(
-        snapshot,
+        snapshots.image,
         PREVIEW_CONTENT_SIZE - 10,
         PREVIEW_CONTENT_SIZE - 10
       )
-      if (resizedImageData) {
-        reflectSnapshot($canvas, resizedImageData)
-      }
-    })
+      reflectSnapshot($imageCanvas, resizedImageData)
+    }
+
+    if (snapshots.drawing) {
+      const resizedImageData = await rescaleImageData(
+        snapshots.drawing,
+        PREVIEW_CONTENT_SIZE - 10,
+        PREVIEW_CONTENT_SIZE - 10
+      )
+      reflectSnapshot($drawingCanvas, resizedImageData)
+    }
   }
 
   protected bindEventListener() {
