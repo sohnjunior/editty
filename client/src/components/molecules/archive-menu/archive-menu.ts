@@ -3,12 +3,12 @@ import type { ReflectAttributeParam } from '@/modules/v-component/types'
 import VCanvasPreview from '@atoms/canvas-preview/canvas-preview'
 import type { Archive } from '@/services/archive'
 
-type ArchivePreview = Omit<Archive, 'snapshot' | 'images'>
+type ArchivePreview = Omit<Archive, 'images'>
 
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    @media screen and (min-width: 421px) { 
+    @media screen and (min-width: 431px) { 
       :host div.preview-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr); 
@@ -20,13 +20,13 @@ template.innerHTML = `
       }
     }
 
-    @media screen and (max-width: 420px) {
+    @media screen and (max-width: 430px) {
       :host div.preview-container {
         display: grid;
-        grid-auto-flow: column;
-        grid-template-rows: repeat(2, 1fr); 
+        grid-auto-flow: row;
+        grid-template-columns: repeat(2, 1fr); 
         gap: 10px 15px;
-        width: 200px;
+        width: 220px;
         height: 270px;
         overflow-x: scroll;
       }
@@ -55,7 +55,7 @@ template.innerHTML = `
     <div class="preview-container" slot="content">
       <div data-value="add" class="add-new-canvas-button">
         <v-icon icon="add-circle" size="large"></v-icon>
-        new canvas
+        create!
       </div>
       <!-- lazy load archives -->
     </div>
@@ -93,6 +93,7 @@ export default class VArchiveMenu extends VComponent {
   set archives(newValue: ArchivePreview[]) {
     this._archives = newValue
     this.updateArchives()
+    this.updatePreview()
     this.updateValueProp(this.value)
   }
 
@@ -110,6 +111,17 @@ export default class VArchiveMenu extends VComponent {
         .join('')
       $archiveContainer.insertAdjacentHTML('beforeend', html)
     }
+  }
+
+  private updatePreview() {
+    const $previews = this.$root.querySelectorAll<VCanvasPreview>('v-canvas-preview')
+    this.archives.forEach((archive, idx) => {
+      const imageData = {
+        image: archive.imageSnapshot,
+        drawing: archive.snapshot,
+      }
+      $previews[idx].imageData = imageData
+    })
   }
 
   protected bindEventListener() {

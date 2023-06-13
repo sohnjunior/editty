@@ -102,10 +102,12 @@ export default class VCanvasContainer extends VComponent {
       height: image.height,
       degree: image.degree,
     }))
+    const imageSnapshot = images.length > 0 ? this.imageLayer.imageSnapshot : undefined
     await addOrUpdateArchive({
       id: this.sid,
       title: this.title,
       snapshot: lastOf(this.snapshots),
+      imageSnapshot,
       images,
     })
     ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
@@ -119,6 +121,7 @@ export default class VCanvasContainer extends VComponent {
         id,
         title: this.title,
         snapshot: undefined,
+        imageSnapshot: undefined,
         images: [],
       }),
       ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id }),
