@@ -18,7 +18,7 @@ export const Basic = (
     setTimeout(() => {
       const $preview = document.querySelector<VCanvasPreview>('v-canvas-preview')
       if ($preview) {
-        $preview.imageData = imageData ? [imageData] : []
+        $preview.imageData = { image: imageData }
       }
     }, 0)
   }
