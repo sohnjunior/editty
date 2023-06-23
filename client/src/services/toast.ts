@@ -37,6 +37,18 @@ const TOAST_MESSAGE = {
       description: '잠시 후에 다시 시도해주세요.',
     },
   },
+  DOWNLOAD: {
+    SUCCESS: {
+      variant: 'success',
+      title: '성공',
+      description: '다운로드에 성공했습니다.',
+    },
+    FAIL: {
+      variant: 'fail',
+      title: '실패',
+      description: '다운로드에 실패했습니다.',
+    },
+  },
 }
 
 export function showToast(category: keyof typeof TOAST_MESSAGE, type: 'SUCCESS' | 'FAIL') {

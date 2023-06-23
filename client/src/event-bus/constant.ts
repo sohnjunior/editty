@@ -5,4 +5,5 @@ export const enum EVENT_KEY {
   'CLEAR_ALL' = 'CLEAR_ALL',
   'SHOW_TOAST' = 'SHOW_TOAST',
   'SHOW_CONFIRM' = 'SHOW_CONFIRM',
+  'DOWNLOAD' = 'DOWNLOAD',
 }
