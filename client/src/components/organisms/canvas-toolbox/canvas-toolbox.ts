@@ -42,6 +42,7 @@ template.innerHTML = `
     <v-icon-button data-selected="false" data-phase="stroke" icon="draw" size="medium"></v-icon-button>
     <v-color-tile data-selected="false" data-phase="color" color="none" size="15px"></v-color-tile>
     <v-icon-button data-selected="false" data-phase="gallery" icon="gallery" size="medium"></v-icon-button>
+    <v-icon-button data-selected="false" data-phase="download" icon="download" size="medium"></v-icon-button>
     <v-icon-button data-selected="false" data-phase="folder" icon="folder" size="medium"></v-icon-button>
 
     <v-stroke-menu open="false"></v-stroke-menu>
@@ -210,6 +211,9 @@ export default class VCanvasToolbox extends VComponent {
       case 'folder':
         this.enterFolderPhase()
         break
+      case 'download':
+        this.enterDownloadPhase()
+        break
       default:
         break
     }
@@ -241,6 +245,10 @@ export default class VCanvasToolbox extends VComponent {
 
   enterFolderPhase() {
     this.handleOpenArchiveMenu()
+  }
+
+  enterDownloadPhase() {
+    EventBus.getInstance().emit(EVENT_KEY.DOWNLOAD)
   }
 
   handleChangePencilColor(ev: Event) {
