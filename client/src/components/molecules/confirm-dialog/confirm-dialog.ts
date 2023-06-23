@@ -10,7 +10,6 @@ template.innerHTML = `
     }
   </style>
   <v-dialog>
-    <span slot="title">Confirm</span>
     <span slot="content"></span>
     <div slot="action">
       <v-button mode="outline" id="cancel-button">취소</v-button>
