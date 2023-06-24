@@ -1,4 +1,5 @@
 const path = require('path')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
@@ -10,23 +11,26 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.ts'],
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@atoms': path.resolve(__dirname, 'src/components/atoms'),
-      '@molecules': path.resolve(__dirname, 'src/components/molecules'),
-      '@organisms': path.resolve(__dirname, 'src/components/organisms'),
-      '@templates': path.resolve(__dirname, 'src/components/templates'),
-    },
+    plugins: [
+      new TsconfigPathsPlugin({ configFile: './tsconfig.json', extensions: ['.js', '.ts'] }),
+    ],
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
-        use: ['babel-loader', 'ts-loader'],
+        test: /\.[jt]s$/,
+        loader: 'esbuild-loader',
+        options: {
+          target: 'es2015',
+        },
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          'style-loader',
+          'css-loader',
+          { loader: 'esbuild-loader', options: { minify: true } },
+        ],
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
