@@ -29,7 +29,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          'style-loader',
+          'css-loader',
+          { loader: 'esbuild-loader', options: { minify: true } },
+        ],
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
