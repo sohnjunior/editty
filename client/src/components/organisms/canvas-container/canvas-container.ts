@@ -1,9 +1,11 @@
 import { VComponent } from '@/modules/v-component'
+import VCanvasBackgroundLayer from '@molecules/canvas-layer/background-layer'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
 import { getOneTimeSessionId } from '@/services/session'
 import { addArchive, addOrUpdateArchive } from '@/services/archive'
 import type { Archive } from '@/services/archive'
+import { showToast } from '@/services/toast'
 import { lastOf } from '@/utils/ramda'
 import {
   CanvasMetaContext,
@@ -34,6 +36,7 @@ template.innerHTML = `
 
 export default class VCanvasContainer extends VComponent {
   static tag = 'v-canvas-container'
+  private backgroundLayer!: VCanvasBackgroundLayer
   private imageLayer!: VCanvasImageLayer
   private drawingLayer!: VCanvasDrawingLayer
 
@@ -62,14 +65,18 @@ export default class VCanvasContainer extends VComponent {
   }
 
   private initLayer() {
+    const backgroundLayer = this.$shadow.querySelector<VCanvasBackgroundLayer>(
+      'v-canvas-background-layer'
+    )
     const imageLayer = this.$shadow.querySelector<VCanvasImageLayer>('v-canvas-image-layer')
     const drawingLayer = this.$shadow.querySelector<VCanvasDrawingLayer>('v-canvas-drawing-layer')
 
-    if (!imageLayer || !drawingLayer) {
+    if (!backgroundLayer || !imageLayer || !drawingLayer) {
       console.error('🚨 canvas container need drawing and image layer')
       return
     }
 
+    this.backgroundLayer = backgroundLayer
     this.imageLayer = imageLayer
     this.drawingLayer = drawingLayer
   }
@@ -90,6 +97,7 @@ export default class VCanvasContainer extends VComponent {
   protected subscribeEventBus() {
     EventBus.getInstance().on(EVENT_KEY.SAVE_ARCHIVE, this.onSaveArchive.bind(this))
     EventBus.getInstance().on(EVENT_KEY.CREATE_NEW_ARCHIVE, this.onCreateNewArchive.bind(this))
+    EventBus.getInstance().on(EVENT_KEY.DOWNLOAD, this.onDownload.bind(this))
   }
 
   private async onSaveArchive() {
@@ -128,5 +136,28 @@ export default class VCanvasContainer extends VComponent {
     ])
 
     ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+  }
+
+  private onDownload() {
+    const $origin = this.backgroundLayer.canvas
+    const $canvas = document.createElement('canvas')
+    $canvas.width = $origin.width
+    $canvas.height = $origin.height
+
+    const ctx = $canvas.getContext('2d')
+    if (!ctx) {
+      showToast('DOWNLOAD', 'FAIL')
+      return
+    }
+
+    ctx.drawImage(this.backgroundLayer.canvas, 0, 0)
+    ctx.drawImage(this.imageLayer.canvas, 0, 0)
+    ctx.drawImage(this.drawingLayer.canvas, 0, 0)
+
+    const $link = document.createElement('a')
+    $link.download = 'image.png'
+    $link.href = $canvas.toDataURL('image/png')
+    $link.click()
+    showToast('DOWNLOAD', 'SUCCESS')
   }
 }

@@ -62,6 +62,10 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     return ['draw', 'erase'].includes(this.phase)
   }
 
+  get canvas() {
+    return this.$root
+  }
+
   constructor() {
     super(template)
   }

@@ -4,37 +4,49 @@ const TOAST_MESSAGE = {
   ADD_ARCHIVE: {
     SUCCESS: {
       variant: 'success',
-      title: '성공',
+      title: '',
       description: '추가되었습니다.',
     },
     FAIL: {
       variant: 'fail',
-      title: '실패',
+      title: '',
       description: '잠시 후에 다시 시도해주세요.',
     },
   },
   SAVE_ARCHIVE: {
     SUCCESS: {
       variant: 'success',
-      title: '성공',
+      title: '',
       description: '저장되었습니다.',
     },
     FAIL: {
       variant: 'fail',
-      title: '실패',
+      title: '',
       description: '잠시 후에 다시 시도해주세요.',
     },
   },
   DELETE_ARCHIVE: {
     SUCCESS: {
       variant: 'success',
-      title: '성공',
+      title: '',
       description: '삭제되었습니다.',
     },
     FAIL: {
       variant: 'fail',
-      title: '실패',
+      title: '',
       description: '잠시 후에 다시 시도해주세요.',
+    },
+  },
+  DOWNLOAD: {
+    SUCCESS: {
+      variant: 'success',
+      title: '',
+      description: '다운로드에 성공했습니다.',
+    },
+    FAIL: {
+      variant: 'fail',
+      title: '',
+      description: '다운로드에 실패했습니다.',
     },
   },
 }

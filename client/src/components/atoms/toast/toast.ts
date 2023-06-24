@@ -50,7 +50,7 @@ template.innerHTML = `
     }
   </style>
   <div class="toast-container">
-    <v-icon size="xlarge"></v-icon>
+    <v-icon size="large"></v-icon>
     <div class="toast-content">
       <h1>
         <span id="title"></span>

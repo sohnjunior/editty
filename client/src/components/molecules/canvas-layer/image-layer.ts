@@ -82,6 +82,10 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     return takeSnapshot(this.$root)
   }
 
+  get canvas() {
+    return this.$root
+  }
+
   constructor() {
     super(template)
   }
