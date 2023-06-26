@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'editty-cache-v1'
+const CACHE_VERSION = 'editty-cache-v2'
 
 const ICON_PATH = '/assets/images'
 const ICON_CACHE = [
