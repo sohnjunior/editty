@@ -32,6 +32,10 @@ self.addEventListener('install', (ev) => {
 })
 
 self.addEventListener('fetch', (ev) => {
+  if (ev.request.method !== 'GET') {
+    return
+  }
+
   ev.respondWith(
     (async () => {
       const cache = await caches.open(CACHE_VERSION)
