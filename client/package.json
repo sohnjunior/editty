@@ -1,7 +1,7 @@
 {
   "name": "editty-client",
   "version": "0.0.1",
-  "description": "blog asset editor",
+  "description": "lightweight progressive web app for sketch",
   "main": "index.js",
   "repository": "https://github.com/sohnjunior/editty",
   "author": "sohnjunior",
