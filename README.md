@@ -2,7 +2,7 @@
 
 **Lightweight sketch web-app with vanilla typescript**
 
-Simple web app inspired by FigJam.
+Simple web app inspired by FigJam.  
 With PWA, It can be installed and used offline.
 
 Developed using Native Web APIs such as Web component, Canvas, IndexedDB, Cache & Storage API and TypeScript.
@@ -48,6 +48,5 @@ Also, perform component visual testing with Chromatic.
 
 ## 🔀 CI & CD
 
-Manage CI/CD with GitHub workflow and Vercel.
-
-When the milestone assigned to each version are completed, a release note is created and the commit version build artifact is converted to production mode.
+Manage CI/CD with GitHub workflow and Vercel.  
+When the milestones assigned to each version are completed, a release note is auto created with workflow and convert current commit HEAD to production mode.
