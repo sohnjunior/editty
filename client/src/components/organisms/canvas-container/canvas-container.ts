@@ -1,4 +1,5 @@
 import { VComponent } from '@/modules/v-component'
+import { clearCanvas } from '@/modules/canvas-engine'
 import VCanvasBackgroundLayer from '@molecules/canvas-layer/background-layer'
 import VCanvasImageLayer from '@molecules/canvas-layer/image-layer'
 import VCanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
@@ -96,6 +97,7 @@ export default class VCanvasContainer extends VComponent {
 
   protected subscribeEventBus() {
     EventBus.getInstance().on(EVENT_KEY.SAVE_ARCHIVE, this.onSaveArchive.bind(this))
+    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, this.onClearArchive.bind(this))
     EventBus.getInstance().on(EVENT_KEY.CREATE_NEW_ARCHIVE, this.onCreateNewArchive.bind(this))
     EventBus.getInstance().on(EVENT_KEY.DOWNLOAD, this.onDownload.bind(this))
   }
@@ -119,6 +121,16 @@ export default class VCanvasContainer extends VComponent {
       images,
     })
     ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+  }
+
+  private async onClearArchive() {
+    clearCanvas(this.drawingLayer.canvas)
+    this.imageLayer.resetFocusedImage()
+    await Promise.all([
+      CanvasDrawingContext.dispatch({ action: 'CLEAR_ALL' }),
+      CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' }),
+    ])
+    EventBus.getInstance().emit(EVENT_KEY.SAVE_ARCHIVE)
   }
 
   private async onCreateNewArchive() {

@@ -194,13 +194,8 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
         console.error('🚨 fail to upload image')
       }
     }
-    const onClearAll = () => {
-      this.focused = null
-      CanvasImageContext.dispatch({ action: 'CLEAR_IMAGE' })
-    }
 
     EventBus.getInstance().on(EVENT_KEY.UPLOAD_IMAGE, onImageUpload)
-    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, onClearAll)
   }
 
   setFocusedImage(image: ImageObject, point: Point) {

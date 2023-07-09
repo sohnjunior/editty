@@ -1,13 +1,13 @@
 # 🎨 editty
 
-**Lightweight sketch web-app with vanilla typescript**
+**Lightweight sketch app with vanilla typescript**
 
 Simple web app inspired by FigJam.  
 With PWA, It can be installed and used offline.
 
-Developed using Native Web APIs such as Web component, Canvas, IndexedDB, Cache & Storage API and TypeScript.
+Developed with typescript and native web APIs such as web component, canvas, indexedDB, cache & storage API.
 
-After drawing with the pen, uploading and editing images, you can save and manage the results as files.
+After drawing, uploading and editing images, you can save and manage the results as files.
 
 ## 🏃 Getting Started
 
