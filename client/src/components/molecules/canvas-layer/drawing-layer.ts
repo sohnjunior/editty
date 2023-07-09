@@ -166,14 +166,6 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
     })
   }
 
-  subscribeEventBus() {
-    EventBus.getInstance().on(EVENT_KEY.CLEAR_ALL, async () => {
-      clearCanvas(this.$root)
-      await CanvasDrawingContext.dispatch({ action: 'CLEAR_ALL' })
-      EventBus.getInstance().emit(EVENT_KEY.SAVE_ARCHIVE)
-    })
-  }
-
   disconnectedCallback() {
     this.removeEventListener('mousedown', this.setup)
     this.removeEventListener('mouseup', this.cleanup)
