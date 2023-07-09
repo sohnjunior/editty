@@ -574,9 +574,13 @@ function drawRotateAnchor({ context, point }: { context: CanvasRenderingContext2
     startAngle: 0.3,
     endAngle: 1.8 * Math.PI,
   })
+
   drawSECramp({
     context,
-    from: { x: point.x + ARC_RADIUS, y: point.y - 5 },
+    from: {
+      x: point.x + Math.cos((0.3 * Math.PI) / 180) * ARC_RADIUS,
+      y: point.y + Math.sin((-20 * Math.PI) / 180) * ARC_RADIUS,
+    },
     lineLength: 8,
     lineWidth: 3,
     color: '#f8f8f8',
