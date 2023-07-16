@@ -78,5 +78,6 @@ export default class VMemoToolbox extends VComponent {
 
   private setMemo(archive: Archive) {
     this.$memoMenu.title = archive.title
+    this.$memoMenu.memo = archive.memo
   }
 }

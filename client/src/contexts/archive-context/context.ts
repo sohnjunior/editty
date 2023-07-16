@@ -11,7 +11,7 @@ type State = {
 
 type Action =
   | { action: 'FETCH_ARCHIVES_FROM_IDB' }
-  | { action: 'UPDATE_MEMO'; data: { title: string } }
+  | { action: 'UPDATE_MEMO'; data: { title: string; memo: string } }
   | { action: 'DELETE_ARCHIVE'; data: NonNullable<State['sid']> }
   | { action: 'SET_SESSION_ID'; data: State['sid'] }
 
@@ -27,10 +27,11 @@ const reducer: Reducer<State, Action> = async ({ state, payload }) => {
       return { ...state, archives }
     }
     case 'UPDATE_MEMO': {
-      const { title } = payload.data
+      const { title, memo } = payload.data
       const target = state.archives.find((archive) => archive.id === state.sid)
       if (target) {
         target.title = title
+        target.memo = memo
         await addOrUpdateArchive(target)
       }
 

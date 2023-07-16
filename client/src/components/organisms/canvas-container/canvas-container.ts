@@ -49,10 +49,6 @@ export default class VCanvasContainer extends VComponent {
     return ArchiveContext.state.sid!
   }
 
-  get title() {
-    return CanvasMetaContext.state.title
-  }
-
   get snapshots() {
     return CanvasDrawingContext.state.snapshots
   }
@@ -113,9 +109,14 @@ export default class VCanvasContainer extends VComponent {
       degree: image.degree,
     }))
     const imageSnapshot = images.length > 0 ? this.imageLayer.imageSnapshot : undefined
+    const { title, memo } = ArchiveContext.state.archives.find(
+      (archive) => archive.id === this.sid
+    ) || { title: 'untitled', memo: '' }
+
     await addOrUpdateArchive({
       id: this.sid,
-      title: this.title,
+      title,
+      memo,
       snapshot: lastOf(this.snapshots),
       imageSnapshot,
       images,
@@ -138,7 +139,8 @@ export default class VCanvasContainer extends VComponent {
 
     await addArchive({
       id,
-      title: this.title,
+      title: 'untitled',
+      memo: '',
       snapshot: undefined,
       imageSnapshot: undefined,
       images: [],

@@ -2,6 +2,7 @@ import { ArchiveContext } from '@/contexts'
 import { VComponent } from '@/modules/v-component'
 import type { ReflectAttributeParam } from '@/modules/v-component/types'
 import VTextInput from '@atoms/text-input/text-input'
+import VTextarea from '@atoms/textarea/textarea'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -30,6 +31,7 @@ template.innerHTML = `
 export default class VMemoMenu extends VComponent {
   static tag = 'v-memo-menu'
   private $textInput!: VTextInput
+  private $textarea!: VTextarea
 
   constructor() {
     super(template)
@@ -41,11 +43,13 @@ export default class VMemoMenu extends VComponent {
 
   private initInnerElement() {
     const $textInput = this.$root.querySelector<VTextInput>('v-text-input')
-    if (!$textInput) {
+    const $textarea = this.$root.querySelector<VTextarea>('v-textarea')
+    if (!$textInput || !$textarea) {
       throw new Error('initialize fail')
     }
 
     this.$textInput = $textInput
+    this.$textarea = $textarea
   }
 
   static get observedAttributes() {
@@ -68,12 +72,24 @@ export default class VMemoMenu extends VComponent {
     this.updateTitleProp(newValue)
   }
 
+  private _memo!: string
+  get memo() {
+    return this._memo
+  }
+  set memo(newValue: string) {
+    this._memo = newValue
+    this.updateMemoProp(newValue)
+  }
+
   protected bindEventListener() {
     this.$root.querySelector('v-button')?.addEventListener('click', this.handleSaveMemo.bind(this))
   }
 
   private async handleSaveMemo() {
-    await ArchiveContext.dispatch({ action: 'UPDATE_MEMO', data: { title: this.$textInput.value } })
+    await ArchiveContext.dispatch({
+      action: 'UPDATE_MEMO',
+      data: { title: this.$textInput.value, memo: this.$textarea.value },
+    })
     ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
   }
 
@@ -91,5 +107,9 @@ export default class VMemoMenu extends VComponent {
 
   private updateTitleProp(newValue: string) {
     this.$textInput.value = newValue
+  }
+
+  private updateMemoProp(newValue: string) {
+    this.$textarea.value = newValue
   }
 }
