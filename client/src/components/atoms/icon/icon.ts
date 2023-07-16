@@ -19,6 +19,7 @@ const icon = [
   'add-circle',
   'close-circle',
   'download',
+  'document',
 ] as const
 const size = ['small', 'medium', 'large', 'xlarge'] as const
 
