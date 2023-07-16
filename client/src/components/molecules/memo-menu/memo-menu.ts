@@ -86,11 +86,13 @@ export default class VMemoMenu extends VComponent {
   }
 
   private async handleSaveMemo() {
-    await ArchiveContext.dispatch({
-      action: 'UPDATE_MEMO',
-      data: { title: this.$textInput.value, memo: this.$textarea.value },
-    })
-    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    this.dispatchEvent(
+      new CustomEvent('save:memo', {
+        detail: { title: this.$textInput.value, memo: this.$textarea.value },
+        bubbles: true,
+        composed: true,
+      })
+    )
   }
 
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {

@@ -2,6 +2,7 @@ import { VComponent } from '@/modules/v-component'
 import { ArchiveContext } from '@/contexts'
 import VMemoMenu from '@molecules/memo-menu/memo-menu'
 import type { Archive } from '@/services/archive'
+import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -43,6 +44,7 @@ export default class VMemoToolbox extends VComponent {
   bindEventListener() {
     this.$root.addEventListener('click', this.handleOpenMenu.bind(this))
     this.$memoMenu.addEventListener('close:menu', this.handleCloseMenu.bind(this))
+    this.$memoMenu.addEventListener('save:memo', this.handleSaveMemo.bind(this))
   }
 
   handleOpenMenu() {
@@ -51,6 +53,23 @@ export default class VMemoToolbox extends VComponent {
 
   handleCloseMenu() {
     this.$memoMenu.open = false
+  }
+
+  private async handleSaveMemo(ev: Event) {
+    const memo = (ev as CustomEvent).detail
+    const currentArchive = ArchiveContext.state.archives.find(
+      (archive) => archive.id === ArchiveContext.state.sid
+    )
+
+    if (currentArchive) {
+      await ArchiveContext.dispatch({
+        action: 'UPDATE_MEMO',
+        data: memo,
+      })
+      ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    } else {
+      EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE, memo)
+    }
   }
 
   protected subscribeContext() {
