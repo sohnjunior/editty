@@ -187,6 +187,7 @@ export default class VCanvasToolbox extends VComponent {
     const archivePreviews = archives.map((archive) => ({
       id: archive.id,
       title: archive.title,
+      memo: archive.memo,
       snapshot: archive.snapshot,
       imageSnapshot: archive.imageSnapshot,
     }))
