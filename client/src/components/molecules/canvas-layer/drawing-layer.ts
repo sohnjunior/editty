@@ -2,7 +2,6 @@ import { VComponent } from '@/modules/v-component'
 import { PALETTE_COLORS } from '@/modules/canvas-engine/constant'
 import { Z_INDEX } from '@/utils/constant'
 import { CanvasDrawingContext, CanvasMetaContext, ArchiveContext } from '@/contexts'
-import { EventBus, EVENT_KEY } from '@/event-bus'
 import { lastOf } from '@/utils/ramda'
 import {
   get2dMiddlePoint,
@@ -36,10 +35,6 @@ export default class VCanvasDrawingLayer extends VComponent<HTMLCanvasElement> {
 
   get sid() {
     return ArchiveContext.state.sid!
-  }
-
-  get title() {
-    return CanvasMetaContext.state.title
   }
 
   get phase() {
