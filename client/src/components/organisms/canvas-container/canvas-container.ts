@@ -8,12 +8,7 @@ import { addArchive, addOrUpdateArchive } from '@/services/archive'
 import type { Archive } from '@/services/archive'
 import { showToast } from '@/services/toast'
 import { lastOf } from '@/utils/ramda'
-import {
-  CanvasMetaContext,
-  CanvasDrawingContext,
-  CanvasImageContext,
-  ArchiveContext,
-} from '@/contexts'
+import { CanvasDrawingContext, CanvasImageContext, ArchiveContext } from '@/contexts'
 import { EventBus, EVENT_KEY } from '@/event-bus'
 
 const template = document.createElement('template')
@@ -47,10 +42,6 @@ export default class VCanvasContainer extends VComponent {
 
   get sid() {
     return ArchiveContext.state.sid!
-  }
-
-  get title() {
-    return CanvasMetaContext.state.title
   }
 
   get snapshots() {
@@ -113,9 +104,14 @@ export default class VCanvasContainer extends VComponent {
       degree: image.degree,
     }))
     const imageSnapshot = images.length > 0 ? this.imageLayer.imageSnapshot : undefined
+    const { title, memo } = ArchiveContext.state.archives.find(
+      (archive) => archive.id === this.sid
+    ) || { title: 'untitled', memo: '' }
+
     await addOrUpdateArchive({
       id: this.sid,
-      title: this.title,
+      title,
+      memo,
       snapshot: lastOf(this.snapshots),
       imageSnapshot,
       images,
@@ -133,21 +129,19 @@ export default class VCanvasContainer extends VComponent {
     EventBus.getInstance().emit(EVENT_KEY.SAVE_ARCHIVE)
   }
 
-  private async onCreateNewArchive() {
+  private async onCreateNewArchive({ title, memo }: { title: string; memo: string }) {
     const id = getOneTimeSessionId()
 
-    await Promise.all([
-      addArchive({
-        id,
-        title: this.title,
-        snapshot: undefined,
-        imageSnapshot: undefined,
-        images: [],
-      }),
-      ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id }),
-    ])
-
-    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    await addArchive({
+      id,
+      title,
+      memo,
+      snapshot: undefined,
+      imageSnapshot: undefined,
+      images: [],
+    })
+    await ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id })
   }
 
   private onDownload() {

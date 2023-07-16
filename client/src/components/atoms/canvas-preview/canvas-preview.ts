@@ -49,6 +49,11 @@ template.innerHTML = `
       margin-top: 8px;
       font-size: 13px;
       font-weight: 500;
+      width: ${PREVIEW_CONTENT_SIZE}px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      text-align: center;
     }
   </style>
   <figure>

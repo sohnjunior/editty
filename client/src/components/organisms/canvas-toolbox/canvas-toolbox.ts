@@ -74,7 +74,7 @@ export default class VCanvasToolbox extends VComponent {
     super(template)
   }
 
-  afterCreated(): void {
+  afterCreated() {
     this.initInnerElement()
     this.initArchives()
     this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
@@ -187,6 +187,7 @@ export default class VCanvasToolbox extends VComponent {
     const archivePreviews = archives.map((archive) => ({
       id: archive.id,
       title: archive.title,
+      memo: archive.memo,
       snapshot: archive.snapshot,
       imageSnapshot: archive.imageSnapshot,
     }))
@@ -282,7 +283,7 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   handleAddArchive() {
-    EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE)
+    EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE, { title: '', memo: '' })
   }
 
   handleDeleteArchive(ev: Event) {

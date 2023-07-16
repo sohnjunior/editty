@@ -10,6 +10,7 @@ import Divider from '@atoms/divider/divider'
 import CanvasPreview from '@atoms/canvas-preview/canvas-preview'
 import Toast from '@atoms/toast/toast'
 import Dialog from '@atoms/dialog/dialog'
+import Textarea from '@atoms/textarea/textarea'
 import IconButton from '@molecules/icon-button/icon-button'
 import CanvasBackgroundLayer from '@molecules/canvas-layer/background-layer'
 import CanvasDrawingLayer from '@molecules/canvas-layer/drawing-layer'
@@ -19,10 +20,12 @@ import ColorPalette from '@molecules/color-palette/color-palette'
 import ColorMenu from '@molecules/color-menu/color-menu'
 import StrokeMenu from '@molecules/stroke-menu/stroke-menu'
 import ArchiveMenu from '@molecules/archive-menu/archive-menu'
+import MemoMenu from '@molecules/memo-menu/memo-menu'
 import ConfirmDialog from '@molecules/confirm-dialog/confirm-dialog'
 import CanvasContainer from '@organisms/canvas-container/canvas-container'
 import CanvasToolbox from '@organisms/canvas-toolbox/canvas-toolbox'
 import HistoryToolbox from '@organisms/history-toolbox/history-toolbox'
+import MemoToolbox from '@organisms/memo-toolbox/memo-toolbox'
 import App from './app'
 
 export function defineCustomElements() {
@@ -35,6 +38,7 @@ export function defineCustomElements() {
   customElements.define(IconButton.tag, IconButton)
   customElements.define(Toast.tag, Toast)
   customElements.define(Dialog.tag, Dialog)
+  customElements.define(Textarea.tag, Textarea)
   customElements.define(CanvasPreview.tag, CanvasPreview)
   customElements.define(CanvasContainer.tag, CanvasContainer)
   customElements.define(CanvasBackgroundLayer.tag, CanvasBackgroundLayer)
@@ -46,10 +50,12 @@ export function defineCustomElements() {
   customElements.define(Divider.tag, Divider)
   customElements.define(CanvasToolbox.tag, CanvasToolbox)
   customElements.define(HistoryToolbox.tag, HistoryToolbox)
+  customElements.define(MemoToolbox.tag, MemoToolbox)
   customElements.define(InputContainer.tag, InputContainer)
   customElements.define(ColorPalette.tag, ColorPalette)
   customElements.define(ColorMenu.tag, ColorMenu)
   customElements.define(StrokeMenu.tag, StrokeMenu)
   customElements.define(ArchiveMenu.tag, ArchiveMenu)
+  customElements.define(MemoMenu.tag, MemoMenu)
   customElements.define(ConfirmDialog.tag, ConfirmDialog)
 }

@@ -62,10 +62,6 @@ export default class VCanvasImageLayer extends VComponent<HTMLCanvasElement> {
     return ArchiveContext.state.sid!
   }
 
-  get title() {
-    return CanvasMetaContext.state.title
-  }
-
   get phase() {
     return CanvasMetaContext.state.phase
   }

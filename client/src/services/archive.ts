@@ -6,6 +6,7 @@ import type { ImageObject } from '@molecules/canvas-layer/types'
 export interface Archive {
   id: string
   title: string
+  memo: string
   snapshot?: ImageData
   imageSnapshot?: ImageData
   images: Omit<ImageObject, 'ref'>[] // NOTE: HTMLImageElement 는 웹 스토리지에 저장할 수 없기 때문에 제외

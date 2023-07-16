@@ -1,7 +1,7 @@
 import { Context } from '@/contexts/shared/context'
 import type { Reducer } from '@/contexts/shared/context'
 import type { Archive } from '@/services/archive'
-import { getAllArchive, deleteArchive } from '@/services/archive'
+import { getAllArchive, deleteArchive, addOrUpdateArchive } from '@/services/archive'
 import { setSessionId } from '@/services/session'
 
 type State = {
@@ -11,6 +11,7 @@ type State = {
 
 type Action =
   | { action: 'FETCH_ARCHIVES_FROM_IDB' }
+  | { action: 'UPDATE_MEMO'; data: { title: string; memo: string } }
   | { action: 'DELETE_ARCHIVE'; data: NonNullable<State['sid']> }
   | { action: 'SET_SESSION_ID'; data: State['sid'] }
 
@@ -24,6 +25,17 @@ const reducer: Reducer<State, Action> = async ({ state, payload }) => {
     case 'FETCH_ARCHIVES_FROM_IDB': {
       const archives = (await getAllArchive()) ?? []
       return { ...state, archives }
+    }
+    case 'UPDATE_MEMO': {
+      const { title, memo } = payload.data
+      const target = state.archives.find((archive) => archive.id === state.sid)
+      if (target) {
+        target.title = title
+        target.memo = memo
+        await addOrUpdateArchive(target)
+      }
+
+      return { ...state }
     }
     case 'DELETE_ARCHIVE': {
       const targetId = payload.data
