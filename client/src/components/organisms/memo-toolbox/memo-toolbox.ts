@@ -42,7 +42,9 @@ export default class VMemoToolbox extends VComponent {
   }
 
   bindEventListener() {
-    this.$root.addEventListener('click', this.handleOpenMenu.bind(this))
+    this.$root
+      .querySelector('v-icon-button')
+      ?.addEventListener('click', this.handleOpenMenu.bind(this))
     this.$memoMenu.addEventListener('close:menu', this.handleCloseMenu.bind(this))
     this.$memoMenu.addEventListener('save:memo', this.handleSaveMemo.bind(this))
   }

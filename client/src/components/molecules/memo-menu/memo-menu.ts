@@ -1,4 +1,3 @@
-import { ArchiveContext } from '@/contexts'
 import { VComponent } from '@/modules/v-component'
 import type { ReflectAttributeParam } from '@/modules/v-component/types'
 import VTextInput from '@atoms/text-input/text-input'
@@ -93,6 +92,7 @@ export default class VMemoMenu extends VComponent {
         composed: true,
       })
     )
+    this.dispatchEvent(new CustomEvent('close:menu'))
   }
 
   protected reflectAttribute({ attribute, value }: ReflectAttributeParam): void {
