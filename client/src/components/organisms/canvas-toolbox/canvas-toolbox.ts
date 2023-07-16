@@ -74,7 +74,7 @@ export default class VCanvasToolbox extends VComponent {
     super(template)
   }
 
-  afterCreated(): void {
+  afterCreated() {
     this.initInnerElement()
     this.initArchives()
     this.setPencilColorPreview(CanvasDrawingContext.state.pencilColor)
