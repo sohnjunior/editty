@@ -21,6 +21,13 @@ template.innerHTML = `
       z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
+    :host v-memo-toolbox {
+      position: fixed;
+      left: 20px;
+      top: 40px;
+      z-index: ${Z_INDEX.ACTION_LAYER};
+    }
+
     :host v-toast {
       position: fixed;
       top: 20px;
@@ -34,6 +41,7 @@ template.innerHTML = `
       <v-canvas-container></v-canvas-container>
       <v-canvas-toolbox></v-canvas-toolbox>
       <v-history-toolbox></v-history-toolbox>
+      <v-memo-toolbox></v-memo-toolbox>
       <v-toast variant="success" open="false" autoclose="true" title="" description=""></v-toast>
       <v-confirm-dialog open="false" content=""></v-confirm-dialog>
     </main>
