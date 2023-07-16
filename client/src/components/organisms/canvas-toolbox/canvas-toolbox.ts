@@ -283,7 +283,7 @@ export default class VCanvasToolbox extends VComponent {
   }
 
   handleAddArchive() {
-    EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE)
+    EventBus.getInstance().emit(EVENT_KEY.CREATE_NEW_ARCHIVE, { title: '', memo: '' })
   }
 
   handleDeleteArchive(ev: Event) {

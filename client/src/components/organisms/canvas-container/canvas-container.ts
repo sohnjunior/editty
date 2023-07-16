@@ -129,13 +129,13 @@ export default class VCanvasContainer extends VComponent {
     EventBus.getInstance().emit(EVENT_KEY.SAVE_ARCHIVE)
   }
 
-  private async onCreateNewArchive() {
+  private async onCreateNewArchive({ title, memo }: { title: string; memo: string }) {
     const id = getOneTimeSessionId()
 
     await addArchive({
       id,
-      title: 'untitled',
-      memo: '',
+      title,
+      memo,
       snapshot: undefined,
       imageSnapshot: undefined,
       images: [],
