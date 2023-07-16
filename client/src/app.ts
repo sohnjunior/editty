@@ -10,21 +10,21 @@ template.innerHTML = `
     :host v-canvas-toolbox {
       position: fixed;
       left: 20px;
-      bottom: 25px;
+      bottom: 20px;
       z-index: ${Z_INDEX.MENU_LAYER};
     }
 
     :host v-history-toolbox {
       position: fixed;
       right: 20px;
-      bottom: 25px;
+      bottom: 20px;
       z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
     :host v-memo-toolbox {
       position: fixed;
       left: 20px;
-      top: 25px;
+      top: 20px;
       z-index: ${Z_INDEX.ACTION_LAYER};
     }
 
