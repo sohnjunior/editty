@@ -136,18 +136,15 @@ export default class VCanvasContainer extends VComponent {
   private async onCreateNewArchive() {
     const id = getOneTimeSessionId()
 
-    await Promise.all([
-      addArchive({
-        id,
-        title: this.title,
-        snapshot: undefined,
-        imageSnapshot: undefined,
-        images: [],
-      }),
-      ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id }),
-    ])
-
-    ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    await addArchive({
+      id,
+      title: this.title,
+      snapshot: undefined,
+      imageSnapshot: undefined,
+      images: [],
+    })
+    await ArchiveContext.dispatch({ action: 'FETCH_ARCHIVES_FROM_IDB' })
+    ArchiveContext.dispatch({ action: 'SET_SESSION_ID', data: id })
   }
 
   private onDownload() {
