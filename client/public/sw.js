@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'editty-cache-v2'
+const CACHE_VERSION = 'editty-cache-v3'
 
 const ICON_PATH = '/assets/images'
 const ICON_CACHE = [
@@ -22,13 +22,13 @@ const ICON_CACHE = [
 ].map((icon) => `${ICON_PATH}/${icon}.svg`)
 const PAGE_CACHE = ['./index.html', './manifest.json']
 
+async function cacheResource() {
+  const cache = await caches.open(CACHE_VERSION)
+  return cache.addAll([...ICON_CACHE, ...PAGE_CACHE])
+}
+
 self.addEventListener('install', (ev) => {
-  ev.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE_VERSION)
-      return cache.addAll([...ICON_CACHE, ...PAGE_CACHE])
-    })()
-  )
+  ev.waitUntil(cacheResource())
 })
 
 self.addEventListener('fetch', (ev) => {
