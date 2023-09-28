@@ -46,26 +46,34 @@ async function cacheResource() {
   return cache.addAll([...ICON_CACHE, ...PAGE_CACHE])
 }
 
-self.addEventListener('fetch', (ev) => {
+self.addEventListener('fetch', async (ev) => {
   if (ev.request.method !== 'GET') {
     return
   }
 
-  ev.respondWith(
-    (async () => {
-      const cache = await caches.open(CACHE_VERSION)
-
-      let resource = null
-
-      try {
-        const response = await fetch(ev.request)
-        cache.put(ev.request, response.clone())
-        resource = response
-      } catch {
-        resource = await cache.match(ev.request)
-      }
-
-      return resource
-    })()
-  )
+  ev.respondWith(cacheFirst(ev.request))
 })
+
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request)
+
+  if (cachedResponse) {
+    return cachedResponse
+  }
+
+  try {
+    const response = await fetch(request)
+    putCache(request, response)
+    return response
+  } catch {
+    return new Response('Network error!', {
+      status: 408,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+  }
+}
+
+async function putCache(request, response) {
+  const cache = await caches.open(CACHE_VERSION)
+  cache.put(request, response.clone())
+}
