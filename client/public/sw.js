@@ -22,6 +22,21 @@ const ICON_CACHE = [
 ].map((icon) => `${ICON_PATH}/${icon}.svg`)
 const PAGE_CACHE = ['./index.html', './manifest.json']
 
+async function deleteCache(key) {
+  await caches.delete(key)
+}
+
+async function deleteOldCache() {
+  const cacheKeys = await caches.keys()
+  const cacheToDelete = cacheKeys.filter((key) => key !== CACHE_VERSION)
+  const deleteCacheJobs = cacheToDelete.map(deleteCache)
+  await Promise.all(deleteCacheJobs)
+}
+
+self.addEventListener('activate', (ev) => {
+  ev.waitUntil(deleteOldCache())
+})
+
 async function cacheResource() {
   const cache = await caches.open(CACHE_VERSION)
   return cache.addAll([...ICON_CACHE, ...PAGE_CACHE])
