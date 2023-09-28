@@ -22,9 +22,9 @@ const ICON_CACHE = [
 ].map((icon) => `${ICON_PATH}/${icon}.svg`)
 const PAGE_CACHE = ['./index.html', './manifest.json']
 
-async function deleteCache(key) {
-  await caches.delete(key)
-}
+self.addEventListener('activate', (ev) => {
+  ev.waitUntil(deleteOldCache())
+})
 
 async function deleteOldCache() {
   const cacheKeys = await caches.keys()
@@ -33,18 +33,18 @@ async function deleteOldCache() {
   await Promise.all(deleteCacheJobs)
 }
 
-self.addEventListener('activate', (ev) => {
-  ev.waitUntil(deleteOldCache())
+async function deleteCache(key) {
+  await caches.delete(key)
+}
+
+self.addEventListener('install', (ev) => {
+  ev.waitUntil(cacheResource())
 })
 
 async function cacheResource() {
   const cache = await caches.open(CACHE_VERSION)
   return cache.addAll([...ICON_CACHE, ...PAGE_CACHE])
 }
-
-self.addEventListener('install', (ev) => {
-  ev.waitUntil(cacheResource())
-})
 
 self.addEventListener('fetch', (ev) => {
   if (ev.request.method !== 'GET') {
